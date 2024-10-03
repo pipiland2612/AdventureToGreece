@@ -7,7 +7,7 @@ import scala.util.Try
 
 object SpriteSheetTest extends App :
 
-  val spriteSheetPath = "/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Enemy/Necromancer_walk.png"
+  val spriteSheetPath = "/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Players/attack_spritesheet.png"
 
   val spriteSheet: BufferedImage = 
     try
@@ -20,7 +20,7 @@ object SpriteSheetTest extends App :
   val frameWidth = 64
   val frameHeight = 64
 
-  val spriteFrames: Array[Array[BufferedImage]] = SpriteSheet.splitSpriteSheet(spriteSheet, frameWidth, frameHeight, 48, 1)
+  val spriteFrames: Array[Array[BufferedImage]] = SpriteSheet.splitSpriteSheet(spriteSheet, frameWidth, frameHeight, 48, 4)
 
   println(s"Sprite Sheet Dimensions: ${spriteSheet.getWidth}x${spriteSheet.getHeight}")
   println(s"Frame Size: ${frameWidth}x${frameHeight}")

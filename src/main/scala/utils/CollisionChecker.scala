@@ -5,6 +5,8 @@ import entities.Direction.ANY
 import entities.{Creatures, Direction}
 import game.GamePanel
 
+import java.awt.Rectangle
+
 class CollisionChecker (var gp: GamePanel) :
 
   private def adjustSolidArea (entity: Creatures): Unit =
@@ -108,6 +110,18 @@ class CollisionChecker (var gp: GamePanel) :
         target(i).solidArea.x = target(i).solidAreaDefaultX
         target(i).solidArea.y = target(i).solidAreaDefaultY
 
+    index
+
+  // overloaded method
+  def checkCollisionWithTargets (effectArea: Rectangle, target: Array[Enemy]) =
+    var index = -1
+    for (i <- target.indices) do
+      if target(i) != null then
+
+        Tools.updateSolidArea(target(i))
+
+        if (effectArea.intersects(target(i).solidArea)) then
+          index = i
     index
 
   def checkPlayer(entity: Creatures): Boolean =

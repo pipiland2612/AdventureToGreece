@@ -5,24 +5,37 @@ import entities.Direction.ANY
 import game.GamePanel
 import utils.Animation
 
+import java.awt.{AlphaComposite, Color, Graphics2D, Rectangle}
+
 abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var speed: Int = 0
   var state: State = State.IDLE
   var direction: Direction = Direction.DOWN
   var isCollided: Boolean = false
+
   var dialoques = new Array[String](10)
   var dialoqueIndex = 0
+
   var needsAnimationUpdate = false
+
   var health: Int = 0
   var maxHealth: Int = 0
+  var isAttacking = false
+  var attackArea: Rectangle = new Rectangle(0, 0, 0, 0)
+
   var isInvinc : Boolean = false
   var invincibleDuration = 0
+  var maxInvincDuration: Int = 0
+
+  var dying = false
+  var dyingCounter = 0
 
   var idleAnimations: Map[Direction, Animation]
   var runAnimations: Map[Direction, Animation]
-
+  var attackAnimations: Map[Direction, Animation]
+  var deadAnimations: Map[Direction, Animation]
   def images: Map[(Direction, State), Animation] =
-    if idleAnimations != null || runAnimations != null then
+    if idleAnimations.nonEmpty || runAnimations.nonEmpty || attackAnimations.nonEmpty then
       Map(
         (Direction.RIGHT, State.IDLE) -> idleAnimations(Direction.RIGHT),
         (Direction.RIGHT, State.RUN) -> runAnimations(Direction.RIGHT),
@@ -31,9 +44,20 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         (Direction.LEFT, State.IDLE) -> idleAnimations(Direction.LEFT),
         (Direction.LEFT, State.RUN) -> runAnimations(Direction.LEFT),
         (Direction.UP, State.IDLE) -> idleAnimations(Direction.UP),
-        (Direction.UP, State.RUN) -> runAnimations(Direction.UP)
+        (Direction.UP, State.RUN) -> runAnimations(Direction.UP),
+
+        (Direction.UP, State.ATTACK) -> attackAnimations(Direction.UP),
+        (Direction.DOWN, State.ATTACK) -> attackAnimations(Direction.DOWN),
+        (Direction.LEFT, State.ATTACK) -> attackAnimations(Direction.LEFT),
+        (Direction.RIGHT, State.ATTACK) -> attackAnimations(Direction.RIGHT),
+
+        (Direction.UP, State.DEAD) -> deadAnimations(Direction.UP),
+        (Direction.DOWN, State.DEAD) -> deadAnimations(Direction.DOWN),
+        (Direction.LEFT, State.DEAD) -> deadAnimations(Direction.LEFT),
+        (Direction.RIGHT, State.DEAD) -> deadAnimations(Direction.RIGHT)
       )
     else null
+
 
   def speak (): Unit =
     if dialoques(dialoqueIndex) == null then
@@ -50,21 +74,46 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
   def takeDamage(amount: Int): Unit =
     this.health -= amount
+    if this.health < 0 then
+      die()
 
   def isAlive: Boolean = health > 0
+  def isDead: Boolean = !isAlive
 
   def setAction(): Unit = {}
+
 
   def move(dx: Int, dy: Int): Unit =
     state = State.RUN
     this.pos = (pos._1 + dx, pos._2 + dy)
     needsAnimationUpdate = true
 
+  def handleInvincibility(): Unit =
+    if isInvinc then
+      invincibleDuration += 1
+      if invincibleDuration > maxInvincDuration then
+        invincibleDuration = 0
+        isInvinc = false
+
+  def die(): Unit =
+    if (state != State.DEAD) then
+      state = State.DEAD
+      needsAnimationUpdate = true
+      currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
+    else
+      // Update the death animation
+      currentAnimation.update()
+      dyingCounter += 1
+      needsAnimationUpdate = true
+
+      if dyingCounter >= 120 then
+        gp.enemyList = gp.enemyList.filterNot(_ == this)
+
   def checkAnimationUpdate (): Unit =
     if(needsAnimationUpdate) then
       currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
       needsAnimationUpdate = false
-    currentAnimation.update()
+      currentAnimation.update()
 
   def continueMove (): Unit =
     if !isCollided then
@@ -78,19 +127,24 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
       currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
 
   def update(): Unit =
-    setAction()
-    isCollided = false
-    gp.cCheck.checkTileCollision(this)
-    gp.cCheck.checkObjectCollision(this, false)
-//    gp.cCheck.checkCollisionWithTargets(this, gp.npc)
-    gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
-    val hasTouchedPlayer = gp.cCheck.checkPlayer(this)
+    if dying then
+      die()
+    else if isAlive then
+      setAction()
+      isCollided = false
+      handleInvincibility()
 
-    if hasTouchedPlayer && this.isInstanceOf[Enemy] then
-      if !gp.player.isInvinc then
-        gp.player.health -= 10
-        gp.player.isInvinc = true
-    checkAnimationUpdate()
-    continueMove()
+      gp.cCheck.checkTileCollision(this)
+      gp.cCheck.checkObjectCollision(this, false)
+  //    gp.cCheck.checkCollisionWithTargets(this, gp.npc)
+      gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+      val hasTouchedPlayer = gp.cCheck.checkPlayer(this)
 
+      if hasTouchedPlayer && this.isInstanceOf[Enemy] then
+        if !gp.player.isInvinc then
+          gp.player.health -= 10
+          gp.player.isInvinc = true
+      checkAnimationUpdate()
+      continueMove()
 
+  override def draw(g: Graphics2D): Unit = super.draw(g)

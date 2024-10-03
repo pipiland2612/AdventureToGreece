@@ -20,18 +20,28 @@ abstract class Entity(var gp: GamePanel) :
 
   def getPosition: (Int, Int) = this.pos
 
-  // draw both objects and creatures
-  def draw (g : Graphics2D): Unit =
-    val (playerX, playerY) = gp.player.getPosition
+
+  protected def calculateScreenCoordinates(): (Int, Int) =
+
     val screenX = gp.player.screenX
     val screenY = gp.player.screenY
-    val (worldX, worldY) = this.pos
-    val tileSize = gp.tileSize
 
+    val tileSize = gp.tileSize
+    val (worldX, worldY) = this.pos
+    val (playerX, playerY) = gp.player.getPosition
     val screenTileX = worldX - playerX + screenX
     val screenTileY = worldY - playerY + screenY
 
-    val drawRange = tileSize * 2
+    (screenTileX, screenTileY)
+
+  // draw both objects and creatures
+  def draw (g : Graphics2D): Unit =
+    val (screenTileX, screenTileY) = calculateScreenCoordinates()
+    val drawRange = gp.tileSize * 2
+    val (worldX, worldY) = this.pos
+    val (playerX, playerY) = gp.player.getPosition
+    val screenX = gp.player.screenX
+    val screenY = gp.player.screenY
     if (
       worldX + drawRange > playerX - screenX &&
       worldX - drawRange < playerX + screenX &&

@@ -97,6 +97,9 @@ class GamePanel extends JPanel with Runnable:
       for enemy <- enemyList do
         if enemy != null then
           enemy.update()
+//          if enemy.dying then
+
+
     else if gameState == GameState.PauseState then {}
 
   def playMusic (int : Int) = this.sound.setFile(int); this.sound.play(); this.sound.loop()

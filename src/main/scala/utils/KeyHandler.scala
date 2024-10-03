@@ -4,7 +4,7 @@ import game.{GamePanel, GameState}
 import java.awt.event.{KeyEvent, KeyListener}
 
 class KeyHandler(var gp: GamePanel) extends KeyListener :
-  var upPressed, downPressed, leftPressed, rightPressed: Boolean = _
+  var upPressed, downPressed, leftPressed, rightPressed, attackPressed: Boolean = _
   var toggle: Boolean = _
 
   override def keyPressed(e: KeyEvent): Unit =
@@ -32,6 +32,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case KeyEvent.VK_S => downPressed = false
       case KeyEvent.VK_A => leftPressed = false
       case KeyEvent.VK_D => rightPressed = false
+      case KeyEvent.VK_G => attackPressed = false
       case _ => println("Not valid keys")
 
   override def keyTyped(e: KeyEvent): Unit = {}
@@ -67,6 +68,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case KeyEvent.VK_S => downPressed = true
       case KeyEvent.VK_A => leftPressed = true
       case KeyEvent.VK_D => rightPressed = true
+      case KeyEvent.VK_G => attackPressed = true
       case KeyEvent.VK_T =>
         if(!toggle) then toggle = true else if(toggle) then toggle = false
       case KeyEvent.VK_P =>
