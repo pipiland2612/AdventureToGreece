@@ -1,0 +1,5 @@
+package items
+
+class Potion {
+
+}
