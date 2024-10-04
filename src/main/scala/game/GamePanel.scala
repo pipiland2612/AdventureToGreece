@@ -6,9 +6,9 @@ import java.awt.image.BufferedImage
 import Tile.TileManager
 import `object`.ObjectManager
 
-import java.awt.{Color, Dimension, Graphics, Graphics2D}
+import java.awt.{Color, Dimension, Font, Graphics, Graphics2D}
 import javax.swing.JPanel
-import entities.{Creatures, Entity, Player}
+import entities.{Entity, Player}
 import ui.UI
 import utils.{CollisionChecker, EventHandler, KeyHandler, Sound, Tools}
 
@@ -32,7 +32,7 @@ class GamePanel extends JPanel with Runnable:
 
   val FPS = 60
   //initialize
-  var backGroundImage: BufferedImage = Tools.loadImage("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/backgroundImage.png")
+  var backGroundImage: BufferedImage = Tools.loadImage("Maps/backgroundImage.png")
   this.setPreferredSize(new Dimension(screenWidth, screenHeight))
   this.setBackground(Color.BLACK)
   // SYSTEM
@@ -53,43 +53,26 @@ class GamePanel extends JPanel with Runnable:
   var entityList: ListBuffer[Entity] = ListBuffer[Entity]()
   var enemyList: Array[Enemy] = new Array[Enemy](10)
 
-  //GAME STate
+  //GAME STATE
   var gameState: GameState = GameState.TitleState
 
+  // SET UP GAME
   def startGameThread(): Unit =
     gameThread = new Thread(this)
     gameThread.start()
-
-  def renderDebugInfo(g: Graphics2D, entity: Entity, objects: Array[Entity], creatures: Array[Enemy]): Unit =
-    g.setColor(Color.RED)
-    g.drawRect(entity.solidArea.x + player.screenX , entity.solidArea.y + player.screenY, entity.solidArea.width, entity.solidArea.height)
-
-    objects.foreach ( obj =>
-      if (obj != null) then
-        g.setColor(Color.BLUE)
-        g.drawRect(
-          obj.solidArea.x + obj.pos._1 - entity.getPosition._1 + player.screenX,
-          obj.solidArea.y + obj.pos._2 - entity.getPosition._2 + player.screenY,
-          obj.solidArea.width, obj.solidArea.height)
-    )
-
-    creatures.foreach (creature =>
-      if creature != null then
-        g.setColor(Color.YELLOW)
-        g.drawRect(
-          creature.solidArea.x + creature.pos._1 - entity.getPosition._1 + player.screenX,
-          creature.solidArea.y + creature.pos._2 - entity.getPosition._2 + player.screenY,
-          creature.solidArea.width, creature.solidArea.height)
-    )
-
-
 
   def setUpGame (): Unit =
     oManager.setObject()
     oManager.setEnemy()
     playMusic(0)
 
+  // Music helper methods
+  def playMusic (int : Int) = this.sound.setFile(int); this.sound.play(); this.sound.loop()
+  def stopMusic (): Unit = this.sound.stop()
+  def playSE (int : Int) = this.se.setFile(int); this.se.play()
+
   // call by the game loop
+
   def update(): Unit =
     if gameState == GameState.PlayState then
       this.player.update()
@@ -102,17 +85,12 @@ class GamePanel extends JPanel with Runnable:
 
     else if gameState == GameState.PauseState then {}
 
-  def playMusic (int : Int) = this.sound.setFile(int); this.sound.play(); this.sound.loop()
-  def stopMusic (): Unit = this.sound.stop()
-  def playSE (int : Int) = this.se.setFile(int); this.se.play()
-
-  // call by the game loop
   override def paintComponent(g: Graphics): Unit =
     super.paintComponent(g)
     val g2d = g.asInstanceOf[Graphics2D]
 
     var startTime: Long = 0
-    if(keyH.toggle) then
+    if(keyH.showDebugText) then
       startTime = System.nanoTime()
 
     //BACKGROUND
@@ -145,18 +123,27 @@ class GamePanel extends JPanel with Runnable:
 
       //EMPTY LIST
       entityList.clear()
-      renderDebugInfo (g2d, player, obj, enemyList)
+//      Tools.renderDebugInfo (g2d, player, obj, enemyList, this)
 
       //UI
       gui.drawUI(g2d)
 
 //      Debug
-      if(keyH.toggle) then
+      if(keyH.showDebugText) then
         val endTime = System.nanoTime()
         val passTime = endTime - startTime
+        g2d.setFont(new Font("Arial",Font.PLAIN, 20))
         g2d.setColor(Color.WHITE)
-        g2d.drawString("Draw time: " + passTime, 10,100)
-        println(passTime)
+        var x = 10
+        var y = 400
+        var lineHeight = 20
+
+
+        g2d.drawString("Position x: " + player.getPosition._1, x,y);y += lineHeight
+        g2d.drawString("Position y: " + player.getPosition._2, x,y);y += lineHeight
+        g2d.drawString("Col: " + (player.getPosition._1 + player.solidArea.x) / tileSize, x,y);y += lineHeight
+        g2d.drawString("Row: " + (player.getPosition._2 + player.solidArea.y) / tileSize, x,y);y += lineHeight
+        g2d.drawString("Draw time: " + passTime, x,y)
 
     g2d.dispose()
 

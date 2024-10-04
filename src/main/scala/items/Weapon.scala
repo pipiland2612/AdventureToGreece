@@ -1,18 +1,15 @@
 package items
 
+import entities.Entity
+import game.GamePanel
 
-class Weapon(name: String, var damage: Int) extends Item (name):
-  def swing(): Unit = {
-    println(s"Swinging $name, dealing $damage damage!")
-  }
+import java.awt.Rectangle
 
-  def throwWeapon(): Unit = {
-    println(s"Throwing $name!")
-  }
 
-  def dealDamage(): Int = {
-    damage
-  }
+class Weapon(var damage: Int, gp: GamePanel) extends Item (gp):
+  var name = ""
+  var pos = (0,0)
+  var solidArea: Rectangle = Rectangle()
+  def getDescription: String = s"Swinging $name \ncan deal $damage damages!"
 
-  override def use(): Unit = swing()
-  override def applyEffect(): Unit = println(s"Weapon $name applied an effect")
+  

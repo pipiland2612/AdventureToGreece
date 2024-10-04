@@ -38,13 +38,14 @@ class TileManager(var gp: GamePanel) :
     setUp(6, "horizontal_wall", true)
     setUp(7, "vertical_wall", true)
     setUp(8, "wall", true)
+    setUp(9, "water", true)
   loadTileImage()
 
   def setUp(index: Int, imageName: String, collision: Boolean): Unit =
     val uTools = Tools
     try
       tile(index) = new Tile()
-      tile(index).image = uTools.loadImage("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Tiles/" + imageName + ".png")
+      tile(index).image = uTools.loadImage("Tiles/" + imageName + ".png")
 
       // scale beforehand to optimize time to draw
       tile(index).image = uTools.scaleImage(tile(index).image, gp.tileSize, gp.tileSize)

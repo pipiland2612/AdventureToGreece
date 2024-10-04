@@ -1,24 +1,54 @@
 package entities
+import `object`.{OBJ_HealFlask, OBJ_NormalShield, OBJ_NormalSword}
 import entities.Direction.{ANY, DOWN, LEFT, RIGHT, UP}
-import entities.State.DEAD
 
 import java.awt.image.BufferedImage
 import game.{GamePanel, GameState}
-import items.Weapon
+import items.{Item, Potion, Shield, Weapon}
 import utils.{Animation, Tools}
 
 import java.awt.{AlphaComposite, Graphics2D, Rectangle}
+import scala.collection.mutable.ListBuffer
 
 class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
+  direction = Direction.RIGHT
+  var currentWeapon: Weapon = OBJ_NormalSword(gp.tileSize, gp)
+  var currentShield: Shield = OBJ_NormalShield(gp.tileSize, gp)
+  val maxInventorySize = 20
+  var inventory : ListBuffer[Item] = ListBuffer()
+  setItems()
 
-  private var currentWeapon: Option[Weapon] = None
   state = State.IDLE
   private var counter = 0
-  direction = Direction.RIGHT
+
+  // Player stats
+  var name = "Warrior"
+  speed = 5
+  maxHealth = 100
+  health = maxHealth
+  var strength = 1
+  var dexterity = 1
+  var exp = 0
+  var level = 1
+  var nextLevelExp = 5
+  var attackDamage = getAttackDamage
+  var defense = getDefense
+
+  // other stats
   private var attackCooldown: Int = 0
   private val maxAttackCooldown: Int = 45
   maxInvincDuration = 60
 
+  var solidAreaX = 22
+  var solidAreaY = 40
+  solidAreaDefaultX = solidAreaX
+  solidAreaDefaultY = solidAreaY
+  var solidAreaWidth = (12)
+  var solidAreaHeight = (12)
+
+  var solidArea = Rectangle(solidAreaX , solidAreaY , (solidAreaWidth * 1.25).toInt, (solidAreaHeight * 1.25).toInt)
+
+  // Screen, animations stats
   val screenX: Int = gp.screenWidth / 2 - (gp.tileSize / 2)
   val screenY: Int = gp.screenHeight / 2 - (gp.tileSize / 2)
   private val playerScale = (gp.tileSize * 1.25).toInt
@@ -67,32 +97,24 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       Tools.getFrames(spriteFrames, 20, 6), 5),
   )
 
-  def backGroundImage: BufferedImage = idleAnimations(Direction.DOWN).getCurrentFrame
-
   needsAnimationUpdate = false
+  var hasCallDie = false
   currentAnimation = images((direction, state))
 
-  var solidAreaX = 22
-  var solidAreaY = 40
-  solidAreaDefaultX = solidAreaX
-  solidAreaDefaultY = solidAreaY
-  var solidAreaWidth = (12)
-  var solidAreaHeight = (12)
-
-  attackArea.width = 32
-  attackArea.height = 16
-
-  var solidArea = Rectangle(solidAreaX , solidAreaY , (solidAreaWidth * 1.25).toInt, (solidAreaHeight * 1.25).toInt)
-  speed = 5
-  maxHealth = 100
-  health = maxHealth
-
+  // Getter methods
   def getState = this.state
   def getHealth = this.health
   override def getPosition = this.pos
   def getSpeed = this.speed
   def getCurrentAnimation = this.currentAnimation
+  def getDefense: Int = currentShield.defense * dexterity
+  def getCurrentWeapon: Weapon = currentWeapon
+  def getCurrentShield: Shield = currentShield
+  def getAttackDamage: Int =
+    attackArea = currentWeapon.attackArea
+    currentWeapon.damage * strength
 
+  // Needs update animations
   def stop(): Unit =
     state = State.IDLE
     needsAnimationUpdate = true
@@ -105,23 +127,24 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
   def attack(): Unit =
     if state != State.ATTACK && attackCooldown == 0 then
+      gp.keyH.attackPressed = false
       updateDirection()
       // save current world x,y
-      var currentWorldX = pos._1
-      var currentWorldy = pos._2
-      var solidAreaWidth = this.solidArea.width
-      var solidAreaHeight = this.solidArea.height
+      val currentWorldX = pos._1
+      val currentWorldy = pos._2
+      val solidAreaWidth = this.solidArea.width
+      val solidAreaHeight = this.solidArea.height
       // adjust player's worlds x,y
       direction match
-        case UP => var newPosY = pos._2 - attackArea.height;  this.pos = (pos._1, newPosY)
-        case DOWN => var newPosY = pos._2 + attackArea.height;  this.pos = (pos._1, newPosY)
-        case LEFT => var newPosX = pos._1 - attackArea.width;  this.pos = (newPosX, pos._2)
-        case RIGHT => var newPosX = pos._1 + attackArea.height;  this.pos = (newPosX, pos._2)
+        case UP => val newPosY = pos._2 - attackArea.height;  this.pos = (pos._1, newPosY)
+        case DOWN => val newPosY = pos._2 + attackArea.height;  this.pos = (pos._1, newPosY)
+        case LEFT => val newPosX = pos._1 - attackArea.width;  this.pos = (newPosX, pos._2)
+        case RIGHT => val newPosX = pos._1 + attackArea.height;  this.pos = (newPosX, pos._2)
         case ANY =>
       // attackAreaBecome solid Area
       solidArea.width = attackArea.width
       solidArea.height = attackArea.height
-      var enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
       attackEnemy(enemyIndex)
 
       this.pos = (currentWorldX, currentWorldy)
@@ -133,36 +156,52 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       counter = 0
       attackCooldown = maxAttackCooldown
 
-  def equipWeapon(weapon: Weapon): Unit =
-    currentWeapon = Some(weapon)
+
+  def setItems(): Unit =
+    this.inventory += currentWeapon
+    this.inventory += currentShield
+    this.inventory += OBJ_HealFlask((gp.tileSize * 0.8).toInt, 10, gp)
+
+  def selectItem(): Unit =
+    val itemIndex = gp.gui.getItemIndexBySlot
+    if itemIndex < this.inventory.size then
+      val selectedItem = this.inventory(itemIndex)
+      selectedItem match
+        case weapon: Weapon =>
+          currentWeapon = weapon
+          attackDamage = getAttackDamage
+        case shield: Shield =>
+          currentShield = shield
+          defense = getDefense
+        case potion: Potion =>
+          potion.usePotion(this)
+          inventory.remove(itemIndex)
 
   override def die(): Unit =
-    super.die()
-    dyingCounter += 1
-    if dyingCounter > 120 then
-      println("Death animation completed. Triggering game over.")
-      gp.gui.isFinished = true
+    if !hasCallDie then
+      super.die()
+      dyingCounter += 1
+      if dyingCounter > 120 then
+        gp.gui.isFinished = true
+      hasCallDie = true
 
   // -----------------------------------------------
   // Rendering methods
 
   // call by the game loop
-  override def update(): Unit =
+  def update(): Unit =
     handleInvincibility()
     if attackCooldown > 0 then
       attackCooldown -= 1
 
-//    if (!isDead) then
-//      state = State.DEAD
-
     state match
       case State.ATTACK => handleAttackState()
-//      case State.DEAD => die()
       case _ => handleInput()
 
   override def draw(g: Graphics2D): Unit =
     if isInvinc then
       g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f))
+    if isDead then if !hasCallDie then die()
     currentAnimation.getCurrentFrame match
       case frame =>
           g.drawImage(frame,
@@ -172,30 +211,67 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f))
   // ------------------------------
 
+  // Helper methods. To call in update
   def pickUpObject(index : Int): Unit =
     if(index != -1) then
-      {}
+      var text: String = ""
+      val obj = gp.obj(index)
+      obj match
+        case item: Item =>
+          if inventory.size < maxInventorySize then
+            inventory += item
+            gp.obj(index) = null
+            text = s"Picked up: ${item.name}"
+          else text = "Your inventory is full"
+        case _ =>
+      gp.gui.addMessage(text)
+
   def interactNPC(index : Int): Unit =
     if(index != -1) then
       gp.gameState = GameState.DialogueState
+
   def enemyAttack(enemyIndex: Int): Unit =
     if enemyIndex != -1 then
+      val currentEnemy = gp.enemyList(enemyIndex)
       if !isInvinc then
-        this.takeDamage(gp.enemyList(enemyIndex).attackPower)
+        var damage = currentEnemy.attackPower - this.defense
+        if damage < 0 then damage = 0
+        this.takeDamage(damage)
+        gp.gui.addMessage(s"Hit by monster! -$damage HP")
         isInvinc = true
+
   def attackEnemy(enemyIndex: Int): Unit =
     if enemyIndex != -1 then
-      var currentEnemy = gp.enemyList(enemyIndex)
-
+      val currentEnemy = gp.enemyList(enemyIndex)
       if !currentEnemy.isInvinc then
-        currentEnemy.takeDamage(10)
+        var damage = this.attackDamage - currentEnemy.defense
+        if damage < 0 then damage = 0
+        currentEnemy.takeDamage(damage)
+        gp.gui.addMessage(damage + " damage!")
         currentEnemy.isInvinc = true
 
         if !currentEnemy.isAlive then
           currentEnemy.dying = true
+          gp.gui.addMessage("Kill " + currentEnemy.name)
+          exp += currentEnemy.expGet
+          gp.gui.addMessage("Exp + " + exp)
+          checkLevelUp()
 
-    else println("Miss")
-// Helper function
+  def checkLevelUp(): Unit =
+    if exp >= nextLevelExp then
+      exp -= nextLevelExp
+      level += 1
+      nextLevelExp = nextLevelExp * 2
+      maxHealth += 10
+      strength += 1
+      dexterity += 1
+      attackDamage = getAttackDamage
+      defense = getDefense
+      // play level up sound/////
+      gp.gameState = GameState.DialogueState
+      gp.gui.currentDialogue = "You are at level " + level + " now!"
+
+// Helper function to handle movements, direction
   private def updateDirection(): Unit =
     if (gp.keyH.upPressed) then
       this.direction = Direction.UP
@@ -207,12 +283,12 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       this.direction = Direction.RIGHT
 
   private def handleAttackState(): Unit =
-    checkAnimationUpdate()
-    currentAnimation.update()
     counter += 1
     if (counter >= 30) then
+      counter = 0
       state = State.IDLE
-      needsAnimationUpdate = true
+    needsAnimationUpdate = true
+    checkAnimationUpdate()
 
   private def handleInput(): Unit =
     if (gp.keyH.attackPressed && attackCooldown == 0) then
@@ -228,7 +304,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
       // CHECK OBJECT
       val objectIndex = gp.cCheck.checkObjectCollision(this, true)
-//      pickUpObject(index)
+      pickUpObject(objectIndex)
 //      val npcIndex = gp.cCheck.checkCollisionWithPlayer(this, gp.npc)
 //      interact ???
 

@@ -1,6 +1,7 @@
 package Enemy
 
-import entities.{Creatures, Player}
+import entities.State.IDLE
+import entities.{Creatures, Player, State}
 import game.GamePanel
 
 import java.awt.{AlphaComposite, Color, Graphics2D}
@@ -8,17 +9,55 @@ import scala.util.Random
 
 abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   var counter: Int = 0
-
+  var spawnCounter: Int = 0
+  var hasSpawn: Boolean = false
+  //
   var pos: (Int, Int)
   var attackPower: Int
+  var defense: Int
+  var expGet: Int
 
   var hpBarOn: Boolean = false
   var hpBarCounter: Int = 0
 
+  // ENEMY METHODS
+  def attackPlayer(player: Player): Unit
+  def moveTowardsPlayer(player: Player): Unit
   def damageReaction(): Unit =
     counter = 0
 //    direction = gp.player.direction
 
+  def spawn(): Unit =
+    if !hasSpawn then
+      spawnCounter += 1
+      state = State.SPAWN
+
+      if spawnCounter > 150 then
+        hasSpawn = true
+        this.state = IDLE
+    needsAnimationUpdate = true
+    checkAnimationUpdate()
+
+  override def die(): Unit =
+    super.die()
+    dyingCounter += 1
+    if dyingCounter >= 150 then
+      gp.enemyList = gp.enemyList.filterNot(_ == this)
+
+  // Call by the game loop
+  def update(): Unit =
+    if (!hasSpawn) then
+      spawn()
+      return
+
+    if (dying) then
+      die()
+      return
+
+    if (isAlive) then
+      performAliveActions()
+
+    continueMove()
 
   override def setAction(): Unit =
     counter += 1
@@ -27,7 +66,6 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
       this.direction = directions(random.nextInt(directions.length))
       currentAnimation = runAnimations(this.direction)
       counter = 0
-
 
   override def draw(g: Graphics2D): Unit =
     val (screenX, screenY) = calculateScreenCoordinates()
@@ -55,5 +93,26 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
     super.draw(g)
     g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f))
 
-  def attackPlayer(player: Player): Unit
-  def moveTowardsPlayer(player: Player): Unit
+
+  private def performAliveActions(): Unit =
+    setAction()
+    isCollided = false
+    handleInvincibility()
+
+    // Handle collisions
+    gp.cCheck.checkTileCollision(this)
+    gp.cCheck.checkObjectCollision(this, false)
+    gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+
+    // handle player collision
+    handlePlayerCollision()
+
+    // Update animations
+    checkAnimationUpdate()
+
+  private def handlePlayerCollision(): Unit =
+    val hasTouchedPlayer = gp.cCheck.checkPlayer(this)
+
+    if (hasTouchedPlayer && this.isInstanceOf[Enemy] && !gp.player.isInvinc) then
+      gp.player.health -= 10
+      gp.player.isInvinc = true

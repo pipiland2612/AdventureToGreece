@@ -44,8 +44,8 @@ class EventHandler (var gp: GamePanel) :
     thisEventRect.y = thisEventRect.eventRectDefaultY
 
     hasHit
-
-  def causeDamage (row: Int, col: Int, gameState : GameState) =
+  // Event heal, damage, etc..
+  def damagePit (row: Int, col: Int, gameState : GameState) =
     gp.gameState = gameState
     gp.gui.currentDialogue = "You have been trapped"
     gp.player.takeDamage(20)
@@ -69,7 +69,7 @@ class EventHandler (var gp: GamePanel) :
       canCauseEvent = true
 
     if canCauseEvent then
-      if hasHit(48, 48, Direction.ANY) then causeDamage(48, 48,DialogueState)
+      if hasHit(48, 48, Direction.ANY) then damagePit(48, 48,DialogueState)
       if hasHit(10 ,20, Direction.ANY) then heal(10, 20, DialogueState)
 
 end EventHandler

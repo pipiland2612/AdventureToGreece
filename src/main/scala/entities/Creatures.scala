@@ -5,7 +5,7 @@ import entities.Direction.ANY
 import game.GamePanel
 import utils.Animation
 
-import java.awt.{AlphaComposite, Color, Graphics2D, Rectangle}
+import java.awt.{Graphics2D, Rectangle}
 
 abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var speed: Int = 0
@@ -21,7 +21,6 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var health: Int = 0
   var maxHealth: Int = 0
   var isAttacking = false
-  var attackArea: Rectangle = new Rectangle(0, 0, 0, 0)
 
   var isInvinc : Boolean = false
   var invincibleDuration = 0
@@ -34,16 +33,18 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var runAnimations: Map[Direction, Animation]
   var attackAnimations: Map[Direction, Animation]
   var deadAnimations: Map[Direction, Animation]
+
   def images: Map[(Direction, State), Animation] =
     if idleAnimations.nonEmpty || runAnimations.nonEmpty || attackAnimations.nonEmpty then
       Map(
         (Direction.RIGHT, State.IDLE) -> idleAnimations(Direction.RIGHT),
-        (Direction.RIGHT, State.RUN) -> runAnimations(Direction.RIGHT),
         (Direction.DOWN, State.IDLE) -> idleAnimations(Direction.DOWN),
-        (Direction.DOWN, State.RUN) -> runAnimations(Direction.DOWN),
         (Direction.LEFT, State.IDLE) -> idleAnimations(Direction.LEFT),
-        (Direction.LEFT, State.RUN) -> runAnimations(Direction.LEFT),
         (Direction.UP, State.IDLE) -> idleAnimations(Direction.UP),
+
+        (Direction.RIGHT, State.RUN) -> runAnimations(Direction.RIGHT),
+        (Direction.DOWN, State.RUN) -> runAnimations(Direction.DOWN),
+        (Direction.LEFT, State.RUN) -> runAnimations(Direction.LEFT),
         (Direction.UP, State.RUN) -> runAnimations(Direction.UP),
 
         (Direction.UP, State.ATTACK) -> attackAnimations(Direction.UP),
@@ -54,7 +55,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         (Direction.UP, State.DEAD) -> deadAnimations(Direction.UP),
         (Direction.DOWN, State.DEAD) -> deadAnimations(Direction.DOWN),
         (Direction.LEFT, State.DEAD) -> deadAnimations(Direction.LEFT),
-        (Direction.RIGHT, State.DEAD) -> deadAnimations(Direction.RIGHT)
+        (Direction.RIGHT, State.DEAD) -> deadAnimations(Direction.RIGHT),
       )
     else null
 
@@ -79,9 +80,9 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
   def isAlive: Boolean = health > 0
   def isDead: Boolean = !isAlive
-
+  
+  def usePotion(creatures: Creatures): Unit = {}
   def setAction(): Unit = {}
-
 
   def move(dx: Int, dy: Int): Unit =
     state = State.RUN
@@ -98,16 +99,9 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   def die(): Unit =
     if (state != State.DEAD) then
       state = State.DEAD
-      needsAnimationUpdate = true
-      currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
-    else
-      // Update the death animation
-      currentAnimation.update()
-      dyingCounter += 1
-      needsAnimationUpdate = true
 
-      if dyingCounter >= 120 then
-        gp.enemyList = gp.enemyList.filterNot(_ == this)
+    needsAnimationUpdate = true
+    checkAnimationUpdate()
 
   def checkAnimationUpdate (): Unit =
     if(needsAnimationUpdate) then
@@ -125,26 +119,5 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         case ANY =>
     else
       currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
-
-  def update(): Unit =
-    if dying then
-      die()
-    else if isAlive then
-      setAction()
-      isCollided = false
-      handleInvincibility()
-
-      gp.cCheck.checkTileCollision(this)
-      gp.cCheck.checkObjectCollision(this, false)
-  //    gp.cCheck.checkCollisionWithTargets(this, gp.npc)
-      gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
-      val hasTouchedPlayer = gp.cCheck.checkPlayer(this)
-
-      if hasTouchedPlayer && this.isInstanceOf[Enemy] then
-        if !gp.player.isInvinc then
-          gp.player.health -= 10
-          gp.player.isInvinc = true
-      checkAnimationUpdate()
-      continueMove()
 
   override def draw(g: Graphics2D): Unit = super.draw(g)

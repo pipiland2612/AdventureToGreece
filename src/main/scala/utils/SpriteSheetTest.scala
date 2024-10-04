@@ -7,7 +7,7 @@ import scala.util.Try
 
 object SpriteSheetTest extends App :
 
-  val spriteSheetPath = "/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Players/attack_spritesheet.png"
+  val spriteSheetPath = "Enemy/Paladin/Paladin_Idle.png"
 
   val spriteSheet: BufferedImage = 
     try

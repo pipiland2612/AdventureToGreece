@@ -15,14 +15,14 @@ abstract class Entity(var gp: GamePanel) :
  
   var currentAnimation: Animation = _
   var image: BufferedImage = _
-  var name: String = ""
+  var name: String
   var collision: Boolean = false
+
+  var attackArea: Rectangle = new Rectangle(0, 0, 0, 0)
 
   def getPosition: (Int, Int) = this.pos
 
-
   protected def calculateScreenCoordinates(): (Int, Int) =
-
     val screenX = gp.player.screenX
     val screenY = gp.player.screenY
 
