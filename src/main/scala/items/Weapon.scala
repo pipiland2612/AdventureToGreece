@@ -6,7 +6,7 @@ import game.GamePanel
 import java.awt.Rectangle
 
 
-class Weapon(var damage: Int, gp: GamePanel) extends Item (gp):
+abstract class Weapon(var damage: Int, gp: GamePanel) extends Item (gp):
   var name = ""
   var pos = (0,0)
   var solidArea: Rectangle = Rectangle()

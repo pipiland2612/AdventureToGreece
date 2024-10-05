@@ -8,10 +8,7 @@ import utils.Animation
 import java.awt.{Graphics2D, Rectangle}
 
 abstract class Creatures(gp: GamePanel) extends Entity(gp) :
-  var speed: Int = 0
   var state: State = State.IDLE
-  var direction: Direction = Direction.DOWN
-  var isCollided: Boolean = false
 
   var dialoques = new Array[String](10)
   var dialoqueIndex = 0
@@ -21,6 +18,8 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var health: Int = 0
   var maxHealth: Int = 0
   var isAttacking = false
+  var maxMana: Int = 0
+  var mana: Int = 0
 
   var isInvinc : Boolean = false
   var invincibleDuration = 0
@@ -28,6 +27,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
   var dying = false
   var dyingCounter = 0
+  var shootCounter = 0
 
   var idleAnimations: Map[Direction, Animation]
   var runAnimations: Map[Direction, Animation]

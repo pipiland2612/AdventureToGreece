@@ -5,7 +5,7 @@ import game.{GamePanel, GameState}
 import java.awt.event.{KeyEvent, KeyListener}
 
 class KeyHandler(var gp: GamePanel) extends KeyListener :
-  var upPressed, downPressed, leftPressed, rightPressed, attackPressed: Boolean = _
+  var upPressed, downPressed, leftPressed, rightPressed, attackPressed, shootKeyPressed: Boolean = _
   var showDebugText: Boolean = _
 
   override def keyPressed(e: KeyEvent): Unit =
@@ -36,6 +36,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case KeyEvent.VK_A => leftPressed = false
       case KeyEvent.VK_D => rightPressed = false
       case KeyEvent.VK_G => attackPressed = false
+      case KeyEvent.VK_U => shootKeyPressed = false
       case _ =>
 
   override def keyTyped(e: KeyEvent): Unit = {}
@@ -74,6 +75,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case KeyEvent.VK_A => leftPressed = true
       case KeyEvent.VK_D => rightPressed = true
       case KeyEvent.VK_J => attackPressed = true
+      case KeyEvent.VK_U => shootKeyPressed = true
       case KeyEvent.VK_C => gp.gameState = CharacterState
       case KeyEvent.VK_T =>
         if(!showDebugText) then showDebugText = true else if(showDebugText) then showDebugText = false

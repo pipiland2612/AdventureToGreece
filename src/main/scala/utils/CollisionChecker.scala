@@ -2,14 +2,14 @@ package utils
 
 import Enemy.Enemy
 import entities.Direction.ANY
-import entities.{Creatures, Direction}
+import entities.{Creatures, Direction, Entity}
 import game.GamePanel
 
 import java.awt.Rectangle
 
 class CollisionChecker (var gp: GamePanel) :
 
-  private def adjustSolidArea (entity: Creatures): Unit =
+  private def adjustSolidArea (entity: Entity): Unit =
     entity.direction match
       case Direction.UP =>
         entity.solidArea.y -= entity.speed
@@ -90,7 +90,7 @@ class CollisionChecker (var gp: GamePanel) :
 
 
   // For npc and monster
-  def checkCollisionWithTargets (entity: Creatures, target: Array[Enemy]) =
+  def checkCollisionWithTargets (entity: Entity, target: Array[Enemy]) =
     var index = -1
     for (i <- target.indices) do
       if target(i) != null then
@@ -124,7 +124,7 @@ class CollisionChecker (var gp: GamePanel) :
           index = i
     index
 
-  def checkPlayer(entity: Creatures): Boolean =
+  def checkPlayer(entity: Entity): Boolean =
     var touchedPlayer: Boolean = false
 
     Tools.updateSolidArea(entity)

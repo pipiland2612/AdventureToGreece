@@ -1,7 +1,7 @@
 package utils
 
 import Enemy.Enemy
-import entities.Entity
+import entities.{Direction, Entity}
 import game.GamePanel
 
 import java.awt.geom.AffineTransform
@@ -19,7 +19,18 @@ object Tools:
     val at = AffineTransform.getScaleInstance(-1, 1)
     at.translate(-image.getWidth(), 0)
     g2d.drawImage(image, at, null)
-    
+
+    g2d.dispose()
+    flippedImage
+
+  def flipImageVertically(image: BufferedImage): BufferedImage =
+    val flippedImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType)
+    val g2d: Graphics2D = flippedImage.createGraphics()
+    val at = AffineTransform.getScaleInstance(1, -1)
+    at.translate(0, -image.getHeight())
+    g2d.drawImage(image, at, null)
+
+    g2d.dispose()
     flippedImage
 
   def loadImage(path: String): BufferedImage =
@@ -38,6 +49,16 @@ object Tools:
 
     scaledImage
 
+  def flipFrames(frames: Vector[BufferedImage], flipFunction: BufferedImage => BufferedImage): Vector[BufferedImage] =
+   frames.map(flipFunction)
+
+  def setupCommonAnimations (flipFunction: BufferedImage => BufferedImage, commonFrames :Vector[BufferedImage], framesRate: Int): Map[Direction, Animation] = Map (
+    Direction.UP -> Animation(commonFrames, framesRate),
+    Direction.RIGHT -> Animation(commonFrames, framesRate),
+    Direction.LEFT -> Animation(flipFrames(commonFrames, flipFunction), framesRate),
+    Direction.DOWN -> Animation(flipFrames(commonFrames, flipFunction), framesRate)
+  )
+
   // Position helper methods
   def resetSolidArea(entity: Entity): Unit =
     entity.solidArea.x = entity.solidAreaDefaultX
@@ -49,9 +70,9 @@ object Tools:
     entity.solidArea.y = y + entity.solidAreaDefaultY
 
   // Frames help methods
-  def loadFrames (path: String, frameSize: Int , scale: Int, numsRow: Int): Array[Array[BufferedImage]] =
+  def loadFrames (path: String, frameSizeX: Int, frameSizeY: Int , scale: Int, numsRow: Int): Array[Array[BufferedImage]] =
     val image: BufferedImage = Tools.loadImage(path + ".png")
-    val frames: Array[Array[BufferedImage]] = SpriteSheet.splitSpriteSheet(image, frameSize, frameSize, scale, numsRow)
+    val frames: Array[Array[BufferedImage]] = SpriteSheet.splitSpriteSheet(image, frameSizeX, frameSizeY, scale, numsRow)
     frames
 
   def getFrames (framesName: Array[Array[BufferedImage]], rowsNum : Int, colLimit: Int): Vector[BufferedImage] =

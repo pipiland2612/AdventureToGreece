@@ -8,20 +8,23 @@ import java.awt.image.BufferedImage
 
 abstract class Entity(var gp: GamePanel) :
 
+  var isCollided: Boolean = false
+  var speed: Int = 0
+  var direction: Direction = Direction.DOWN
   var solidArea: Rectangle
   var solidAreaDefaultX, solidAreaDefaultY: Int = 0
   var pos : (Int, Int)
   val directions = Vector(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT)
  
+  
   var currentAnimation: Animation = _
   var image: BufferedImage = _
   var name: String
   var collision: Boolean = false
 
   var attackArea: Rectangle = new Rectangle(0, 0, 0, 0)
-
   def getPosition: (Int, Int) = this.pos
-
+  
   protected def calculateScreenCoordinates(): (Int, Int) =
     val screenX = gp.player.screenX
     val screenY = gp.player.screenY

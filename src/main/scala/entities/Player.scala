@@ -1,10 +1,10 @@
 package entities
-import `object`.{OBJ_HealFlask, OBJ_NormalShield, OBJ_NormalSword}
+import `object`.{OBJ_Fireball, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword}
 import entities.Direction.{ANY, DOWN, LEFT, RIGHT, UP}
 
 import java.awt.image.BufferedImage
 import game.{GamePanel, GameState}
-import items.{Item, Potion, Shield, Weapon}
+import items.{Coin, Item, Potion, Projectile, Shield, Weapon}
 import utils.{Animation, Tools}
 
 import java.awt.{AlphaComposite, Graphics2D, Rectangle}
@@ -12,8 +12,10 @@ import scala.collection.mutable.ListBuffer
 
 class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   direction = Direction.RIGHT
-  var currentWeapon: Weapon = OBJ_NormalSword(gp.tileSize, gp)
-  var currentShield: Shield = OBJ_NormalShield(gp.tileSize, gp)
+  var currentWeapon: Weapon = OBJ_NormalSword(gp)
+  var currentShield: Shield = OBJ_NormalShield(gp)
+  var currentProjectile: Projectile = OBJ_Fireball(gp)
+
   val maxInventorySize = 20
   var inventory : ListBuffer[Item] = ListBuffer()
   setItems()
@@ -26,6 +28,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   speed = 5
   maxHealth = 100
   health = maxHealth
+  maxMana = 100
+  mana = maxMana
   var strength = 1
   var dexterity = 1
   var exp = 0
@@ -33,6 +37,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   var nextLevelExp = 5
   var attackDamage = getAttackDamage
   var defense = getDefense
+  var coin = 0
 
   // other stats
   private var attackCooldown: Int = 0
@@ -55,8 +60,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   private var isMoving = false
 
   private val frameSize = 64
-  private val spriteFrames = Tools.loadFrames("Players/Player_spritesheet", frameSize, playerScale, 21)
-  private val attackFrames = Tools.loadFrames("Players/attack_spritesheet", frameSize, playerScale, 4)
+  private val spriteFrames = Tools.loadFrames("Players/Player_spritesheet", frameSize, frameSize, playerScale, 21)
+  private val attackFrames = Tools.loadFrames("Players/attack_spritesheet", frameSize, frameSize,playerScale, 4)
   var idleAnimations = Map(
     Direction.UP -> Animation(Vector(spriteFrames(0)(0)), 1),
     Direction.LEFT -> Animation(Vector(spriteFrames(1)(0)), 1),
@@ -110,6 +115,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   def getDefense: Int = currentShield.defense * dexterity
   def getCurrentWeapon: Weapon = currentWeapon
   def getCurrentShield: Shield = currentShield
+  def getCurrentProjectile: Projectile = currentProjectile
   def getAttackDamage: Int =
     attackArea = currentWeapon.attackArea
     currentWeapon.damage * strength
@@ -145,7 +151,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       solidArea.width = attackArea.width
       solidArea.height = attackArea.height
       val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
-      attackEnemy(enemyIndex)
+      attackEnemy(enemyIndex, attackDamage)
 
       this.pos = (currentWorldX, currentWorldy)
       solidArea.width = solidAreaWidth
@@ -160,7 +166,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   def setItems(): Unit =
     this.inventory += currentWeapon
     this.inventory += currentShield
-    this.inventory += OBJ_HealFlask((gp.tileSize * 0.8).toInt, 10, gp)
+    this.inventory += currentProjectile
+    this.inventory += OBJ_NormalHealFlask(gp)
 
   def selectItem(): Unit =
     val itemIndex = gp.gui.getItemIndexBySlot
@@ -198,6 +205,9 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       case State.ATTACK => handleAttackState()
       case _ => handleInput()
 
+    if shootCounter < 60 then
+      shootCounter += 1
+
   override def draw(g: Graphics2D): Unit =
     if isInvinc then
       g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f))
@@ -216,7 +226,11 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     if(index != -1) then
       var text: String = ""
       val obj = gp.obj(index)
+
       obj match
+        case coin: Coin =>
+          coin.pickupCoin(this)
+          gp.obj(index) = null
         case item: Item =>
           if inventory.size < maxInventorySize then
             inventory += item
@@ -230,17 +244,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     if(index != -1) then
       gp.gameState = GameState.DialogueState
 
-  def enemyAttack(enemyIndex: Int): Unit =
-    if enemyIndex != -1 then
-      val currentEnemy = gp.enemyList(enemyIndex)
-      if !isInvinc then
-        var damage = currentEnemy.attackPower - this.defense
-        if damage < 0 then damage = 0
-        this.takeDamage(damage)
-        gp.gui.addMessage(s"Hit by monster! -$damage HP")
-        isInvinc = true
-
-  def attackEnemy(enemyIndex: Int): Unit =
+  def attackEnemy(enemyIndex: Int, damage: Int): Unit =
     if enemyIndex != -1 then
       val currentEnemy = gp.enemyList(enemyIndex)
       if !currentEnemy.isInvinc then
@@ -291,6 +295,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     checkAnimationUpdate()
 
   private def handleInput(): Unit =
+
     if (gp.keyH.attackPressed && attackCooldown == 0) then
       attack()
     else if gp.keyH.upPressed || gp.keyH.downPressed || gp.keyH.leftPressed || gp.keyH.rightPressed then
@@ -309,8 +314,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 //      interact ???
 
       // CHECK EVENT
-      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
-      enemyAttack(enemyIndex)
+//      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+//      gp.enemyList(enemyIndex).attackPlayer(gp.enemyList(enemyIndex).attackPower)
 
       gp.eHandler.checkEvent()
 
@@ -329,3 +334,10 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         state = State.IDLE
         isMoving = false
         needsAnimationUpdate = true
+
+    if gp.keyH.shootKeyPressed && !currentProjectile.alive
+        && shootCounter == 60 && this.currentProjectile.haveEnoughMana(this) then
+      currentProjectile.set(this.pos, this.direction, true, this)
+      currentProjectile.useMana(this)
+      gp.projectileList += this.currentProjectile
+      shootCounter = 0

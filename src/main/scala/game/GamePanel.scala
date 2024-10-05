@@ -9,6 +9,7 @@ import `object`.ObjectManager
 import java.awt.{Color, Dimension, Font, Graphics, Graphics2D}
 import javax.swing.JPanel
 import entities.{Entity, Player}
+import items.Projectile
 import ui.UI
 import utils.{CollisionChecker, EventHandler, KeyHandler, Sound, Tools}
 
@@ -50,6 +51,7 @@ class GamePanel extends JPanel with Runnable:
   val player = Player((tileSize * 23, tileSize * 21), this)
   val obj = new Array[Entity](10)
   //  var npc
+  var projectileList: ListBuffer[Projectile] = ListBuffer[Projectile]()
   var entityList: ListBuffer[Entity] = ListBuffer[Entity]()
   var enemyList: Array[Enemy] = new Array[Enemy](10)
 
@@ -80,6 +82,10 @@ class GamePanel extends JPanel with Runnable:
       for enemy <- enemyList do
         if enemy != null then
           enemy.update()
+
+      for projectile <- projectileList do
+        if projectile != null then
+          projectile.update()
 //          if enemy.dying then
 
 
@@ -116,6 +122,10 @@ class GamePanel extends JPanel with Runnable:
         if enemy != null then
           entityList += enemy
 
+      for (projectile <- projectileList) do
+        if projectile != null then
+          entityList += projectile
+
       entityList = entityList.sortBy(entity => entity.getPosition._2 + entity.solidAreaDefaultY)
 
       for entity <- entityList do
@@ -137,7 +147,6 @@ class GamePanel extends JPanel with Runnable:
         var x = 10
         var y = 400
         var lineHeight = 20
-
 
         g2d.drawString("Position x: " + player.getPosition._1, x,y);y += lineHeight
         g2d.drawString("Position y: " + player.getPosition._2, x,y);y += lineHeight

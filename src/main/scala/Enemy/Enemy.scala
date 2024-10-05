@@ -1,8 +1,10 @@
 package Enemy
 
+import `object`.{OBJ_BronzeCoin, OBJ_NormalHealFlask}
 import entities.State.IDLE
 import entities.{Creatures, Player, State}
 import game.GamePanel
+import items.Item
 
 import java.awt.{AlphaComposite, Color, Graphics2D}
 import scala.util.Random
@@ -20,12 +22,35 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   var hpBarOn: Boolean = false
   var hpBarCounter: Int = 0
 
+  var itemDropped: Vector[Item]
+
   // ENEMY METHODS
-  def attackPlayer(player: Player): Unit
+  def attackPlayer(damagePower: Int): Unit =
+    var damage = damagePower - gp.player.defense
+    if damage < 0 then damage = 0
+    gp.player.takeDamage(damage)
+    gp.gui.addMessage(s"Monster attack! -$damage HP")
+    gp.player.isInvinc = true
+
   def moveTowardsPlayer(player: Player): Unit
   def damageReaction(): Unit =
     counter = 0
 //    direction = gp.player.direction
+
+  def dropItem (item: Item): Unit =
+    for index <- gp.obj.indices do
+      if gp.obj(index) == null then
+        gp.obj(index) = item
+        gp.obj(index).pos = (this.pos._1 + this.solidArea.x, this.pos._2 + this.solidArea.y)
+        return
+        
+  def checkDrop (): Unit =
+    val randomInt = new Random().nextInt(100) + 1
+
+    if randomInt < 50 then
+      dropItem(new OBJ_BronzeCoin(gp))
+    if randomInt >= 50 then
+      dropItem(new OBJ_NormalHealFlask(gp))
 
   def spawn(): Unit =
     if !hasSpawn then
@@ -42,6 +67,7 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
     super.die()
     dyingCounter += 1
     if dyingCounter >= 150 then
+      checkDrop()
       gp.enemyList = gp.enemyList.filterNot(_ == this)
 
   // Call by the game loop
@@ -66,6 +92,12 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
       this.direction = directions(random.nextInt(directions.length))
       currentAnimation = runAnimations(this.direction)
       counter = 0
+
+  //    var i = new Random().nextInt(100) + 1
+  //    if i == 100 && !projective.alive && shotCounter == 60 then
+  //      this.projectile.set (this.pos, direction, true, this)
+  //      gp.projectile += this.projectile
+  //          shotCounter = 0
 
   override def draw(g: Graphics2D): Unit =
     val (screenX, screenY) = calculateScreenCoordinates()
@@ -113,6 +145,5 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   private def handlePlayerCollision(): Unit =
     val hasTouchedPlayer = gp.cCheck.checkPlayer(this)
 
-    if (hasTouchedPlayer && this.isInstanceOf[Enemy] && !gp.player.isInvinc) then
-      gp.player.health -= 10
-      gp.player.isInvinc = true
+    if (hasTouchedPlayer && !gp.player.isInvinc) then
+      this.attackPlayer(this.attackPower)

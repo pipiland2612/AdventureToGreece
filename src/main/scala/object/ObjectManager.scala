@@ -13,16 +13,16 @@ class ObjectManager(var gp : GamePanel) :
     gp.obj(1) = new OBJ_Rock(48, (10 * tileSize, 15 * tileSize), gp)
     gp.obj(2) = new OBJ_Tree(256, (10 * tileSize, 20 * tileSize), gp)
 
-    gp.obj(3) = new OBJ_HealFlask(tileSize, 10, gp)
+    gp.obj(3) = new OBJ_NormalHealFlask(gp)
     gp.obj(3).pos = (9 * tileSize, 9 * tileSize)
 
-    gp.obj(4) = new OBJ_NormalSword(tileSize, gp)
+    gp.obj(4) = new OBJ_NormalSword(gp)
     gp.obj(4).pos = (10 * tileSize, 9 * tileSize)
 
-    gp.obj(5) = new OBJ_NormalAxe(tileSize, gp)
+    gp.obj(5) = new OBJ_NormalAxe(gp)
     gp.obj(5).pos = (11 * tileSize, 9 * tileSize)
 
-    gp.obj(6) = new OBJ_NormalShield(tileSize, gp)
+    gp.obj(6) = new OBJ_BronzeCoin(gp)
     gp.obj(6).pos = (11 * tileSize, 10 * tileSize)
 
 

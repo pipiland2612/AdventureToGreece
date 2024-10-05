@@ -1,8 +1,9 @@
 package ui
 
-import `object`.OBJ_Heart
+import `object`.{OBJ_Heart, OBJ_Mana}
 import game.{GamePanel, GameState}
 
+import java.awt.image.BufferedImage
 import java.awt.{BasicStroke, Color, Font, Graphics2D}
 import scala.collection.mutable.ListBuffer
 
@@ -17,10 +18,12 @@ class UI (var gp: GamePanel):
   var currentDialogue: String = ""
   var commandNum = 1
   val tileSize = gp.tileSize
-  var heart: OBJ_Heart = new OBJ_Heart(25 ,(0,0), gp)
+  var heart: OBJ_Heart = new OBJ_Heart(25 , gp)
+  var mana : OBJ_Mana = new OBJ_Mana(25, gp)
 
   var slotCol = 0
   var slotRow = 0
+
 
   def addMessage(text : String) =
     message += text
@@ -34,12 +37,15 @@ class UI (var gp: GamePanel):
     gp.gameState match
       case GameState.PlayState =>
         drawPlayerLife()
+        drawPlayerMana()
         drawMessage()
       case GameState.PauseState =>
         drawPlayerLife()
+        drawPlayerMana()
         drawPauseScreen()
       case GameState.DialogueState =>
         drawPlayerLife()
+        drawPlayerMana()
         drawDialogueScreen()
       case GameState.TitleState =>
         drawTitleScreen()
@@ -49,32 +55,22 @@ class UI (var gp: GamePanel):
 
   def drawPlayerLife(): Unit =
     val spacing = tileSize / 8
-    val xStart = spacing
     val y = tileSize / 2 - 20
-
     val totalHearts = gp.player.maxHealth / 20
-    var currentHealth = gp.player.health
+    val currentHealth = gp.player.health
 
-    for (i <- 0 until totalHearts) do
-      val x = xStart + i * (4 * spacing)
+    drawPlayerStats(spacing, y, totalHearts, currentHealth, heart.image, heart.image2, heart.image3, heart.image4, heart.image5)
 
-      if (currentHealth >= 20) then
-        // Full heart
-        g2.drawImage(heart.image, x, y, null)
-        currentHealth -= 20
-      else
-        // Determine the heart state based on remaining health
-        val heartImage = currentHealth match
-          case h if h >= 14 => heart.image2
-          case h if h >= 10 => heart.image3
-          case h if h >= 7  => heart.image4
-          case _             => heart.image5
+  def drawPlayerMana(): Unit =
+    val spacing = tileSize / 8
+    val y = tileSize / 2 + 5
+    val totalMana = gp.player.maxMana / 20
+    val currentMana = gp.player.mana
 
-        g2.drawImage(heartImage, x, y, null)
-        currentHealth = 0
+    drawPlayerStats(spacing, y, totalMana, currentMana, mana.image, mana.image2, mana.image3, mana.image4, mana.image5)
 
   def drawMessage(): Unit =
-    var messageX = tileSize / 2
+    val messageX = tileSize / 2
     var messageY = tileSize * 4
     g2.setFont(g2.getFont.deriveFont(Font.BOLD, 15F))
 
@@ -92,8 +88,6 @@ class UI (var gp: GamePanel):
         if messageCounter(index) > 150 then
           message.remove(index)
           messageCounter.remove(index)
-
-
 
   def drawTitleScreen(): Unit =
     g2.setColor(new Color(208, 147, 62))
@@ -168,11 +162,13 @@ class UI (var gp: GamePanel):
 
     // Player's Item
     for index <- gp.player.inventory.indices do
-      if gp.player.inventory(index) == gp.player.currentWeapon || gp.player.inventory(index) == gp.player.currentShield then
+      val currentItem = gp.player.inventory(index)
+      if currentItem == gp.player.currentWeapon || currentItem == gp.player.currentShield
+        || currentItem == gp.player.currentProjectile then
         g2.setColor(new Color (240, 190, 90))
         g2.fillRoundRect(slotX, slotY, tileSize, tileSize, 10, 10 )
 
-      g2.drawImage(gp.player.inventory(index).image, slotX + 5, slotY + 5, null)
+      g2.drawImage(currentItem.image, slotX + 5, slotY + 5, null)
       slotX += slotSize
       if index % 5 == 4 then
         slotX = slotXstart
@@ -217,18 +213,21 @@ class UI (var gp: GamePanel):
     val labels = List(
         "Level" -> (() => gp.player.level.toString),
         "Health" -> (() => s"${gp.player.health}/${gp.player.maxHealth}"),
+        "Mana" -> (() => s"${gp.player.mana}/${gp.player.maxMana}"),
         "Strength" -> (() => gp.player.strength.toString),
         "Dexterity" -> (() => gp.player.dexterity.toString),
         "Attack" -> (() => gp.player.attackDamage.toString),
         "Defense" -> (() => gp.player.defense.toString),
         "Next Level" -> (() =>s"${gp.player.exp}/${gp.player.nextLevelExp.toString}"),
+        "Coin" -> (() =>s"${gp.player.coin}"),
         "Weapon" -> (() => ""),
         "Shield" -> (() => ""),
+        "Projectile" -> (() => ""),
     )
 
     val initialTextX = frameX + 20
-    var textY = frameY + tileSize
-    val lineHeight = 36
+    var textY = frameY + tileSize - 10
+    val lineHeight = 38
     val tailX = (frameX + frameWidth) - 30
 
     for ((label, _) <- labels) {
@@ -236,7 +235,7 @@ class UI (var gp: GamePanel):
         textY += lineHeight
     }
 
-    textY = frameY + tileSize
+    textY = frameY + tileSize - 10
 
     for (((_, getValue), index) <- labels.zipWithIndex) {
         if (index < labels.length - 1) {
@@ -249,12 +248,17 @@ class UI (var gp: GamePanel):
 
     val weapon = gp.player.getCurrentWeapon
     if (weapon != null && weapon.image != null) {
-        g2.drawImage(weapon.image, (tailX - tileSize / 1.5).toInt, textY - 65, null)
+        g2.drawImage(weapon.image, (tailX - tileSize / 1.5).toInt, textY - 105, null)
     }
     textY += lineHeight
     val shield = gp.player.getCurrentShield
     if (shield != null && shield.image != null) {
-        g2.drawImage(shield.image, (tailX - tileSize / 1.5).toInt, textY - 55, null)
+        g2.drawImage(shield.image, (tailX - tileSize / 1.5).toInt, textY - 95, null)
+    }
+    textY += lineHeight
+    val projectile = gp.player.getCurrentProjectile
+    if (projectile != null && projectile.image != null) {
+        g2.drawImage(projectile.image, (tailX - tileSize / 1.5).toInt, textY - 95, null)
     }
 
   def drawPauseScreen(): Unit =
@@ -283,5 +287,36 @@ class UI (var gp: GamePanel):
   def getRightX (text: String, tailX : Int): Int =
     val length = g2.getFontMetrics.getStringBounds(text, g2).getWidth
     (tailX - length).toInt
+
+  def drawPlayerStats(
+      spacing: Int,
+      yPosition: Int,
+      totalUnits: Int,
+      currentUnits: Int,
+      fullImage: BufferedImage,
+      image2: BufferedImage,
+      image3: BufferedImage,
+      image4: BufferedImage,
+      image5: BufferedImage
+  ): Unit =
+    val xStart = spacing
+    var remainingUnits = currentUnits
+    for (i <- 0 until totalUnits) do
+      val x = xStart + i * (4 * spacing)
+
+      if (remainingUnits >= 20) then
+
+        g2.drawImage(fullImage, x, yPosition, null)
+        remainingUnits -= 20
+      else
+
+        val unitImage = remainingUnits match
+          case u if u >= 14 => image2
+          case u if u >= 10 => image3
+          case u if u >= 7  => image4
+          case _            => image5
+
+        g2.drawImage(unitImage, x, yPosition, null)
+        remainingUnits = 0
 
 end UI
