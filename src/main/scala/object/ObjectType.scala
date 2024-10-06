@@ -64,8 +64,10 @@ end OBJ_Mana
 class OBJ_NormalHealFlask(gp: GamePanel) extends Potion (10, gp) :
   name = "Normal Heal Flask"
   effectName = "Heal"
-  image = Tools.scaleImage(Tools.loadImage("Objects/flask_medium.png"), size, size)
-  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
+  var scale = 32
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/flask_medium.png"), scale, scale)
+  image = Tools.scaleImage(Tools.loadImage("Objects/flask_medium.png"), scale, scale)
+  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
 
   override def applyEffect(effect: Int, creatures: Creatures): Unit =
     creatures.health += effect
@@ -74,15 +76,18 @@ class OBJ_NormalHealFlask(gp: GamePanel) extends Potion (10, gp) :
 end OBJ_NormalHealFlask
 
 class OBJ_NormalSword(gp: GamePanel) extends Weapon (15, gp):
+  var scale = 48
   name = "Normal Sword"
-  image = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), size - size / 5, size - size / 5)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), scale * 4/5 , scale * 4/5)
+  image = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), scale, scale)
   attackArea.width = 32
   attackArea.height = 16
-  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
+  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
 end OBJ_NormalSword
 
 class OBJ_NormalAxe(gp: GamePanel) extends Weapon (6, gp) :
   name = "Normal Axe"
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/axe_normal.png"), size - size / 5, size - size / 5)
   image = Tools.scaleImage(Tools.loadImage("Objects/axe_normal.png"), size - size / 5, size - size / 5)
   attackArea.width = 32
   attackArea.height = 20
@@ -91,6 +96,7 @@ end OBJ_NormalAxe
 
 class OBJ_NormalShield(gp: GamePanel) extends Shield (3, gp) :
   name = "Normal shield"
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5 )
   image = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5 )
   attackArea.width = 10
   attackArea.height = 10
@@ -106,9 +112,8 @@ class OBJ_Fireball(gp : GamePanel) extends Projectile(gp) :
   attackArea.width = 32
   attackArea.height = 20
 
+  var scale = 48
   // Images
-  var scale = size
-  image = Tools.loadImage("Objects/Fireball/fireball_right.png")
   def flyAnimation = Map (
     Direction.UP -> Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_up.png"), scale, scale),
     Direction.LEFT -> Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_left.png"), scale, scale),
@@ -116,11 +121,14 @@ class OBJ_Fireball(gp : GamePanel) extends Projectile(gp) :
     Direction.RIGHT -> Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_right.png"), scale, scale)
   )
 
-  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_left.png"), size, size)
+  image = Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_left.png"), size, size)
+  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
 
 end OBJ_Fireball
 
 class OBJ_BronzeCoin (gp: GamePanel) extends Coin(1, gp):
   var name = "Bronze Coin"
   var pos = (0,0)
-  image = Tools.loadImage("Objects/coin.png")
+  var imageDisplayed = Tools.loadImage("Objects/coin.png")
+  image = Tools.scaleImage(Tools.loadImage("Objects/coin.png"), 20, 20)

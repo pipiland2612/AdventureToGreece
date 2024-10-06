@@ -1,9 +1,7 @@
 package items
 
-import entities.{Creatures, Direction, State}
+import entities.{Creatures, Direction}
 import game.GamePanel
-import utils.Animation
-
 import java.awt.image.BufferedImage
 import java.awt.Rectangle
 
@@ -51,7 +49,7 @@ abstract class Projectile (gp: GamePanel) extends Item(gp):
       gp.projectileList = gp.projectileList.filterNot(_ == this)
 
     if user == gp.player then
-      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+      val enemyIndex = gp.cCheck.checkCollisionWithTargetsHitBox(this, gp.enemyList)
       if enemyIndex != -1 then
         gp.player.attackEnemy(enemyIndex, this.damage)
         alive = false

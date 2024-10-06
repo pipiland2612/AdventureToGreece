@@ -1,7 +1,7 @@
 package utils
 
 import Enemy.Enemy
-import entities.{Direction, Entity}
+import entities.{Creatures, Direction, Entity}
 import game.GamePanel
 
 import java.awt.geom.AffineTransform
@@ -67,7 +67,16 @@ object Tools:
   def updateSolidArea(entity: Entity): Unit =
     val (x,y) = entity.getPosition
     entity.solidArea.x = x + entity.solidAreaDefaultX
-    entity.solidArea.y = y + entity.solidAreaDefaultY
+    entity.solidArea.y = y + entity.solidAreaDefaultY 
+    
+  def updateAreaHitBox(creatures: Creatures): Unit =
+    val (x,y) = creatures.getPosition
+    creatures.areaHitBox.x = x + creatures.areaDefaultX
+    creatures.areaHitBox.y = y + creatures.areaDefaultY
+  
+  def resetAreaHitBox(creatures: Creatures): Unit =
+    creatures.areaHitBox.x = creatures.areaDefaultX
+    creatures.areaHitBox.y = creatures.areaDefaultY
 
   // Frames help methods
   def loadFrames (path: String, frameSizeX: Int, frameSizeY: Int , scale: Int, numsRow: Int): Array[Array[BufferedImage]] =
@@ -106,4 +115,12 @@ object Tools:
           creature.solidArea.x + creature.pos._1 - entity.getPosition._1 + gp.player.screenX,
           creature.solidArea.y + creature.pos._2 - entity.getPosition._2 + gp.player.screenY,
           creature.solidArea.width, creature.solidArea.height)
+    )
+    creatures.foreach (creature =>
+      if creature != null then
+        g.setColor(Color.BLUE)
+        g.drawRect(
+          creature.areaHitBox.x + creature.pos._1 - entity.getPosition._1 + gp.player.screenX,
+          creature.areaHitBox.y + creature.pos._2 - entity.getPosition._2 + gp.player.screenY,
+          creature.areaHitBox.width, creature.areaHitBox.height)
     )

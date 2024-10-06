@@ -88,7 +88,7 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   override def setAction(): Unit =
     counter += 1
     if counter >= 120 then
-      var random = new Random()
+      val random = new Random()
       this.direction = directions(random.nextInt(directions.length))
       currentAnimation = runAnimations(this.direction)
       counter = 0
@@ -97,7 +97,7 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   //    if i == 100 && !projective.alive && shotCounter == 60 then
   //      this.projectile.set (this.pos, direction, true, this)
   //      gp.projectile += this.projectile
-  //          shotCounter = 0
+  //          shotCounter = 0to
 
   override def draw(g: Graphics2D): Unit =
     val (screenX, screenY) = calculateScreenCoordinates()

@@ -21,16 +21,19 @@ class GamePanel extends JPanel with Runnable:
   val originTileSize = 16
   val scale = 3
   val tileSize = originTileSize * scale
-  val maxScreenColumn = 16
-  val maxScreenRow = 12
+//  val maxScreenColumn = 16
+  val maxScreenColumn = 25
+  val maxScreenRow = 15
   val screenWidth = maxScreenColumn * tileSize
   val screenHeight = maxScreenRow * tileSize
-
 
   // worlds settings
   val maxWorldCol = 50
   val maxWorldRow = 50
 
+  // FOR FULLSCREEN
+//  val screenWidth2 = screenWidth
+//  val screenHeight2 = screenHeight
   val FPS = 60
   //initialize
   var backGroundImage: BufferedImage = Tools.loadImage("Maps/backgroundImage.png")
@@ -67,6 +70,7 @@ class GamePanel extends JPanel with Runnable:
     oManager.setObject()
     oManager.setEnemy()
     playMusic(0)
+
 
   // Music helper methods
   def playMusic (int : Int) = this.sound.setFile(int); this.sound.play(); this.sound.loop()
@@ -133,7 +137,7 @@ class GamePanel extends JPanel with Runnable:
 
       //EMPTY LIST
       entityList.clear()
-//      Tools.renderDebugInfo (g2d, player, obj, enemyList, this)
+      Tools.renderDebugInfo (g2d, player, obj, enemyList, this)
 
       //UI
       gui.drawUI(g2d)

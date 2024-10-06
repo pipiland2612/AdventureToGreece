@@ -105,24 +105,40 @@ class CollisionChecker (var gp: GamePanel) :
             index = i
             entity.isCollided = true
 
-        entity.solidArea.x = entity.solidAreaDefaultX
-        entity.solidArea.y = entity.solidAreaDefaultY
-        target(i).solidArea.x = target(i).solidAreaDefaultX
-        target(i).solidArea.y = target(i).solidAreaDefaultY
+        Tools.resetSolidArea(entity)
+        Tools.resetSolidArea(target(i))
 
     index
 
-  // overloaded method
-  def checkCollisionWithTargets (effectArea: Rectangle, target: Array[Enemy]) =
+  def checkCollisionWithTargetsHitBox (entity: Entity, target: Array[Enemy]) =
     var index = -1
     for (i <- target.indices) do
       if target(i) != null then
 
-        Tools.updateSolidArea(target(i))
+        Tools.updateSolidArea(entity)
+        Tools.updateAreaHitBox(target(i))
 
-        if (effectArea.intersects(target(i).solidArea)) then
-          index = i
+        adjustSolidArea(entity)
+
+        if (entity.solidArea.intersects(target(i).areaHitBox)) then
+          if target(i) != entity then
+            index = i
+
+        Tools.resetSolidArea(entity)
+        Tools.resetAreaHitBox(target(i))
+
     index
+
+//  def checkCollisionWithTargets (effectArea: Rectangle, target: Array[Enemy]) =
+//    var index = -1
+//    for (i <- target.indices) do
+//      if target(i) != null then
+//
+//        Tools.updateSolidArea(target(i))
+//
+//        if (effectArea.intersects(target(i).solidArea)) then
+//          index = i
+//    index
 
   def checkPlayer(entity: Entity): Boolean =
     var touchedPlayer: Boolean = false

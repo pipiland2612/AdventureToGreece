@@ -1,6 +1,6 @@
 package items
 
-import entities.{Creatures, Entity}
+import entities.Creatures
 import game.GamePanel
 import game.GameState.DialogueState
 

@@ -27,7 +27,11 @@ class EN_Necromancer(gp : GamePanel, var pos: (Int, Int)) extends Enemy(gp) :
   solidAreaDefaultY = solidAreaY
   var solidAreaWidth = (12)
   var solidAreaHeight = (12)
-  var solidArea = Rectangle(solidAreaX + gp.tileSize * 10 , solidAreaY + gp.tileSize * 15, (solidAreaWidth * 2).toInt, (solidAreaHeight * 2).toInt)
+  var solidArea = Rectangle(solidAreaX + gp.tileSize * 10 , solidAreaY + gp.tileSize * 15, (solidAreaWidth * 2), (solidAreaHeight * 2))
+
+  areaDefaultX = 70
+  areaDefaultY = 55
+  areaHitBox = Rectangle(70 , 55, (solidAreaWidth * 2), (solidAreaHeight * 6))
 
   private val frameSize = 64
   private val walkSpriteFrames = Tools.loadFrames("Enemy/Necromancer/Necromancer_walk", frameSize, frameSize, gp.tileSize * 3, 1)

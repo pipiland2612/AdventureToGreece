@@ -5,7 +5,7 @@ import game.{GamePanel, GameState}
 import java.awt.event.{KeyEvent, KeyListener}
 
 class KeyHandler(var gp: GamePanel) extends KeyListener :
-  var upPressed, downPressed, leftPressed, rightPressed, attackPressed, shootKeyPressed: Boolean = _
+  var upPressed, downPressed, leftPressed, rightPressed, enterPressed, attackPressed, shootKeyPressed: Boolean = _
   var showDebugText: Boolean = _
 
   override def keyPressed(e: KeyEvent): Unit =
@@ -26,6 +26,9 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
 
       case GameState.CharacterState =>
         handleCharacterState(code)
+
+      case GameState.GameMenu =>
+        handleGameMenuState(code)
       case _ =>
         println("Unknown game state")
 
@@ -57,15 +60,15 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
     code match
       case KeyEvent.VK_UP =>
         gp.gui.commandNum = (gp.gui.commandNum - 1)
-        if gp.gui.commandNum < 1 then gp.gui.commandNum = 3
+        if gp.gui.commandNum < 0 then gp.gui.commandNum = 2
       case KeyEvent.VK_DOWN =>
         gp.gui.commandNum = (gp.gui.commandNum + 1)
-        if gp.gui.commandNum > 3 then gp.gui.commandNum = 1
+        if gp.gui.commandNum > 2 then gp.gui.commandNum = 0
       case KeyEvent.VK_ENTER =>
         gp.gui.commandNum match
-          case 1 => gp.gameState = GameState.PlayState
-          case 2 => {}
-          case 3 => System.exit(0)
+          case 0 => gp.gameState = GameState.PlayState; gp.playMusic(0)
+          case 1 => {}
+          case 2 => System.exit(0)
       case _ =>
 
   private def handlePlayState(code : Int): Unit =
@@ -83,6 +86,8 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
         gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/map.txt")
       case KeyEvent.VK_P =>
         gp.gameState = GameState.PauseState
+      case KeyEvent.VK_ESCAPE =>
+        gp.gameState = GameState.GameMenu
       case _ =>
 
   private def handleCharacterState (code : Int): Unit =
@@ -101,4 +106,34 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
           gp.gui.slotCol += 1
       case KeyEvent.VK_C => gp.gameState = PlayState
       case KeyEvent.VK_ENTER => gp.player.selectItem()
+      case _ =>
+
+  private def handleGameMenuState(code : Int): Unit =
+    var maxCommanNum = gp.gui.subState match
+        case 0 => 4
+        case 1 => 0
+        case 2 => 1
+    code match
+      case KeyEvent.VK_ESCAPE =>
+        gp.gameState = GameState.PlayState
+      case KeyEvent.VK_ENTER =>
+        enterPressed = true
+      case KeyEvent.VK_UP =>
+          gp.gui.commandNum -= 1
+          if gp.gui.commandNum < 0 then gp.gui.commandNum = maxCommanNum
+      case KeyEvent.VK_DOWN =>
+          gp.gui.commandNum += 1
+          if gp.gui.commandNum > maxCommanNum then gp.gui.commandNum = 0
+      case KeyEvent.VK_LEFT =>
+        if gp.gui.subState == 0 then
+          if gp.gui.commandNum == 0 && gp.sound.volumeScale > 0 then
+            gp.sound.volumeScale -= 1; gp.sound.checkVolume()
+          if gp.gui.commandNum == 1 && gp.se.volumeScale > 0 then
+            gp.se.volumeScale -= 1
+      case KeyEvent.VK_RIGHT =>
+        if gp.gui.subState == 0 then
+          if gp.gui.commandNum == 0 && gp.sound.volumeScale < 5 then
+            gp.sound.volumeScale += 1; gp.sound.checkVolume()
+          if gp.gui.commandNum == 1 && gp.se.volumeScale < 5 then
+            gp.se.volumeScale += 1
       case _ =>

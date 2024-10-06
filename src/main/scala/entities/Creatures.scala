@@ -14,6 +14,8 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var dialoqueIndex = 0
 
   var needsAnimationUpdate = false
+  var areaHitBox: Rectangle = _
+  var areaDefaultX, areaDefaultY: Int = 0
 
   var health: Int = 0
   var maxHealth: Int = 0

@@ -145,12 +145,12 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         case UP => val newPosY = pos._2 - attackArea.height;  this.pos = (pos._1, newPosY)
         case DOWN => val newPosY = pos._2 + attackArea.height;  this.pos = (pos._1, newPosY)
         case LEFT => val newPosX = pos._1 - attackArea.width;  this.pos = (newPosX, pos._2)
-        case RIGHT => val newPosX = pos._1 + attackArea.height;  this.pos = (newPosX, pos._2)
+        case RIGHT => val newPosX = pos._1 + attackArea.width;  this.pos = (newPosX, pos._2)
         case ANY =>
       // attackAreaBecome solid Area
       solidArea.width = attackArea.width
       solidArea.height = attackArea.height
-      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+      var enemyIndex = gp.cCheck.checkCollisionWithTargetsHitBox(this, gp.enemyList)
       attackEnemy(enemyIndex, attackDamage)
 
       this.pos = (currentWorldX, currentWorldy)
@@ -244,11 +244,11 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     if(index != -1) then
       gp.gameState = GameState.DialogueState
 
-  def attackEnemy(enemyIndex: Int, damage: Int): Unit =
+  def attackEnemy(enemyIndex: Int, damageDealt: Int): Unit =
     if enemyIndex != -1 then
-      val currentEnemy = gp.enemyList(enemyIndex)
+      var currentEnemy = gp.enemyList(enemyIndex)
       if !currentEnemy.isInvinc then
-        var damage = this.attackDamage - currentEnemy.defense
+        var damage = damageDealt - currentEnemy.defense
         if damage < 0 then damage = 0
         currentEnemy.takeDamage(damage)
         gp.gui.addMessage(damage + " damage!")
@@ -314,8 +314,10 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 //      interact ???
 
       // CHECK EVENT
-//      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
-//      gp.enemyList(enemyIndex).attackPlayer(gp.enemyList(enemyIndex).attackPower)
+      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+      if enemyIndex != -1 then
+//        println(enemyIndex)
+//        gp.enemyList(enemyIndex).attackPlayer(gp.enemyList(enemyIndex).attackPower)
 
       gp.eHandler.checkEvent()
 

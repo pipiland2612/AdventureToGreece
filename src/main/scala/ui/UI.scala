@@ -16,10 +16,11 @@ class UI (var gp: GamePanel):
   var messageCounter: ListBuffer[Int] = ListBuffer()
   var isFinished = false
   var currentDialogue: String = ""
-  var commandNum = 1
+  var commandNum = 0
   val tileSize = gp.tileSize
   var heart: OBJ_Heart = new OBJ_Heart(25 , gp)
   var mana : OBJ_Mana = new OBJ_Mana(25, gp)
+  var subState = 0
 
   var slotCol = 0
   var slotRow = 0
@@ -52,6 +53,8 @@ class UI (var gp: GamePanel):
       case GameState.CharacterState =>
         drawCharacterState()
         drawInventory()
+      case GameState.GameMenu =>
+        drawGameMenu()
 
   def drawPlayerLife(): Unit =
     val spacing = tileSize / 8
@@ -114,19 +117,19 @@ class UI (var gp: GamePanel):
     x = getCenterX(text)
     y += tileSize * 4
     g2.drawString(text, x, y)
-    if commandNum == 1 then g2.drawString(">", x - tileSize, y)
+    if commandNum == 0 then g2.drawString(">", x - tileSize, y)
 
     text = "LOAD GAME"
     x = getCenterX(text)
     y += tileSize
     g2.drawString(text, x, y)
-    if commandNum == 2 then g2.drawString(">", x - tileSize, y)
+    if commandNum == 1 then g2.drawString(">", x - tileSize, y)
 
     text = "QUIT GAME"
     x = getCenterX(text)
     y += tileSize
     g2.drawString(text, x, y)
-    if commandNum == 3 then g2.drawString(">", x - tileSize, y)
+    if commandNum == 2 then g2.drawString(">", x - tileSize, y)
 
   def drawDialogueScreen(): Unit =
     var (x, y , width, height) = (
@@ -147,7 +150,7 @@ class UI (var gp: GamePanel):
   // Handle character state
   def drawInventory(): Unit =
     // Frame
-    val frameX = tileSize * 9
+    val frameX = tileSize * 18
     val frameY = tileSize
     val frameWidth = tileSize * 6
     val frameHeight = tileSize * 5
@@ -168,7 +171,7 @@ class UI (var gp: GamePanel):
         g2.setColor(new Color (240, 190, 90))
         g2.fillRoundRect(slotX, slotY, tileSize, tileSize, 10, 10 )
 
-      g2.drawImage(currentItem.image, slotX + 5, slotY + 5, null)
+      g2.drawImage(currentItem.imageDisplayed, slotX + 5, slotY + 5, null)
       slotX += slotSize
       if index % 5 == 4 then
         slotX = slotXstart
@@ -247,18 +250,18 @@ class UI (var gp: GamePanel):
     }
 
     val weapon = gp.player.getCurrentWeapon
-    if (weapon != null && weapon.image != null) {
-        g2.drawImage(weapon.image, (tailX - tileSize / 1.5).toInt, textY - 105, null)
+    if (weapon != null && weapon.imageDisplayed != null) {
+        g2.drawImage(weapon.imageDisplayed, (tailX - tileSize / 1.5).toInt, textY - 105, null)
     }
     textY += lineHeight
     val shield = gp.player.getCurrentShield
-    if (shield != null && shield.image != null) {
-        g2.drawImage(shield.image, (tailX - tileSize / 1.5).toInt, textY - 95, null)
+    if (shield != null && shield.imageDisplayed != null) {
+        g2.drawImage(shield.imageDisplayed, (tailX - tileSize / 1.5).toInt, textY - 100, null)
     }
     textY += lineHeight
     val projectile = gp.player.getCurrentProjectile
-    if (projectile != null && projectile.image != null) {
-        g2.drawImage(projectile.image, (tailX - tileSize / 1.5).toInt, textY - 95, null)
+    if (projectile != null && projectile.imageDisplayed != null) {
+        g2.drawImage(projectile.imageDisplayed, (tailX - tileSize / 1.5).toInt, textY - 100, null)
     }
 
   def drawPauseScreen(): Unit =
@@ -318,5 +321,139 @@ class UI (var gp: GamePanel):
 
         g2.drawImage(unitImage, x, yPosition, null)
         remainingUnits = 0
+
+  def drawGameMenu(): Unit =
+    g2.setColor(Color.WHITE)
+    g2.setFont(g2.getFont.deriveFont(28F))
+    val frameX = (tileSize * 9)
+    val frameY = tileSize
+    val frameWidth = tileSize * 8
+    val frameHeight = tileSize * 10
+    drawSubWindow(frameX, frameY, frameWidth, frameHeight)
+
+    subState match
+      case 0 => gameMenuTop(frameX, frameY)
+      case 1 => controlDisplay(frameX, frameY)
+      case 2 => endGameConfimation(frameX, frameY)
+      case _ =>
+    gp.keyH.enterPressed = false
+
+  def gameMenuTop(frameX: Int, frameY: Int):Unit =
+    val text = "Options"
+    var textX = getCenterX(text) + 20
+    var textY = frameY + tileSize
+    g2.drawString(text, textX, textY)
+
+    // MUSIC
+    textX = frameX + tileSize - 10
+    textY += tileSize + 25
+    g2.drawString("Music", textX, textY)
+    if commandNum == 0 then g2.drawString(">", textX - 25, textY)
+    // SE
+    textY += tileSize
+    g2.drawString("SE", textX, textY)
+    if commandNum == 1 then g2.drawString(">", textX - 25, textY)
+    // CONTROL
+    textY += tileSize
+    g2.drawString("Control", textX, textY)
+    if commandNum == 2 then
+      g2.drawString(">", textX - 25, textY)
+      if gp.keyH.enterPressed then
+        subState = 1
+        commandNum = 0
+    // END GAME
+    textY += tileSize
+    g2.drawString("End Game", textX, textY)
+    if commandNum == 3 then
+      g2.drawString(">", textX - 25, textY)
+      if gp.keyH.enterPressed then
+        subState = 2
+        commandNum = 0
+    // BACK
+    textY += tileSize * 2
+    g2.drawString("Back", textX, textY)
+    if commandNum == 4 then
+      g2.drawString(">", textX - 25, textY)
+      if gp.keyH.enterPressed then
+        gp.gameState = GameState.PlayState
+
+    // MUSIC CHECKBOX
+    textX = frameX + (tileSize * 4.5).toInt
+    textY = frameY + tileSize * 2 + 3
+    g2.setStroke(new BasicStroke(3))
+    g2.drawRect(textX, textY, 120, 24) // 120/5
+    val volumeWidth = 24 * gp.sound.volumeScale
+    g2.fillRect(textX, textY, volumeWidth, 24)
+
+    textY += tileSize
+    g2.drawRect(textX, textY, 120, 24)
+    val seWidth = 24 * gp.se.volumeScale
+    g2.fillRect(textX, textY, seWidth, 24)
+    // CONTROL
+
+  def controlDisplay(frameX: Int, frameY: Int): Unit =
+    val text = "Control"
+    var textX = getCenterX(text) + 20
+    var textY = frameY + tileSize
+    g2.drawString("Control", textX, textY)
+
+    textX = frameX + tileSize - 15
+    textY += tileSize + 25
+
+    g2.drawString("Move", textX, textY); textY += tileSize
+    g2.drawString("Confirm/Attack", textX, textY); textY += tileSize
+    g2.drawString("Shoot/Cast", textX, textY); textY += tileSize
+    g2.drawString("Character Screen", textX, textY); textY += tileSize
+    g2.drawString("Pause", textX, textY); textY += tileSize
+    g2.drawString("Game Menu", textX, textY); textY += tileSize
+
+    textX = frameX + tileSize * 6 - 5
+    textY = frameY + tileSize * 2 + 25
+
+    g2.drawString("WASD", textX, textY); textY += tileSize
+    g2.drawString("J", textX, textY); textY += tileSize
+    g2.drawString("U", textX, textY); textY += tileSize
+    g2.drawString("C", textX, textY); textY += tileSize
+    g2.drawString("P", textX, textY); textY += tileSize
+    g2.drawString("ESC", textX, textY); textY += tileSize
+
+    textX = frameX + tileSize
+    textY = frameY + tileSize * 9
+    g2.drawString("Back", textX, textY)
+    if commandNum == 0 then
+      g2.drawString(">", textX - 25, textY)
+      if gp.keyH.enterPressed then
+        subState = 0
+        commandNum = 2
+
+  def endGameConfimation(frameX: Int, frameY: Int): Unit =
+    var textX = frameX + tileSize - 10
+    var textY = frameY + tileSize
+    currentDialogue = "Quit the game and \nreturn to the title screen ?"
+
+    for line <- currentDialogue.split("\n") do
+      g2.drawString(line, textX, textY)
+      textY += 40
+
+    val text = "Yes"
+    textX = frameX + tileSize * 4 - 20
+    textY += tileSize * 3
+    g2.drawString(text, textX, textY)
+    if commandNum == 0 then
+      g2.drawString(">", textX - 25, textY)
+      if gp.keyH.enterPressed then
+        subState = 0
+        commandNum = 0
+        gp.gameState = GameState.TitleState
+
+    val text2 = "No"
+    textX = frameX + tileSize * 4 - 20
+    textY += tileSize * 2
+    g2.drawString(text2, textX, textY)
+    if commandNum == 1 then
+      g2.drawString(">", textX - 25, textY)
+      if gp.keyH.enterPressed then
+        subState = 0
+        commandNum = 3
 
 end UI
