@@ -95,38 +95,43 @@ object Tools:
     vector
 
   // Debug method
-  def renderDebugInfo(g: Graphics2D, entity: Entity, objects: Array[Entity], creatures: Array[Enemy], gp: GamePanel): Unit =
+  def renderDebugInfo(g: Graphics2D, entity: Entity, objects: Array[Array[Entity]], creatures: Array[Array[Enemy]], gp: GamePanel): Unit =
     g.setColor(Color.RED)
     g.drawRect(entity.solidArea.x + gp.player.screenX , entity.solidArea.y + gp.player.screenY, entity.solidArea.width, entity.solidArea.height)
 
-    objects.foreach ( obj =>
-      if (obj != null) then
+    for i <- objects(1).indices do
+      if (objects(gp.currentMap)(i) != null) then
         g.setColor(Color.BLUE)
         g.drawRect(
-          obj.solidArea.x + obj.pos._1 - entity.getPosition._1 + gp.player.screenX,
-          obj.solidArea.y + obj.pos._2 - entity.getPosition._2 + gp.player.screenY,
-          obj.solidArea.width, obj.solidArea.height)
-    )
+          objects(gp.currentMap)(i).solidArea.x + objects(gp.currentMap)(i).pos._1 - entity.getPosition._1 + gp.player.screenX,
+          objects(gp.currentMap)(i).solidArea.y + objects(gp.currentMap)(i).pos._2 - entity.getPosition._2 + gp.player.screenY,
+          objects(gp.currentMap)(i).solidArea.width, objects(gp.currentMap)(i).solidArea.height)
 
-    creatures.foreach (creature =>
-      if creature != null then
+    for i <- gp.npcList(1).indices do
+      if gp.npcList(gp.currentMap)(i) != null then
+        g.setColor(Color.BLUE)
+        g.drawRect(
+          gp.npcList(gp.currentMap)(i).solidArea.x + gp.npcList(gp.currentMap)(i).pos._1 - entity.getPosition._1 + gp.player.screenX,
+          gp.npcList(gp.currentMap)(i).solidArea.y + gp.npcList(gp.currentMap)(i).pos._2 - entity.getPosition._2 + gp.player.screenY,
+          gp.npcList(gp.currentMap)(i).solidArea.width, gp.npcList(gp.currentMap)(i).solidArea.height)
+
+    for i <- creatures(1).indices do
+      if creatures(gp.currentMap)(i) != null then
         g.setColor(Color.YELLOW)
         g.drawRect(
-          creature.solidArea.x + creature.pos._1 - entity.getPosition._1 + gp.player.screenX,
-          creature.solidArea.y + creature.pos._2 - entity.getPosition._2 + gp.player.screenY,
-          creature.solidArea.width, creature.solidArea.height)
-    )
-    creatures.foreach (creature =>
-      if creature != null then
-        g.setColor(Color.BLUE)
+          creatures(gp.currentMap)(i).solidArea.x + creatures(gp.currentMap)(i).pos._1 - entity.getPosition._1 + gp.player.screenX,
+          creatures(gp.currentMap)(i).solidArea.y + creatures(gp.currentMap)(i).pos._2 - entity.getPosition._2 + gp.player.screenY,
+          creatures(gp.currentMap)(i).solidArea.width, creatures(gp.currentMap)(i).solidArea.height)
+    
+    for i <- creatures(1).indices do
+      if creatures(gp.currentMap)(i) != null then
+        g.setColor(Color.YELLOW)
         g.drawRect(
-          creature.areaHitBox.x + creature.pos._1 - entity.getPosition._1 + gp.player.screenX,
-          creature.areaHitBox.y + creature.pos._2 - entity.getPosition._2 + gp.player.screenY,
-          creature.areaHitBox.width, creature.areaHitBox.height)
-    )
+          creatures(gp.currentMap)(i).areaHitBox.x + creatures(gp.currentMap)(i).pos._1 - entity.getPosition._1 + gp.player.screenX,
+          creatures(gp.currentMap)(i).areaHitBox.y + creatures(gp.currentMap)(i).pos._2 - entity.getPosition._2 + gp.player.screenY,
+          creatures(gp.currentMap)(i).areaHitBox.width, creatures(gp.currentMap)(i).areaHitBox.height)
     
   // FOR UI 
-
 
   def drawSubWindow(g2 : Graphics2D , x: Int, y: Int, width: Int, height: Int): Unit =
     var c: Color = Color(0,0,0, 210)

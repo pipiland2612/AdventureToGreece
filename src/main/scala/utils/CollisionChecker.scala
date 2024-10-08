@@ -24,22 +24,23 @@ class CollisionChecker (var gp: GamePanel) :
   def checkObjectCollision (entity: Creatures, isPlayer: Boolean): Int =
     var index = -1
 
-    for (i <- gp.obj.indices) do
-      if gp.obj(i) != null then
+    for (i <- gp.obj(1).indices) do
+      if gp.obj(gp.currentMap)(i) != null then
+        val currentObj =  gp.obj(gp.currentMap)(i)
         Tools.updateSolidArea(entity)
-        gp.obj(i).solidArea.x = gp.obj(i).pos._1 + gp.obj(i).solidAreaDefaultX
-        gp.obj(i).solidArea.y = gp.obj(i).pos._2 + gp.obj(i).solidAreaDefaultY
+        currentObj.solidArea.x = currentObj.pos._1 + currentObj.solidAreaDefaultX
+        currentObj.solidArea.y = currentObj.pos._2 + currentObj.solidAreaDefaultY
 
         adjustSolidArea(entity)
-        if (entity.solidArea.intersects(gp.obj(i).solidArea)) then
-          if(gp.obj(i).collision) then
+        if (entity.solidArea.intersects(currentObj.solidArea)) then
+          if(currentObj.collision) then
             entity.isCollided = true
 
           if(isPlayer) then
             index = i
 
         Tools.resetSolidArea(entity)
-        Tools.resetSolidArea(gp.obj(i))
+        Tools.resetSolidArea(currentObj)
 
     index
 
@@ -65,23 +66,23 @@ class CollisionChecker (var gp: GamePanel) :
     entity.direction match
       case Direction.UP =>
         entityTopRow = (entityTopWorldY - speed) / tileSize
-        tile1 = tileManager.mapTileNum(entityTopRow)(entityLeftCol)
-        tile2 = tileManager.mapTileNum(entityTopRow)(entityRightCol)
+        tile1 = tileManager.mapTileNum(gp.currentMap)(entityTopRow)(entityLeftCol)
+        tile2 = tileManager.mapTileNum(gp.currentMap)(entityTopRow)(entityRightCol)
 
       case Direction.DOWN =>
         entityBottomRow = (entityBottomWorldY + speed) / tileSize
-        tile1 = tileManager.mapTileNum(entityBottomRow)(entityLeftCol)
-        tile2 = tileManager.mapTileNum(entityBottomRow)(entityRightCol)
+        tile1 = tileManager.mapTileNum(gp.currentMap)(entityBottomRow)(entityLeftCol)
+        tile2 = tileManager.mapTileNum(gp.currentMap)(entityBottomRow)(entityRightCol)
 
       case Direction.LEFT =>
         entityLeftCol = (entityLeftWorldX - speed) / tileSize
-        tile1 = tileManager.mapTileNum(entityBottomRow)(entityLeftCol)
-        tile2 = tileManager.mapTileNum(entityTopRow)(entityLeftCol)
+        tile1 = tileManager.mapTileNum(gp.currentMap)(entityBottomRow)(entityLeftCol)
+        tile2 = tileManager.mapTileNum(gp.currentMap)(entityTopRow)(entityLeftCol)
 
       case Direction.RIGHT =>
         entityRightCol = (entityRightWorldX + speed) / tileSize
-        tile1 = tileManager.mapTileNum(entityBottomRow)(entityRightCol)
-        tile2 = tileManager.mapTileNum(entityTopRow)(entityRightCol)
+        tile1 = tileManager.mapTileNum(gp.currentMap)(entityBottomRow)(entityRightCol)
+        tile2 = tileManager.mapTileNum(gp.currentMap)(entityTopRow)(entityRightCol)
       case ANY =>
       case null =>
 
@@ -90,42 +91,42 @@ class CollisionChecker (var gp: GamePanel) :
 
 
   // For npc and monster
-  def checkCollisionWithTargets (entity: Entity, target: Array[Enemy]) =
+  def checkCollisionWithTargets[T <: Creatures](entity: Entity, target: Array[Array[T]]) =
     var index = -1
-    for (i <- target.indices) do
-      if target(i) != null then
-
+    for (i <- target(1).indices) do
+      if target(gp.currentMap)(i) != null then
+        val currentTarget = target(gp.currentMap)(i)
         Tools.updateSolidArea(entity)
-        Tools.updateSolidArea(target(i))
+        Tools.updateSolidArea(currentTarget)
 
         adjustSolidArea(entity)
 
-        if (entity.solidArea.intersects(target(i).solidArea)) then
-          if target(i) != entity then
+        if (entity.solidArea.intersects(currentTarget.solidArea)) then
+          if currentTarget != entity then
             index = i
             entity.isCollided = true
 
         Tools.resetSolidArea(entity)
-        Tools.resetSolidArea(target(i))
+        Tools.resetSolidArea(currentTarget)
 
     index
 
-  def checkCollisionWithTargetsHitBox (entity: Entity, target: Array[Enemy]) =
+  def checkCollisionWithTargetsHitBox (entity: Entity, target: Array[Array[Enemy]]) =
     var index = -1
-    for (i <- target.indices) do
-      if target(i) != null then
-
+    for (i <- target(1).indices) do
+      if target(gp.currentMap)(i) != null then
+        val currentTarget = target(gp.currentMap)(i)
         Tools.updateSolidArea(entity)
-        Tools.updateAreaHitBox(target(i))
+        Tools.updateAreaHitBox(currentTarget)
 
         adjustSolidArea(entity)
 
-        if (entity.solidArea.intersects(target(i).areaHitBox)) then
-          if target(i) != entity then
+        if (entity.solidArea.intersects(currentTarget.areaHitBox)) then
+          if currentTarget != entity then
             index = i
 
         Tools.resetSolidArea(entity)
-        Tools.resetAreaHitBox(target(i))
+        Tools.resetAreaHitBox(currentTarget)
 
     index
 

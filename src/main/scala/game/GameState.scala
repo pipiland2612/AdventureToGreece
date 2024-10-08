@@ -1,4 +1,4 @@
 package game
 
 enum GameState:
-  case PlayState, PauseState, DialogueState, TitleState, CharacterState, GameMenu
+  case PlayState, PauseState, DialogueState, TitleState, CharacterState, GameMenu, GameOver, TransitionState, TradeState

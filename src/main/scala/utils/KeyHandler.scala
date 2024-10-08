@@ -14,21 +14,20 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
     gp.gameState match
       case GameState.PlayState =>
         handlePlayState(code)
-        
       case GameState.TitleState =>
         handleTitleState(code)
-        
       case GameState.PauseState =>
         handlePauseState(code)
-        
       case GameState.DialogueState =>
         handleDialogueState(code)
-
       case GameState.CharacterState =>
         handleCharacterState(code)
-
       case GameState.GameMenu =>
         handleGameMenuState(code)
+      case GameState.GameOver =>
+        handleGameOverState(code)
+      case GameState.TradeState =>
+        handleTradeState(code)
       case _ =>
         println("Unknown game state")
 
@@ -40,6 +39,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case KeyEvent.VK_D => rightPressed = false
       case KeyEvent.VK_G => attackPressed = false
       case KeyEvent.VK_U => shootKeyPressed = false
+      case KeyEvent.VK_ENTER => enterPressed = false
       case _ =>
 
   override def keyTyped(e: KeyEvent): Unit = {}
@@ -83,30 +83,23 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case KeyEvent.VK_T =>
         if(!showDebugText) then showDebugText = true else if(showDebugText) then showDebugText = false
       case KeyEvent.VK_R =>
-        gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/map.txt")
+        gp.currentMap match
+          case 0 => gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/map.txt", 0)
+          case 1 => gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/dungeon_map.txt", 1)
       case KeyEvent.VK_P =>
         gp.gameState = GameState.PauseState
       case KeyEvent.VK_ESCAPE =>
         gp.gameState = GameState.GameMenu
+      case KeyEvent.VK_ENTER =>
+        enterPressed = true
       case _ =>
 
   private def handleCharacterState (code : Int): Unit =
     code match
-      case KeyEvent.VK_W =>
-        if PlayerUI.slotRow != 0 then
-          PlayerUI.slotRow -= 1
-      case KeyEvent.VK_S =>
-        if PlayerUI.slotRow != 3 then
-          PlayerUI.slotRow += 1
-      case KeyEvent.VK_A =>
-        if PlayerUI.slotCol != 0 then
-          PlayerUI.slotCol -= 1
-      case KeyEvent.VK_D =>
-        if PlayerUI.slotCol != 4 then
-          PlayerUI.slotCol += 1
       case KeyEvent.VK_C => gp.gameState = PlayState
       case KeyEvent.VK_ENTER => gp.player.selectItem()
       case _ =>
+    playerInventory(code)
 
   private def handleGameMenuState(code : Int): Unit =
     var maxCommanNum = gp.gui.subState match
@@ -136,4 +129,72 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
             gp.sound.volumeScale += 1; gp.sound.checkVolume()
           if gp.gui.commandNum == 1 && gp.se.volumeScale < 5 then
             gp.se.volumeScale += 1
+      case _ =>
+
+  private def handleGameOverState(code: Int): Unit  =
+    code match
+      case KeyEvent.VK_UP =>
+        gp.gui.commandNum -= 1
+        if gp.gui.commandNum < 0 then gp.gui.commandNum = 1
+      case KeyEvent.VK_DOWN =>
+        gp.gui.commandNum += 1
+        if gp.gui.commandNum > 1 then gp.gui.commandNum = 0
+      case KeyEvent.VK_ENTER =>
+        if gp.gui.commandNum == 0 then
+          gp.gameState = GameState.PlayState
+          gp.retry()
+        if gp.gui.commandNum == 1 then
+          gp.gameState = GameState.TitleState
+          gp.restart()
+      case _ =>
+
+  private def handleTradeState(code : Int): Unit =
+
+      if code == KeyEvent.VK_ENTER then enterPressed = true
+      if gp.gui.subState == 0 then
+        if code == KeyEvent.VK_UP then
+            gp.gui.commandNum -= 1
+            if gp.gui.commandNum < 0 then gp.gui.commandNum = 2
+        if code == KeyEvent.VK_DOWN then
+            gp.gui.commandNum += 1
+            if gp.gui.commandNum > 2 then gp.gui.commandNum = 0
+      if gp.gui.subState == 1 then
+        npcInventory(code)
+        if code == KeyEvent.VK_ESCAPE then
+          gp.gui.subState = 0
+      if gp.gui.subState == 2 then
+        playerInventory(code)
+        if code == KeyEvent.VK_ESCAPE then
+          gp.gui.subState = 0
+
+  def playerInventory (code : Int): Unit =
+    code match
+      case KeyEvent.VK_UP =>
+        if PlayerUI.playerSlotRow != 0 then
+          PlayerUI.playerSlotRow -= 1
+      case KeyEvent.VK_DOWN =>
+        if PlayerUI.playerSlotRow != 3 then
+          PlayerUI.playerSlotRow += 1
+      case KeyEvent.VK_LEFT =>
+        if PlayerUI.playerSlotCol != 0 then
+          PlayerUI.playerSlotCol -= 1
+      case KeyEvent.VK_RIGHT =>
+        if PlayerUI.playerSlotCol != 4 then
+          PlayerUI.playerSlotCol += 1
+      case _ =>
+
+  def npcInventory (code : Int): Unit =
+    code match
+      case KeyEvent.VK_UP =>
+        if PlayerUI.npcSlotRow != 0 then
+          PlayerUI.npcSlotRow -= 1
+      case KeyEvent.VK_DOWN =>
+        if PlayerUI.npcSlotRow != 3 then
+          PlayerUI.npcSlotRow += 1
+      case KeyEvent.VK_LEFT =>
+        if PlayerUI.npcSlotCol != 0 then
+          PlayerUI.npcSlotCol -= 1
+      case KeyEvent.VK_RIGHT =>
+        if PlayerUI.npcSlotCol != 4 then
+          PlayerUI.npcSlotCol += 1
       case _ =>

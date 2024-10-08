@@ -3,15 +3,17 @@ package entities
 import Enemy.Enemy
 import entities.Direction.ANY
 import game.GamePanel
+import items.{Item, Projectile, Shield, Weapon}
 import utils.Animation
 
 import java.awt.{Graphics2D, Rectangle}
+import scala.collection.mutable.ListBuffer
 
 abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var state: State = State.IDLE
-
-  var dialoques = new Array[String](10)
-  var dialoqueIndex = 0
+  var currentWeapon: Weapon = _
+  var currentShield: Shield = _
+  var currentProjectile: Projectile = _ 
 
   var needsAnimationUpdate = false
   var areaHitBox: Rectangle = _
@@ -30,6 +32,9 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var dying = false
   var dyingCounter = 0
   var shootCounter = 0
+  
+  val maxInventorySize = 20
+  var inventory : ListBuffer[Item] = ListBuffer()
 
   var idleAnimations: Map[Direction, Animation]
   var runAnimations: Map[Direction, Animation]
@@ -37,7 +42,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var deadAnimations: Map[Direction, Animation]
 
   def images: Map[(Direction, State), Animation] =
-    if idleAnimations.nonEmpty || runAnimations.nonEmpty || attackAnimations.nonEmpty then
+    if idleAnimations != null || runAnimations != null || attackAnimations != null then
       Map(
         (Direction.RIGHT, State.IDLE) -> idleAnimations(Direction.RIGHT),
         (Direction.DOWN, State.IDLE) -> idleAnimations(Direction.DOWN),
@@ -60,20 +65,6 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         (Direction.RIGHT, State.DEAD) -> deadAnimations(Direction.RIGHT),
       )
     else null
-
-
-  def speak (): Unit =
-    if dialoques(dialoqueIndex) == null then
-      dialoqueIndex = 0
-    gp.gui.currentDialogue = dialoques(dialoqueIndex)
-    dialoqueIndex += 1
-
-    this.direction = this.direction match
-      case Direction.UP => Direction.DOWN
-      case Direction.DOWN => Direction.UP
-      case Direction.LEFT => Direction.RIGHT
-      case Direction.RIGHT => Direction.LEFT
-      case Direction.ANY => null
 
   def takeDamage(amount: Int): Unit =
     this.health -= amount
@@ -107,9 +98,10 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
   def checkAnimationUpdate (): Unit =
     if(needsAnimationUpdate) then
-      currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
-      needsAnimationUpdate = false
-      currentAnimation.update()
+      if currentAnimation != null then
+        currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
+        needsAnimationUpdate = false
+        currentAnimation.update()
 
   def continueMove (): Unit =
     if !isCollided then
@@ -120,6 +112,19 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         case Direction.RIGHT => this.move(this.speed, 0)
         case ANY =>
     else
-      currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
+      if currentAnimation != null then
+        currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
+
+  def update(): Unit =
+    setAction()
+    isCollided = false
+    gp.cCheck.checkTileCollision(this)
+    gp.cCheck.checkObjectCollision(this, false)
+    gp.cCheck.checkCollisionWithTargets(this, gp.npcList)
+    gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+    val hasTouchedPlayer = gp.cCheck.checkPlayer(this)
+
+    checkAnimationUpdate()
+    continueMove()
 
   override def draw(g: Graphics2D): Unit = super.draw(g)

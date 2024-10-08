@@ -67,8 +67,10 @@ object GameMenuUI:
     g2.drawRect(textX, textY, 120, 24)
     val seWidth = 24 * gp.se.volumeScale
     g2.fillRect(textX, textY, seWidth, 24)
-    // CONTROL
 
+    gp.config.saveConfig()
+
+  // CONTROL
   def controlDisplay(frameX: Int, frameY: Int): Unit =
     val tileSize = gp.tileSize
     val text = "Control"

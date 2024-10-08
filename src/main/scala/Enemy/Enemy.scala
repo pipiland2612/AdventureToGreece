@@ -13,6 +13,7 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   var counter: Int = 0
   var spawnCounter: Int = 0
   var hasSpawn: Boolean = false
+  val thisIndex = gp.enemyList(gp.currentMap).indexOf(this)
   //
   var pos: (Int, Int)
   var attackPower: Int
@@ -38,10 +39,10 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
 //    direction = gp.player.direction
 
   def dropItem (item: Item): Unit =
-    for index <- gp.obj.indices do
-      if gp.obj(index) == null then
-        gp.obj(index) = item
-        gp.obj(index).pos = (this.pos._1 + this.solidArea.x, this.pos._2 + this.solidArea.y)
+    for index <- gp.obj(1).indices do
+      if gp.obj(gp.currentMap)(index) == null then
+        gp.obj(gp.currentMap)(index) = item
+        gp.obj(gp.currentMap)(index).pos = (this.pos._1 + this.solidArea.x, this.pos._2 + this.solidArea.y)
         return
         
   def checkDrop (): Unit =
@@ -67,23 +68,22 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
     super.die()
     dyingCounter += 1
     if dyingCounter >= 150 then
-      checkDrop()
-      gp.enemyList = gp.enemyList.filterNot(_ == this)
+      dying = true
 
   // Call by the game loop
-  def update(): Unit =
-    if (!hasSpawn) then
-      spawn()
-      return
+  override def update(): Unit =
+      if (!hasSpawn) then
+        spawn()
+        return
 
-    if (dying) then
-      die()
-      return
+      if (isDead) then
+        die()
+        return
 
-    if (isAlive) then
-      performAliveActions()
+      if (isAlive) then
+        performAliveActions()
 
-    continueMove()
+      continueMove()
 
   override def setAction(): Unit =
     counter += 1

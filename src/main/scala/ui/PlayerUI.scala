@@ -1,6 +1,7 @@
 package ui
 
 import `object`.{OBJ_Heart, OBJ_Mana}
+import entities.Creatures
 import game.GamePanel
 import utils.Tools
 
@@ -15,49 +16,21 @@ object PlayerUI:
   var heart: OBJ_Heart = new OBJ_Heart(25 , gp)
   var mana : OBJ_Mana = new OBJ_Mana(25, gp)
 
-  var slotCol = 0
-  var slotRow = 0
+  var playerSlotCol = 0
+  var playerSlotRow = 0
+  var npcSlotRow = 0
+  var npcSlotCol = 0
 
   def setGraphics(g: Graphics2D, gamePanel: GamePanel): Unit =
     g2 = g
     gp = gamePanel
     tileSize = gp.tileSize
 
-  def drawPlayerStats(
-      spacing: Int,
-      yPosition: Int,
-      totalUnits: Int,
-      currentUnits: Int,
-      fullImage: BufferedImage,
-      image2: BufferedImage,
-      image3: BufferedImage,
-      image4: BufferedImage,
-      image5: BufferedImage
-  ): Unit =
-    val xStart = spacing
-    var remainingUnits = currentUnits
-    for (i <- 0 until totalUnits) do
-      val x = xStart + i * (4 * spacing)
-
-      if (remainingUnits >= 20) then
-
-        g2.drawImage(fullImage, x, yPosition, null)
-        remainingUnits -= 20
-      else
-
-        val unitImage = remainingUnits match
-          case u if u >= 14 => image2
-          case u if u >= 10 => image3
-          case u if u >= 7  => image4
-          case _            => image5
-
-        g2.drawImage(unitImage, x, yPosition, null)
-        remainingUnits = 0
-
   def drawPlayerLife(): Unit =
     val spacing = tileSize / 8
     val y = tileSize / 2 - 20
-    val totalHearts = gp.player.maxHealth / 20
+    val otherHealth: Int = if gp.player.maxHealth % 20 >= 0 then 1 else 0
+    val totalHearts = if gp.player.maxHealth % 20 == 0 then gp.player.maxHealth / 20 else gp.player.maxHealth / 20 + otherHealth
     val currentHealth = gp.player.health
 
     drawPlayerStats(spacing, y, totalHearts, currentHealth, heart.image, heart.image2, heart.image3, heart.image4, heart.image5)
@@ -70,12 +43,30 @@ object PlayerUI:
 
     drawPlayerStats(spacing, y, totalMana, currentMana, mana.image, mana.image2, mana.image3, mana.image4, mana.image5)
 
-  def drawInventory(): Unit =
+  def drawInventory(creature: Creatures, cursor : Boolean): Unit =
     // Frame
-    val frameX = tileSize * 18
-    val frameY = tileSize
-    val frameWidth = tileSize * 6
-    val frameHeight = tileSize * 5
+    var slotRow: Int = 0
+    var slotCol: Int = 0
+    var frameX: Int = 0
+    var frameY: Int = 0
+    var frameWidth: Int = 0
+    var frameHeight: Int = 0
+
+    if creature == gp.player then
+      frameX = gp.screenWidth - tileSize * 7
+      frameY = tileSize
+      frameWidth = tileSize * 6
+      frameHeight = tileSize * 5
+      slotRow = playerSlotRow
+      slotCol = playerSlotCol
+    else
+      frameX = tileSize * 2
+      frameY = tileSize
+      frameWidth = tileSize * 6
+      frameHeight = tileSize * 5
+      slotRow = npcSlotRow
+      slotCol = npcSlotCol
+
     Tools.drawSubWindow(g2, frameX, frameY, frameWidth, frameHeight)
 
     // SLOT
@@ -86,10 +77,10 @@ object PlayerUI:
     var slotSize = tileSize + 3
 
     // Player's Item
-    for index <- gp.player.inventory.indices do
-      val currentItem = gp.player.inventory(index)
-      if currentItem == gp.player.currentWeapon || currentItem == gp.player.currentShield
-        || currentItem == gp.player.currentProjectile then
+    for index <- creature.inventory.indices do
+      val currentItem = creature.inventory(index)
+      if currentItem == creature.currentWeapon || currentItem == creature.currentShield
+        || currentItem == creature.currentProjectile then
         g2.setColor(new Color (240, 190, 90))
         g2.fillRoundRect(slotX, slotY, tileSize, tileSize, 10, 10 )
 
@@ -100,31 +91,33 @@ object PlayerUI:
         slotY += slotSize
 
     // CURSOR
-    val cursorX = slotXstart + (slotSize * slotCol)
-    val cursorY = slotYstart + (slotSize * slotRow)
-    val cursorWidth = tileSize
-    val cursorHeight = tileSize
+    if cursor then
+      val cursorX = slotXstart + (slotSize * slotCol)
+      val cursorY = slotYstart + (slotSize * slotRow)
+      val cursorWidth = tileSize
+      val cursorHeight = tileSize
 
-    // DRAW
-    g2.setColor(Color.WHITE)
-    g2.setStroke(new BasicStroke(3))
-    g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10)
+      // DRAW
+      g2.setColor(Color.WHITE)
+      g2.setStroke(new BasicStroke(3))
+      g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10)
 
-    // Descriptions FRAME, and Draw
-    val dframeX = frameX
-    val dframeY = frameY + frameHeight
-    val dframeWidth = frameWidth
-    val dframeHeight = tileSize * 3
+      // Descriptions FRAME, and Draw
+      val dframeX = frameX
+      val dframeY = frameY + frameHeight
+      val dframeWidth = frameWidth
+      val dframeHeight = tileSize * 3
 
-    val textX = dframeX + 20
-    var textY = dframeY + tileSize * 0.8
-    g2.setFont(g2.getFont.deriveFont(20F))
-    if getItemIndexBySlot < gp.player.inventory.size then
-      Tools.drawSubWindow(g2, dframeX, dframeY, dframeWidth, dframeHeight)
-      val currentItem = gp.player.inventory(getItemIndexBySlot)
-      for (line <- currentItem.getDescription.split("\n")) do
-        g2.drawString(line, textX, textY.toInt)
-        textY += 32
+      val textX = dframeX + 20
+      var textY = dframeY + tileSize * 0.8
+      g2.setFont(g2.getFont.deriveFont(20F))
+      val itemIndex = getItemIndexBySlot(slotCol, slotRow)
+      if itemIndex < creature.inventory.size then
+        Tools.drawSubWindow(g2, dframeX, dframeY, dframeWidth, dframeHeight)
+        val currentItem = creature.inventory(itemIndex)
+        for (line <- currentItem.getDescription.split("\n")) do
+          g2.drawString(line, textX, textY.toInt)
+          textY += 32
 
   def drawCharacterState(): Unit =
     val frameX = (tileSize * 1.5).toInt
@@ -182,4 +175,35 @@ object PlayerUI:
     if (projectile != null && projectile.imageDisplayed != null) then
         g2.drawImage(projectile.imageDisplayed, (tailX - tileSize / 1.5).toInt, textY - 100, null)
 
-  def getItemIndexBySlot: Int = slotCol + (slotRow * 5)
+  def getItemIndexBySlot(slotCol: Int, slotRow : Int ): Int = slotCol + (slotRow * 5)
+
+  private def drawPlayerStats(
+      spacing: Int,
+      yPosition: Int,
+      totalUnits: Int,
+      currentUnits: Int,
+      fullImage: BufferedImage,
+      image2: BufferedImage,
+      image3: BufferedImage,
+      image4: BufferedImage,
+      image5: BufferedImage
+  ): Unit =
+    val xStart = spacing
+    var remainingUnits = currentUnits
+    for (i <- 0 until totalUnits) do
+      val x = xStart + i * (4 * spacing)
+
+      if (remainingUnits >= 20) then
+
+        g2.drawImage(fullImage, x, yPosition, null)
+        remainingUnits -= 20
+      else
+
+        val unitImage = remainingUnits match
+          case u if u >= 14 => image2
+          case u if u >= 10 => image3
+          case u if u >= 7  => image4
+          case _            => image5
+
+        g2.drawImage(unitImage, x, yPosition, null)
+        remainingUnits = 0

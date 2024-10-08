@@ -13,12 +13,10 @@ import scala.collection.mutable.ListBuffer
 
 class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   direction = Direction.RIGHT
-  var currentWeapon: Weapon = OBJ_NormalSword(gp)
-  var currentShield: Shield = OBJ_NormalShield(gp)
-  var currentProjectile: Projectile = OBJ_Fireball(gp)
+  currentWeapon = OBJ_NormalSword(gp)
+  currentShield = OBJ_NormalShield(gp)
+  currentProjectile = OBJ_Fireball(gp)
 
-  val maxInventorySize = 20
-  var inventory : ListBuffer[Item] = ListBuffer()
   setItems()
 
   state = State.IDLE
@@ -27,7 +25,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   // Player stats
   var name = "Warrior"
   speed = 5
-  maxHealth = 100
+  maxHealth = 110
   health = maxHealth
   maxMana = 100
   mana = maxMana
@@ -38,7 +36,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   var nextLevelExp = 5
   var attackDamage = getAttackDamage
   var defense = getDefense
-  var coin = 0
+  var coin = 20
 
   // other stats
   private var attackCooldown: Int = 0
@@ -165,13 +163,14 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
 
   def setItems(): Unit =
+    this.inventory.clear()
     this.inventory += currentWeapon
     this.inventory += currentShield
     this.inventory += currentProjectile
     this.inventory += OBJ_NormalHealFlask(gp)
 
   def selectItem(): Unit =
-    val itemIndex = PlayerUI.getItemIndexBySlot
+    val itemIndex = PlayerUI.getItemIndexBySlot(PlayerUI.playerSlotCol, PlayerUI.playerSlotRow)
     if itemIndex < this.inventory.size then
       val selectedItem = this.inventory(itemIndex)
       selectedItem match
@@ -197,8 +196,9 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   // Rendering methods
 
   // call by the game loop
-  def update(): Unit =
+  override def update(): Unit =
     handleInvincibility()
+    handleGameOver()
     if attackCooldown > 0 then
       attackCooldown -= 1
 
@@ -226,16 +226,16 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   def pickUpObject(index : Int): Unit =
     if(index != -1) then
       var text: String = ""
-      val obj = gp.obj(index)
+      val obj = gp.obj(gp.currentMap)(index)
 
       obj match
         case coin: Coin =>
           coin.pickupCoin(this)
-          gp.obj(index) = null
+          gp.obj(gp.currentMap)(index) = null
         case item: Item =>
           if inventory.size < maxInventorySize then
             inventory += item
-            gp.obj(index) = null
+            gp.obj(gp.currentMap)(index) = null
             text = s"Picked up: ${item.name}"
           else text = "Your inventory is full"
         case _ =>
@@ -243,11 +243,14 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
   def interactNPC(index : Int): Unit =
     if(index != -1) then
-      gp.gameState = GameState.DialogueState
+      if gp.keyH.enterPressed then
+        gp.gameState = GameState.DialogueState
+        gp.npcList(gp.currentMap)(index).speak()
+    gp.keyH.enterPressed = false
 
   def attackEnemy(enemyIndex: Int, damageDealt: Int): Unit =
     if enemyIndex != -1 then
-      var currentEnemy = gp.enemyList(enemyIndex)
+      var currentEnemy = gp.enemyList(gp.currentMap)(enemyIndex)
       if !currentEnemy.isInvinc then
         var damage = damageDealt - currentEnemy.defense
         if damage < 0 then damage = 0
@@ -256,7 +259,6 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         currentEnemy.isInvinc = true
 
         if !currentEnemy.isAlive then
-          currentEnemy.dying = true
           gp.gui.addMessage("Kill " + currentEnemy.name)
           exp += currentEnemy.expGet
           gp.gui.addMessage("Exp + " + exp)
@@ -299,7 +301,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
     if (gp.keyH.attackPressed && attackCooldown == 0) then
       attack()
-    else if gp.keyH.upPressed || gp.keyH.downPressed || gp.keyH.leftPressed || gp.keyH.rightPressed then
+    else if gp.keyH.upPressed || gp.keyH.downPressed || gp.keyH.leftPressed || gp.keyH.rightPressed || gp.keyH.enterPressed then
       updateDirection()
       checkAnimationUpdate()
 
@@ -311,12 +313,13 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       // CHECK OBJECT
       val objectIndex = gp.cCheck.checkObjectCollision(this, true)
       pickUpObject(objectIndex)
-//      val npcIndex = gp.cCheck.checkCollisionWithPlayer(this, gp.npc)
-//      interact ???
+
+      val npcIndex = gp.cCheck.checkCollisionWithTargets(this, gp.npcList)
+      interactNPC(npcIndex)
 
       // CHECK EVENT
       val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
-      if enemyIndex != -1 then
+//      if enemyIndex != -1 then
 //        println(enemyIndex)
 //        gp.enemyList(enemyIndex).attackPlayer(gp.enemyList(enemyIndex).attackPower)
 
@@ -332,6 +335,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       else
         currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
       gp.keyH.attackPressed = false
+      gp.keyH.enterPressed = false
     else
       if state != State.IDLE then
         state = State.IDLE
@@ -344,3 +348,14 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       currentProjectile.useMana(this)
       gp.projectileList += this.currentProjectile
       shootCounter = 0
+
+  private def handleGameOver(): Unit =
+    if isDead then
+      gp.gameState = GameState.GameOver
+      gp.gui.commandNum = -1
+
+  def reset(): Unit =
+    this.pos = (gp.tileSize * 23, gp.tileSize * 21)
+    health = maxHealth
+    mana = maxMana
+    this.level = 1

@@ -1,5 +1,6 @@
 package ui
 
+import entities.Npc
 import game.{GamePanel, GameState}
 import utils.Tools
 
@@ -12,9 +13,13 @@ class UI (var gp: GamePanel):
   var messageOn : Boolean = false
   var message: ListBuffer[String] = ListBuffer()
   var messageCounter: ListBuffer[Int] = ListBuffer()
+
+  var merchant: Npc = _
   var isFinished = false
   var currentDialogue: String = ""
   var commandNum = 0
+  var counter: Int = 0
+
 
   var g2 : Graphics2D = _
   val tileSize = gp.tileSize
@@ -25,6 +30,7 @@ class UI (var gp: GamePanel):
     g2 = g
     PlayerUI.setGraphics(g, gp)
     GameMenuUI.setGraphics(g, gp)
+    TradeUI.setGraphics(g, gp)
 
   def drawUI (g : Graphics2D): Unit =
     setGraphics(g)
@@ -48,9 +54,15 @@ class UI (var gp: GamePanel):
         drawTitleScreen()
       case GameState.CharacterState =>
         PlayerUI.drawCharacterState()
-        PlayerUI.drawInventory()
+        PlayerUI.drawInventory(gp.player, true)
       case GameState.GameMenu =>
         drawGameMenu()
+      case GameState.GameOver =>
+        drawGameOver()
+      case GameState.TransitionState =>
+        drawTransitionState()
+      case GameState.TradeState =>
+        TradeUI.drawTradeState()
 
   def drawMessage(): Unit =
     val messageX = tileSize / 2
@@ -113,9 +125,9 @@ class UI (var gp: GamePanel):
 
   def drawDialogueScreen(): Unit =
     var (x, y , width, height) = (
-      tileSize * 2,
+      tileSize * 3,
       tileSize / 2,
-      gp.screenWidth - (tileSize * 5),
+      gp.screenWidth - (tileSize * 6),
       tileSize * 3
     )
     Tools.drawSubWindow(g2, x, y, width, height)
@@ -152,5 +164,49 @@ class UI (var gp: GamePanel):
   def addMessage(text : String) =
     message += text
     messageCounter += 0
+
+  def drawGameOver(): Unit =
+    g2.setColor(new Color(0, 0, 0, 150))
+    g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)
+
+    g2.setFont(g2.getFont.deriveFont(100F))
+    var text = "You Died! Game Over"
+    var x = Tools.getCenterX(g2, gp, text)
+    var y = tileSize * 4
+    // SHADOW
+    g2.setColor(Color.BLACK)
+    g2.drawString(text, x, y)
+    // MAIN
+    g2.setColor(Color.WHITE)
+    g2.drawString(text, x - 4, y - 4)
+    // RETRY
+    g2.setFont(g2.getFont.deriveFont(50F))
+    text = "Retry"
+    x = Tools.getCenterX(g2, gp, text)
+    y += tileSize * 4
+    g2.drawString(text, x, y)
+    if commandNum == 0 then
+      g2.drawString(">", x-40, y)
+
+    // QUIT
+    text = "Quit"
+    x = Tools.getCenterX(g2, gp, text)
+    y += 55
+    g2.drawString(text, x, y)
+    if commandNum == 1 then
+      g2.drawString(">", x-40, y)
+
+  def drawTransitionState(): Unit =
+    counter += 1
+    g2.setColor(new Color(0, 0, 0, counter * 5))
+    g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)
+
+    if counter == 50 then
+      counter = 0
+      gp.gameState = GameState.PlayState
+      gp.currentMap = gp.eHandler.tempMap
+      gp.player.pos = (gp.eHandler.tempRow * gp.tileSize, gp.eHandler.tempCol * gp.tileSize)
+      gp.eHandler.previousEventX = gp.player.pos._1
+      gp.eHandler.previousEventY = gp.player.pos._2
 
 end UI

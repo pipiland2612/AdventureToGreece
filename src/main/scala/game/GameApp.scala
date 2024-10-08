@@ -20,6 +20,7 @@ object GameApp extends App :
   frame.setFocusable(true)
   frame.setLocationRelativeTo(null)
 
+  gamePanel.config.loadConfig()
   gamePanel.setUpGame()
   gamePanel.startGameThread()
 
