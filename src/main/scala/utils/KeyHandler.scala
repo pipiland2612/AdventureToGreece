@@ -1,6 +1,7 @@
 package utils
 import game.GameState.{CharacterState, PlayState}
 import game.{GamePanel, GameState}
+import ui.PlayerUI
 
 import java.awt.event.{KeyEvent, KeyListener}
 
@@ -9,7 +10,6 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
   var showDebugText: Boolean = _
 
   override def keyPressed(e: KeyEvent): Unit =
-
     val code = e.getKeyCode
     gp.gameState match
       case GameState.PlayState =>
@@ -93,17 +93,17 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
   private def handleCharacterState (code : Int): Unit =
     code match
       case KeyEvent.VK_W =>
-        if gp.gui.slotRow != 0 then
-          gp.gui.slotRow -= 1
+        if PlayerUI.slotRow != 0 then
+          PlayerUI.slotRow -= 1
       case KeyEvent.VK_S =>
-        if gp.gui.slotRow != 3 then
-          gp.gui.slotRow += 1
+        if PlayerUI.slotRow != 3 then
+          PlayerUI.slotRow += 1
       case KeyEvent.VK_A =>
-        if gp.gui.slotCol != 0 then
-          gp.gui.slotCol -= 1
+        if PlayerUI.slotCol != 0 then
+          PlayerUI.slotCol -= 1
       case KeyEvent.VK_D =>
-        if gp.gui.slotCol != 4 then
-          gp.gui.slotCol += 1
+        if PlayerUI.slotCol != 4 then
+          PlayerUI.slotCol += 1
       case KeyEvent.VK_C => gp.gameState = PlayState
       case KeyEvent.VK_ENTER => gp.player.selectItem()
       case _ =>

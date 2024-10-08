@@ -20,7 +20,7 @@ abstract class Projectile (gp: GamePanel) extends Item(gp):
   def flyAnimation: Map[Direction, BufferedImage]
   var solidArea: Rectangle = Rectangle()
 
-  def getDescription: String = s"Firing $name \ncan deal $damage damages!"
+  def getDescription: String = s"Firing $name can deal \n$damage base damages! \nCurrent damage : ${gp.player.strength * damage}"
   def haveEnoughMana(creatures: Creatures): Boolean = creatures.mana >= costMana
   def useMana(creatures: Creatures): Unit = creatures.mana -= costMana
   def fly (): Unit =

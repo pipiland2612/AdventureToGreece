@@ -5,7 +5,7 @@ import entities.{Creatures, Direction, Entity}
 import game.GamePanel
 
 import java.awt.geom.AffineTransform
-import java.awt.{Color, Graphics2D, Image}
+import java.awt.{BasicStroke, Color, Graphics2D, Image}
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -124,3 +124,25 @@ object Tools:
           creature.areaHitBox.y + creature.pos._2 - entity.getPosition._2 + gp.player.screenY,
           creature.areaHitBox.width, creature.areaHitBox.height)
     )
+    
+  // FOR UI 
+
+
+  def drawSubWindow(g2 : Graphics2D , x: Int, y: Int, width: Int, height: Int): Unit =
+    var c: Color = Color(0,0,0, 210)
+    g2.setColor(c)
+    g2.fillRoundRect(x, y, width, height, 35 ,35)
+
+    c = Color(255, 255, 255)
+    g2.setColor(c)
+    g2.setStroke(new BasicStroke(5))
+    g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25)
+
+  def getCenterX (g2 : Graphics2D, gp: GamePanel, text: String): Int =
+    val length = g2.getFontMetrics.getStringBounds(text, g2).getWidth
+    (gp.screenWidth / 2 - length /2).toInt
+
+  def getRightX (g2 : Graphics2D ,text: String, tailX : Int): Int =
+    val length = g2.getFontMetrics.getStringBounds(text, g2).getWidth
+    (tailX - length).toInt
+

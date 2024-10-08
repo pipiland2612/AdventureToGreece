@@ -129,17 +129,6 @@ class CollisionChecker (var gp: GamePanel) :
 
     index
 
-//  def checkCollisionWithTargets (effectArea: Rectangle, target: Array[Enemy]) =
-//    var index = -1
-//    for (i <- target.indices) do
-//      if target(i) != null then
-//
-//        Tools.updateSolidArea(target(i))
-//
-//        if (effectArea.intersects(target(i).solidArea)) then
-//          index = i
-//    index
-
   def checkPlayer(entity: Entity): Boolean =
     var touchedPlayer: Boolean = false
 
@@ -155,5 +144,6 @@ class CollisionChecker (var gp: GamePanel) :
     Tools.resetSolidArea(entity)
     Tools.resetSolidArea(gp.player)
     touchedPlayer
+    
 end CollisionChecker
 

@@ -113,11 +113,11 @@ class GamePanel extends JPanel with Runnable:
       //TILE
       tileManager.drawTiles(g2d)
 
-
       // ADDING ENTITIES
       entityList += player
 
       //add npc using for loop ...
+      // ADDING OBJs, enemy, projectile
       for (ob <- obj) do
         if ob != null then
           entityList += ob

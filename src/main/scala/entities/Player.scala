@@ -5,6 +5,7 @@ import entities.Direction.{ANY, DOWN, LEFT, RIGHT, UP}
 import java.awt.image.BufferedImage
 import game.{GamePanel, GameState}
 import items.{Coin, Item, Potion, Projectile, Shield, Weapon}
+import ui.PlayerUI
 import utils.{Animation, Tools}
 
 import java.awt.{AlphaComposite, Graphics2D, Rectangle}
@@ -170,7 +171,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     this.inventory += OBJ_NormalHealFlask(gp)
 
   def selectItem(): Unit =
-    val itemIndex = gp.gui.getItemIndexBySlot
+    val itemIndex = PlayerUI.getItemIndexBySlot
     if itemIndex < this.inventory.size then
       val selectedItem = this.inventory(itemIndex)
       selectedItem match
