@@ -1,24 +1,25 @@
 package `object`
 
-import entities.{Creatures, Direction, Entity}
-import game.{GamePanel, GameState}
-import items.{Coin, Item, Potion, Projectile, Shield, Weapon}
-import levels.Obstacle
-import utils.{Animation, Tools}
+import entities.Entity
+import game.GamePanel
+import items.Light
+import utils.Tools
 
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
 
-class OBJ_Rock(size : Int, var pos: (Int, Int), gp: GamePanel) extends Entity (gp):
+class OBJ_Rock(size : Int, gp: GamePanel) extends Entity (gp):
   var name = "Rock"
+  var pos: (Int, Int)= (0,0)
   image = Tools.scaleImage(Tools.loadImage("Objects/rock.png"), size, size)
   collision = true
   var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
 
 end OBJ_Rock
 
-class OBJ_Tree(size : Int, var pos: (Int, Int), gp: GamePanel) extends Entity (gp):
+class OBJ_Tree(size : Int, gp: GamePanel) extends Entity (gp):
+  var pos: (Int, Int)= (0,0)
   var name = "Tree"
   image = Tools.scaleImage(Tools.loadImage("Objects/tree.png"), size, size)
   collision = true
@@ -52,3 +53,16 @@ class OBJ_Mana (size : Int, gp: GamePanel) extends Entity (gp):
   var image4 = Tools.scaleImage(Tools.loadImage("Objects/Mana/mana_nearly.png"), size, size)
   var image5 = Tools.scaleImage(Tools.loadImage("Objects/Mana/mana_empty.png"), size, size)
 end OBJ_Mana
+
+class OBJ_Candle (gp: GamePanel) extends Light(gp):
+  var name = "Light Candle"
+  var pos = (0,0)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/candle_light.png"), 32, 32)
+  image = Tools.scaleImage(Tools.loadImage("Objects/candle_light.png"), 32, 32)
+  price = 100
+  var lightRadius = 250
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
+
+
+end OBJ_Candle
+

@@ -2,44 +2,50 @@ package entities
 
 import entities.Direction.ANY
 import game.GamePanel
-import items.{Item, Projectile, Shield, Weapon}
+import items.{Item, Light, Projectile, Shield, Weapon}
 import utils.Animation
 
 import java.awt.{Graphics2D, Rectangle}
 import scala.collection.mutable.ListBuffer
 
 abstract class Creatures(gp: GamePanel) extends Entity(gp) :
+
+  // ----------------------------------------------------------------------------------------------
+  // Creature States and Attributes
+
   var state: State = State.IDLE
   var currentWeapon: Weapon = _
   var currentShield: Shield = _
   var currentProjectile: Projectile = _ 
-
-  var needsAnimationUpdate = false
-  var areaHitBox: Rectangle = _
-  var areaDefaultX, areaDefaultY: Int = 0
+  var currentLight: Light = _
 
   var health: Int = 0
   var maxHealth: Int = 0
   var isAttacking = false
   var maxMana: Int = 0
   var mana: Int = 0
-
   var isOnPath: Boolean = false
   var isInvinc : Boolean = false
   var invincibleDuration = 0
   var maxInvincDuration: Int = 0
-
   var dying = false
   var dyingCounter = 0
   var shootCounter = 0
-  
   val maxInventorySize = 20
   var inventory : ListBuffer[Item] = ListBuffer()
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Animation and Rendering
 
   var idleAnimations: Map[Direction, Animation]
   var runAnimations: Map[Direction, Animation]
   var attackAnimations: Map[Direction, Animation]
   var deadAnimations: Map[Direction, Animation]
+
+  var needsAnimationUpdate = false
+  var areaHitBox: Rectangle = _
+  var areaDefaultX, areaDefaultY: Int = 0
 
   def images: Map[(Direction, State), Animation] =
     if idleAnimations != null || runAnimations != null || attackAnimations != null then
@@ -66,6 +72,8 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
       )
     else null
 
+  // ----------------------------------------------------------------------------------------------
+  // Creature Actions and State Management
 
   def takeDamage(amount: Int): Unit =
     this.health -= amount
@@ -116,13 +124,15 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
       if currentAnimation != null then
         currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
 
+  // ----------------------------------------------------------------------------------------------
+  // Game Loop Update and Collision Handling
+
   def update(): Unit =
     setAction()
     checkCollision()
 
     checkAnimationUpdate()
     continueMove()
-//    if isOnPath
 
   private def checkCollision(): Unit =
     isCollided = false
@@ -183,4 +193,6 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
       if nextCol == goalCol && nextRow == goalRow then
         isOnPath = false
 
+
+  // Rendering Methods
   override def draw(g: Graphics2D): Unit = super.draw(g)

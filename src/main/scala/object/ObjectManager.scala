@@ -7,48 +7,56 @@ import game.GamePanel
 
 
 class ObjectManager(var gp : GamePanel) :
+  val tileSize = gp.tileSize
+
+  private def calcPos(col: Int, row: Int): (Int, Int) = (col * tileSize, row * tileSize)
 
   def setObject(): Unit =
-    val tileSize = gp.tileSize
     var mapNum = 0
     var currentObjList = gp.obj(mapNum)
 
-    currentObjList(0) = new OBJ_Chest(32, (35 * tileSize, 25 * tileSize), gp, OBJ_BronzeCoin(gp))
-    currentObjList(1) = new OBJ_Rock(48, (10 * tileSize, 15 * tileSize), gp)
-    currentObjList(2) = new OBJ_Tree(256, (10 * tileSize, 20 * tileSize), gp)
+    val objectData = List(
+      // OBJ                                      INDEX   POSITION
+      (new OBJ_Chest(32, gp, OBJ_BronzeCoin(gp)),  0,     Some(calcPos(35, 25))),
+      (new OBJ_Rock(48, gp),                        1,     Some(calcPos(10, 15))),
+      (new OBJ_Tree(256, gp),                        2,     Some(calcPos(10, 20))),
+      (new OBJ_NormalHealFlask(gp),                  3,     Some(calcPos(9, 9))),
+      (new OBJ_NormalSword(gp),                      4,     Some(calcPos(10, 9))),
+      (new OBJ_NormalAxe(gp),                        5,     Some(calcPos(11, 9))),
+      (new OBJ_BronzeCoin(gp),                       6,     Some(calcPos(11, 10))),
+      (new OBJ_NormalHealFlask(gp),                  7,     Some(calcPos(10, 9))),
+      (new OBJ_NormalHealFlask(gp),                  8,     Some(calcPos(11, 9))),
+      (new OBJ_NormalHealFlask(gp),                  9,     Some(calcPos(12, 9))),
+      (new OBJ_Candle(gp),                          10,     Some(calcPos(24, 21)))
+    )
 
-    currentObjList(3) = new OBJ_NormalHealFlask(gp)
-    currentObjList(3).pos = (9 * tileSize, 9 * tileSize)
-
-    currentObjList(4) = new OBJ_NormalSword(gp)
-    currentObjList(4).pos = (10 * tileSize, 9 * tileSize)
-
-    currentObjList(5) = new OBJ_NormalAxe(gp)
-    currentObjList(5).pos = (11 * tileSize, 9 * tileSize)
-
-    currentObjList(6) = new OBJ_BronzeCoin(gp)
-    currentObjList(6).pos = (11 * tileSize, 10 * tileSize)
-
-    currentObjList(7) = new OBJ_NormalHealFlask(gp)
-    currentObjList(7).pos = (10 * tileSize, 9 * tileSize)
-
-    currentObjList(8) = new OBJ_NormalHealFlask(gp)
-    currentObjList(8).pos = (11 * tileSize, 9 * tileSize)
-
-    currentObjList(9) = new OBJ_NormalHealFlask(gp)
-    currentObjList(9).pos = (12 * tileSize, 9 * tileSize)
-
+    objectData.foreach { case (obj, index, positionOpt) =>
+      currentObjList(index) = obj
+      positionOpt.foreach(pos => currentObjList(index).pos = pos)
+    }
 
   def setEnemy (): Unit =
     var mapNum = 0
     var currentEnemyList = gp.enemyList(mapNum)
-    currentEnemyList(0) = new EN_Necromancer(gp, (23 * gp.tileSize, 24 * gp.tileSize))
-    currentEnemyList(1) = new EN_Necromancer(gp, (13 * gp.tileSize, 14 * gp.tileSize))
+    val enemyData = List(
+      (new EN_Necromancer(gp, calcPos(23, 24)), 0),
+      (new EN_Necromancer(gp, calcPos(13, 14)), 1)
+    )
+
+    enemyData.foreach { case (enemy, index) =>
+      currentEnemyList(index) = enemy
+    }
 
   def setNpc(): Unit =
     var mapNum = 0
     var currentNpcList = gp.npcList(mapNum)
-    currentNpcList(0) = new Merchant(gp, (13 * gp.tileSize, 14 * gp.tileSize))
+    val npcData = List(
+      (new Merchant(gp, calcPos(13, 14)), 0)
+    )
+
+    npcData.foreach { case (npc, index) =>
+      currentNpcList(index) = npc
+    }
 
 end ObjectManager
 

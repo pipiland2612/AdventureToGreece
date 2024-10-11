@@ -8,8 +8,9 @@ import utils.Tools
 
 import java.awt.Rectangle
 
-class OBJ_Chest(size : Int, var pos: (Int, Int), gp: GamePanel, var loot: Item) extends Obstacle (gp):
+class OBJ_Chest(size : Int, gp: GamePanel, var loot: Item) extends Obstacle (gp):
   var name = "Chest"
+  var pos: (Int, Int) = (0,0)
   var opened: Boolean = false
 
   image = Tools.scaleImage(Tools.loadImage("Objects/chest.png"), size, size)

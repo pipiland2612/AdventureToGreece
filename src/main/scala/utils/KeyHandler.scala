@@ -1,5 +1,5 @@
 package utils
-import game.GameState.{CharacterState, PlayState}
+import game.GameState.{CharacterState, MapState, PlayState}
 import game.{GamePanel, GameState}
 import ui.PlayerUI
 
@@ -28,6 +28,8 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
         handleGameOverState(code)
       case GameState.TradeState =>
         handleTradeState(code)
+      case GameState.MapState =>
+        handleMapState(code)
       case _ =>
         println("Unknown game state")
 
@@ -80,6 +82,8 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case KeyEvent.VK_J => attackPressed = true
       case KeyEvent.VK_U => shootKeyPressed = true
       case KeyEvent.VK_C => gp.gameState = CharacterState
+      case KeyEvent.VK_M => gp.gameState = MapState
+      case KeyEvent.VK_N => if gp.miniMap.miniMapOn then gp.miniMap.miniMapOn = false else gp.miniMap.miniMapOn = true
       case KeyEvent.VK_T =>
         if(!showDebugText) then showDebugText = true else if(showDebugText) then showDebugText = false
       case KeyEvent.VK_R =>
@@ -146,6 +150,10 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
         if gp.gui.commandNum == 1 then
           gp.gameState = GameState.TitleState
           gp.restart()
+      case _ =>
+  private def handleMapState(code: Int): Unit =
+    code match
+      case KeyEvent.VK_M => gp.gameState = GameState.PlayState
       case _ =>
 
   private def handleTradeState(code : Int): Unit =

@@ -1,11 +1,10 @@
 package entities
 
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword}
+import `object`.ObjectType.{OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword}
 import game.{GamePanel, GameState}
 import utils.{Animation, Tools}
 
 import java.awt.Rectangle
-import scala.util.Random
 
 abstract class Npc(gp: GamePanel) extends Creatures(gp):
 
@@ -30,7 +29,7 @@ abstract class Npc(gp: GamePanel) extends Creatures(gp):
 //      case Direction.DOWN => Direction.UP
 //      case Direction.LEFT => Direction.RIGHT
 //      case Direction.RIGHT => Direction.LEFT
-//      case Direction.ANY => null
+//      case Direction.ANY =>
 
 end Npc
 

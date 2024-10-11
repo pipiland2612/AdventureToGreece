@@ -2,9 +2,10 @@ package game
 
 import Behavior.PathFinder
 import Enemy.Enemy
+import Environment.EnvironmentManager
 
 import java.awt.image.BufferedImage
-import Tile.TileManager
+import Tile.{TileManager, Map}
 import `object`.ObjectManager
 
 import java.awt.{Color, Dimension, Font, Graphics, Graphics2D}
@@ -18,11 +19,11 @@ import scala.collection.mutable.ListBuffer
 
 
 class GamePanel extends JPanel with Runnable:
-  //screen settings
+  // ----------------------------------------------------------------------------------------------
+  //Screen settings
   val originTileSize = 16
   val scale = 3
   val tileSize = originTileSize * scale
-//  val maxScreenColumn = 16
   val maxScreenColumn = 20
   val maxScreenRow = 12
   val screenWidth = maxScreenColumn * tileSize
@@ -33,15 +34,14 @@ class GamePanel extends JPanel with Runnable:
   val maxWorldRow = 50
   val maxMap = 2
   var currentMap = 0
-
-  // FOR FULLSCREEN
-//  val screenWidth2 = screenWidth
-//  val screenHeight2 = screenHeight
   val FPS = 60
-  //initialize
+
+  //----------------------------------------------------------------------------------------------
+  //INITIALIZATION
   var backGroundImage: BufferedImage = Tools.loadImage("Maps/backgroundImage.png")
   this.setPreferredSize(new Dimension(screenWidth, screenHeight))
   this.setBackground(Color.BLACK)
+
   // SYSTEM
   val tileManager = TileManager(this)
   val keyH = KeyHandler(this)
@@ -53,21 +53,23 @@ class GamePanel extends JPanel with Runnable:
   val eHandler: EventHandler =  EventHandler(this)
   val config: Config = Config(this)
   var pFinder: PathFinder = PathFinder(this)
+  var environmentManager = EnvironmentManager(this)
+  var miniMap: Map = new Map(this)
   var gameThread: Thread = _
 
-  //ENTITY, OBJECT
+  //ENTITY, OBJECT, NPCS< ENEMIES
   val player = Player((tileSize * 23, tileSize * 21), this)
   val obj: Array[Array[Entity]] = Array.ofDim[Entity](maxMap, 20)
   var enemyList: Array[Array[Enemy]] = Array.ofDim[Enemy](maxMap, 10)
   var npcList : Array[Array[Npc]] = Array.ofDim[Npc](maxMap, 1)
-  //  var npc
   var projectileList: ListBuffer[Projectile] = ListBuffer[Projectile]()
   var entityList: ListBuffer[Entity] = ListBuffer[Entity]()
 
   //GAME STATE
   var gameState: GameState = GameState.TitleState
 
-  // SET UP GAME
+  //----------------------------------------------------------------------------------------------
+  // SET UP METHODS
   def startGameThread(): Unit =
     gameThread = new Thread(this)
     gameThread.start()
@@ -76,6 +78,7 @@ class GamePanel extends JPanel with Runnable:
     oManager.setObject()
     oManager.setEnemy()
     oManager.setNpc()
+    environmentManager.setup()
     playMusic(0)
 
   def retry(): Unit =
@@ -89,13 +92,14 @@ class GamePanel extends JPanel with Runnable:
     player.setItems()
     setUpGame()
 
-  // Music helper methods
+  //----------------------------------------------------------------------------------------------
+  // MUSICS SOUNDS methods
   def playMusic (int : Int) = this.sound.setFile(int); this.sound.play(); this.sound.loop()
   def stopMusic (): Unit = this.sound.stop()
   def playSE (int : Int) = this.se.setFile(int); this.se.play()
 
-  // call by the game loop
-
+  // ----------------------------------------------------------------------------------------------
+  // Game Loop Update
   def update(): Unit =
     if gameState == GameState.PlayState then
       this.player.update()
@@ -116,8 +120,11 @@ class GamePanel extends JPanel with Runnable:
         if projectile != null then
           projectile.update()
 
+      environmentManager.update()
+
     else if gameState == GameState.PauseState then {}
 
+  // RENDERING METHODS
   override def paintComponent(g: Graphics): Unit =
     super.paintComponent(g)
     val g2d = g.asInstanceOf[Graphics2D]
@@ -132,6 +139,8 @@ class GamePanel extends JPanel with Runnable:
 
     if gameState == GameState.TitleState then
       gui.drawUI(g2d)
+    else if gameState == GameState.MapState then
+      miniMap.drawFullMapScreen(g2d)
     else
       //TILE
       tileManager.drawTiles(g2d)
@@ -139,8 +148,7 @@ class GamePanel extends JPanel with Runnable:
       // ADDING ENTITIES
       entityList += player
 
-      //add npc using for loop ...
-      // ADDING OBJs, enemy, projectile
+      // ADDING OBJs, enemy, projectile, NPCS
       for i <- npcList(1).indices do
         if npcList(currentMap)(i) != null then
           entityList += npcList(currentMap)(i)
@@ -156,16 +164,17 @@ class GamePanel extends JPanel with Runnable:
       for (projectile <- projectileList) do
         if projectile != null then
           entityList += projectile
-
+      // SORT LIST
       entityList = entityList.sortBy(entity => entity.getPosition._2 + entity.solidAreaDefaultY)
-
+      //DRAW
       for entity <- entityList do
         entity.draw(g2d)
-
       //EMPTY LIST
       entityList.clear()
       Tools.renderDebugInfo (g2d, player, obj, enemyList, this)
-
+      // ENVIRONMENT
+//      environmentManager.draw(g2d)
+      miniMap.drawMiniMap(g2d)
       //UI
       gui.drawUI(g2d)
 
@@ -187,6 +196,8 @@ class GamePanel extends JPanel with Runnable:
 
     g2d.dispose()
 
+  // ----------------------------------------------------------------------------------------------
+  // GAME LOOP
   override def run(): Unit =
     val drawInterval: Double = 1e9 / FPS
     var delta: Double = 0

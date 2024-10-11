@@ -63,6 +63,7 @@ class UI (var gp: GamePanel):
         drawTransitionState()
       case GameState.TradeState =>
         TradeUI.drawTradeState()
+      case GameState.MapState => 
 
   def drawMessage(): Unit =
     val messageX = tileSize / 2

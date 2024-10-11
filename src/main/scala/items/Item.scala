@@ -19,7 +19,6 @@ abstract class Item(gp : GamePanel) extends Entity(gp):
   def getDescription: String
   def use(entity: Creatures): Boolean = false
   def canOpenChest: Boolean = false
-
   
   def getDetected(user: Creatures, target: Array[Array[Entity]], name:String): Int =
     var index = -1

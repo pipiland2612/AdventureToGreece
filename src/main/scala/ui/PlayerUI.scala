@@ -80,7 +80,7 @@ object PlayerUI:
     for index <- creature.inventory.indices do
       val currentItem = creature.inventory(index)
       if currentItem == creature.currentWeapon || currentItem == creature.currentShield
-        || currentItem == creature.currentProjectile then
+        || currentItem == creature.currentProjectile || currentItem == creature.currentLight then
         g2.setColor(new Color (240, 190, 90))
         g2.fillRoundRect(slotX, slotY, tileSize, tileSize, 10, 10 )
 

@@ -1,10 +1,10 @@
 package entities
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_Fireball, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
+import `object`.ObjectType.{ OBJ_Fireball, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
 import entities.Direction.{ANY, DOWN, LEFT, RIGHT, UP}
 
 import java.awt.image.BufferedImage
 import game.{GamePanel, GameState}
-import items.{Coin, Item, Potion, Projectile, Shield, Weapon}
+import items.{Coin, Item, Light, Potion, Projectile, Shield, Weapon}
 import levels.Obstacle
 import ui.PlayerUI
 import utils.{Animation, Tools}
@@ -17,11 +17,10 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   currentShield = OBJ_NormalShield(gp)
   currentProjectile = OBJ_Fireball(gp)
 
-  setItems()
-
   state = State.IDLE
   private var counter = 0
 
+  // ----------------------------------------------------------------------------------
   // Player stats
   var name = "Warrior"
   speed = 5
@@ -42,23 +41,32 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   private var attackCooldown: Int = 0
   private val maxAttackCooldown: Int = 45
   maxInvincDuration = 60
+  var lightUpdated: Boolean = false
+  var hasCallDie = false
 
+  // Inventory
+  setItems()
+
+  // ----------------------------------------------------------------------------------
+  // Player Position and collision
   var solidAreaX = 22
-  var solidAreaY = 40
+  var solidAreaY = 37
   solidAreaDefaultX = solidAreaX
   solidAreaDefaultY = solidAreaY
-  var solidAreaWidth = (12)
-  var solidAreaHeight = (12)
+  var solidAreaWidth = (12 * 1.25).toInt
+  var solidAreaHeight = (12 * 1.25).toInt + 5
+  var solidArea = Rectangle(solidAreaX , solidAreaY , solidAreaWidth, solidAreaHeight)
 
-  var solidArea = Rectangle(solidAreaX , solidAreaY , (solidAreaWidth * 1.25).toInt, (solidAreaHeight * 1.25).toInt)
-
-  // Screen, animations stats
+  // ----------------------------------------------------------------------------------------------
+  // Screen and Rendering
   val screenX: Int = gp.screenWidth / 2 - (gp.tileSize / 2)
   val screenY: Int = gp.screenHeight / 2 - (gp.tileSize / 2)
-  private val playerScale = (gp.tileSize * 1.25).toInt
-  private var isMoving = false
-
+  val playerScale = (gp.tileSize * 1.25).toInt
   private val frameSize = 64
+  val displayedImage = Tools.loadImage("Players/player_image.png")
+
+  // ----------------------------------------------------------------------------------------------
+  // ANIMATIONS
   private val spriteFrames = Tools.loadFrames("Players/Player_spritesheet", frameSize, frameSize, playerScale, 21)
   private val attackFrames = Tools.loadFrames("Players/attack_spritesheet", frameSize, frameSize,playerScale, 4)
   var idleAnimations = Map(
@@ -102,10 +110,10 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   )
 
   needsAnimationUpdate = false
-  var hasCallDie = false
   currentAnimation = images((direction, state))
 
-  // Getter methods
+  // ----------------------------------------------------------------------------------------------
+  // GETTER methods
   def getState = this.state
   def getHealth = this.health
   override def getPosition = this.pos
@@ -118,8 +126,11 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   def getAttackDamage: Int =
     attackArea = currentWeapon.attackArea
     currentWeapon.damage * strength
+  def canShoot: Boolean = !currentProjectile.alive && shootCounter == 60 && this.currentProjectile.haveEnoughMana(this)
 
-  // Needs update animations
+  // ----------------------------------------------------------------------------------------------
+  // STATE AND ACTIONS
+
   def stop(): Unit =
     state = State.IDLE
     needsAnimationUpdate = true
@@ -161,6 +172,79 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       counter = 0
       attackCooldown = maxAttackCooldown
 
+  override def die(): Unit =
+    if !hasCallDie then
+      super.die()
+      dyingCounter += 1
+      if dyingCounter > 120 then
+        gp.gui.isFinished = true
+      hasCallDie = true
+
+  def reset(): Unit =
+    this.pos = (gp.tileSize * 23, gp.tileSize * 21)
+    health = maxHealth
+    mana = maxMana
+    this.level = 1
+
+  // ----------------------------------------------------------------------------------------------
+  // Input and Movement Handling
+
+  private def handleInput(): Unit =
+    if (gp.keyH.attackPressed && attackCooldown == 0) then
+      attack()
+    else if Seq(gp.keyH.upPressed, gp.keyH.downPressed, gp.keyH.leftPressed, gp.keyH.rightPressed, gp.keyH.enterPressed).exists(identity) then
+      handleMovementInput()
+      gp.keyH.attackPressed = false
+      gp.keyH.enterPressed = false
+    else
+      handleIdleState()
+    if gp.keyH.shootKeyPressed && canShoot then shootProjectile()
+
+  private def handleMovementInput(): Unit =
+    updateDirection()
+    checkAnimationUpdate()
+    performCollisionsAndEvents()
+    if !isCollided then
+      continueMove()
+    else
+        currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
+
+  private def handleIdleState(): Unit =
+    if state != State.IDLE then
+      state = State.IDLE
+      needsAnimationUpdate = true
+
+  private def updateDirection(): Unit =
+    if (gp.keyH.upPressed) then
+      this.direction = Direction.UP
+    else if (gp.keyH.downPressed) then
+      this.direction = Direction.DOWN
+    else if (gp.keyH.leftPressed) then
+      this.direction = Direction.LEFT
+    else if (gp.keyH.rightPressed) then
+      this.direction = Direction.RIGHT
+
+  // ----------------------------------------------------------------------------------------------
+  // Collision and Event Handling
+  private def performCollisionsAndEvents(): Unit =
+      isCollided = false
+      // CHECK TILE
+      gp.cCheck.checkTileCollision(this)
+      // CHECK OBJECT
+      val objectIndex = gp.cCheck.checkObjectCollision(this, true)
+      pickUpObject(objectIndex)
+      // CHECK NPC
+      val npcIndex = gp.cCheck.checkCollisionWithTargets(this, gp.npcList)
+      interactNPC(npcIndex)
+      // CHECK EVENT
+      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+//      if enemyIndex != -1 then
+//        println(enemyIndex)
+//        gp.enemyList(enemyIndex).attackPlayer(gp.enemyList(enemyIndex).attackPower)
+      gp.eHandler.checkEvent()
+
+  // ----------------------------------------------------------------------------------------------
+  // Inventory and Items
 
   def setItems(): Unit =
     this.inventory.clear()
@@ -174,63 +258,70 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     val itemIndex = PlayerUI.getItemIndexBySlot(PlayerUI.playerSlotCol, PlayerUI.playerSlotRow)
     if itemIndex < this.inventory.size then
       val selectedItem = this.inventory(itemIndex)
-      selectedItem match
-        case weapon: Weapon =>
-          currentWeapon = weapon
-          attackDamage = getAttackDamage
-        case shield: Shield =>
-          currentShield = shield
-          defense = getDefense
-        case coin: Coin =>
-          coin.pickupCoin(this)
-          inventory.remove(itemIndex)
-        case potion: Potion =>
-          if potion.use(this) then
-            if potion.amount > 1 then potion.amount -= 1 else inventory.remove(itemIndex)
-          else
-            inventory.remove(itemIndex)
-        case item: Item =>
-          if item.use(this) then
-            inventory.remove(itemIndex)
+      handleSelectedItem(selectedItem, itemIndex)
 
-  def searchItemInInventory(itemName: String): Int =
-    var itemIndex = -1
-    for i <- inventory.indices do
-      if inventory(i).name.equals(itemName) then
-        itemIndex = i
+  private def handleSelectedItem(item: Item, itemIndex: Int): Unit = item match
+    case weapon: Weapon =>
+      currentWeapon = weapon
+      attackDamage = getAttackDamage
+    case shield: Shield =>
+      currentShield = shield
+      defense = getDefense
+    case coin: Coin =>
+      coin.pickupCoin(this)
+      inventory.remove(itemIndex)
+    case potion: Potion =>
+      if potion.use(this) then
+        if potion.amount > 1 then potion.amount -= 1 else inventory.remove(itemIndex)
+      else
+        inventory.remove(itemIndex)
+    case light: Light =>
+      if currentLight == light then
+        currentLight = null
+      else
+        currentLight = light
+      lightUpdated = true
+    case item: Item =>
+      if item.use(this) then
+        inventory.remove(itemIndex)
 
-    itemIndex
+  def searchItemInInventory(itemName: String): Int = inventory.indexWhere(_.name.equals(itemName))
 
   def obtainItem(item: Item): Boolean =
-    var canObtain : Boolean = false
-    if item.isStackable then
-      val index = searchItemInInventory(item.name)
+    if item.isStackable then handleStackableItem(item)
+    else handleNewItem(item)
 
-      if index != -1 then
-        inventory(index).amount += 1
-        canObtain = true
-      else // New ITEM
-        if inventory.size != maxInventorySize then
-          inventory += item
-          canObtain = true
-    else // New ITEM
-        if inventory.size != maxInventorySize then
-          inventory += item
-          canObtain = true
-    canObtain
+  private def handleStackableItem(item: Item): Boolean =
+    val index = searchItemInInventory(item.name)
+    if index != -1 then
+      inventory(index).amount += 1
+      true
+    else handleNewItem(item)
 
-  override def die(): Unit =
-    if !hasCallDie then
-      super.die()
-      dyingCounter += 1
-      if dyingCounter > 120 then
-        gp.gui.isFinished = true
-      hasCallDie = true
+  private def handleNewItem(item: Item): Boolean =
+    if inventory.size != maxInventorySize then
+      inventory += item
+      true
+    else
+      false
 
-  // -----------------------------------------------
+  // ----------------------------------------------------------------------------------------------
   // Rendering methods
 
-  // call by the game loop
+  override def draw(g: Graphics2D): Unit =
+    if isInvinc then
+      g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f))
+    if isDead then if !hasCallDie then die()
+    currentAnimation.getCurrentFrame match
+      case frame =>
+          g.drawImage(frame,
+            (this.screenX),
+            (this.screenY),
+            null)
+    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f))
+
+  // ----------------------------------------------------------------------------------------------
+  // GAME LOOP UPDATE
   override def update(): Unit =
     handleInvincibility()
     handleGameOver()
@@ -244,20 +335,25 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     if shootCounter < 60 then
       shootCounter += 1
 
-  override def draw(g: Graphics2D): Unit =
-    if isInvinc then
-      g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f))
-    if isDead then if !hasCallDie then die()
-    currentAnimation.getCurrentFrame match
-      case frame =>
-          g.drawImage(frame,
-            (this.screenX),
-            (this.screenY),
-            null)
-    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f))
-  // ------------------------------
+  private def handleAttackState(): Unit =
+    counter += 1
+    if (counter >= 30) then
+      counter = 0
+      state = State.IDLE
+    needsAnimationUpdate = true
+    checkAnimationUpdate()
 
-  // Helper methods. To call in update
+  private def handleGameOver(): Unit =
+    if isDead then
+      gp.gameState = GameState.GameOver
+      gp.gui.commandNum = -1
+
+  private def shootProjectile(): Unit =
+    currentProjectile.set(this.pos, this.direction, true, this)
+    currentProjectile.useMana(this)
+    gp.projectileList += currentProjectile
+    shootCounter = 0
+
   def pickUpObject(index : Int): Unit =
     if(index != -1) then
       var text: String = ""
@@ -315,86 +411,3 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       gp.gameState = GameState.DialogueState
       gp.gui.currentDialogue = "You are at level " + level + " now!"
 
-// Helper function to handle movements, direction
-  private def updateDirection(): Unit =
-    if (gp.keyH.upPressed) then
-      this.direction = Direction.UP
-    else if (gp.keyH.downPressed) then
-      this.direction = Direction.DOWN
-    else if (gp.keyH.leftPressed) then
-      this.direction = Direction.LEFT
-    else if (gp.keyH.rightPressed) then
-      this.direction = Direction.RIGHT
-
-  private def handleAttackState(): Unit =
-    counter += 1
-    if (counter >= 30) then
-      counter = 0
-      state = State.IDLE
-    needsAnimationUpdate = true
-    checkAnimationUpdate()
-
-  private def handleInput(): Unit =
-
-    if (gp.keyH.attackPressed && attackCooldown == 0) then
-      attack()
-    else if gp.keyH.upPressed || gp.keyH.downPressed || gp.keyH.leftPressed || gp.keyH.rightPressed || gp.keyH.enterPressed then
-      updateDirection()
-      checkAnimationUpdate()
-
-      isCollided = false
-
-      // CHECK TILE
-      gp.cCheck.checkTileCollision(this)
-
-      // CHECK OBJECT
-      val objectIndex = gp.cCheck.checkObjectCollision(this, true)
-      pickUpObject(objectIndex)
-
-      val npcIndex = gp.cCheck.checkCollisionWithTargets(this, gp.npcList)
-      interactNPC(npcIndex)
-
-      // CHECK EVENT
-      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
-//      if enemyIndex != -1 then
-//        println(enemyIndex)
-//        gp.enemyList(enemyIndex).attackPlayer(gp.enemyList(enemyIndex).attackPower)
-
-      gp.eHandler.checkEvent()
-
-      if !isCollided then
-        direction match
-          case Direction.UP => this.move(0, -this.speed); isMoving = true
-          case Direction.DOWN => this.move(0, this.speed); isMoving = true
-          case Direction.LEFT => this.move(-this.speed, 0); isMoving = true
-          case Direction.RIGHT => this.move(this.speed, 0); isMoving = true
-          case Direction.ANY =>
-      else
-        currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
-      gp.keyH.attackPressed = false
-      gp.keyH.enterPressed = false
-    else
-      if state != State.IDLE then
-        state = State.IDLE
-        isMoving = false
-        needsAnimationUpdate = true
-
-    if gp.keyH.shootKeyPressed && !currentProjectile.alive
-        && shootCounter == 60 && this.currentProjectile.haveEnoughMana(this) then
-      currentProjectile.set(this.pos, this.direction, true, this)
-      currentProjectile.useMana(this)
-
-      gp.projectileList += currentProjectile
-
-      shootCounter = 0
-
-  private def handleGameOver(): Unit =
-    if isDead then
-      gp.gameState = GameState.GameOver
-      gp.gui.commandNum = -1
-
-  def reset(): Unit =
-    this.pos = (gp.tileSize * 23, gp.tileSize * 21)
-    health = maxHealth
-    mana = maxMana
-    this.level = 1

@@ -21,18 +21,17 @@ class EN_Necromancer(gp : GamePanel, var pos: (Int, Int)) extends Enemy(gp) :
   var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp))
 
   // world stats
-  var solidAreaWidth = (9)
-  var solidAreaHeight = (12)
+  var solidAreaWidth = 9 * 2
+  var solidAreaHeight = 12 * 2
   var solidAreaX = 65
-  
   var solidAreaY = 100
   solidAreaDefaultX = solidAreaX
   solidAreaDefaultY = solidAreaY
-  var solidArea = Rectangle(solidAreaX , solidAreaY, (solidAreaWidth * 2), (solidAreaHeight * 2))
+  var solidArea = Rectangle(solidAreaX , solidAreaY, solidAreaWidth , solidAreaHeight)
 
-  areaDefaultX = 70
+  areaDefaultX = 65
   areaDefaultY = 55
-  areaHitBox = Rectangle(70 , 55, (solidAreaWidth * 2), (solidAreaHeight * 6))
+  areaHitBox = Rectangle(70 , 55, solidAreaWidth, solidAreaHeight * 3)
 
   private val frameSize = 64
   private val walkSpriteFrames = Tools.loadFrames("Enemy/Necromancer/Necromancer_walk", frameSize, frameSize, gp.tileSize * 3, 1)
@@ -61,6 +60,4 @@ class EN_Necromancer(gp : GamePanel, var pos: (Int, Int)) extends Enemy(gp) :
 
   currentAnimation = idleAnimations(this.direction)
 
-  def attackPlayer(player: Player): Unit = {}
-  def moveTowardsPlayer(player: Player): Unit = {}
 
