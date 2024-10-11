@@ -1,6 +1,6 @@
 package Enemy
 
-import `object`.{OBJ_BronzeCoin, OBJ_NormalHealFlask}
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_NormalHealFlask}
 import entities.State.IDLE
 import entities.{Creatures, Player, State}
 import game.GamePanel
@@ -36,7 +36,7 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   def moveTowardsPlayer(player: Player): Unit
   def damageReaction(): Unit =
     counter = 0
-//    direction = gp.player.direction
+    isOnPath = true
 
   def dropItem (item: Item): Unit =
     for index <- gp.obj(1).indices do
@@ -72,32 +72,37 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
 
   // Call by the game loop
   override def update(): Unit =
-      if (!hasSpawn) then
-        spawn()
-        return
+    if (!hasSpawn) then
+      spawn()
+      return
 
-      if (isDead) then
-        die()
-        return
+    if (isDead) then
+      die()
+      return
 
-      if (isAlive) then
-        performAliveActions()
+    if (isAlive) then
+      performAliveActions()
 
-      continueMove()
+    continueMove()
 
   override def setAction(): Unit =
-    counter += 1
-    if counter >= 120 then
-      val random = new Random()
-      this.direction = directions(random.nextInt(directions.length))
-      currentAnimation = runAnimations(this.direction)
-      counter = 0
+    if isOnPath then
+      var goalCol = ( gp.player.pos._1 + gp.player.solidArea.x )/ gp.tileSize
+      var goalRow = ( gp.player.pos._2 + gp.player.solidArea.y )/ gp.tileSize
+      findPath(goalRow, goalCol)
+    else
+      counter += 1
+      if counter >= 120 then
+        val random = new Random()
+        this.direction = directions(random.nextInt(directions.length))
+        currentAnimation = runAnimations(this.direction)
+        counter = 0
 
   //    var i = new Random().nextInt(100) + 1
   //    if i == 100 && !projective.alive && shotCounter == 60 then
   //      this.projectile.set (this.pos, direction, true, this)
   //      gp.projectile += this.projectile
-  //          shotCounter = 0to
+  //          shotCounter = 0
 
   override def draw(g: Graphics2D): Unit =
     val (screenX, screenY) = calculateScreenCoordinates()
@@ -141,6 +146,14 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
 
     // Update animations
     checkAnimationUpdate()
+
+    val xDistance = Math.abs(this.pos._1 - gp.player.pos._1)
+    val yDistance = Math.abs(this.pos._2 - gp.player.pos._2)
+    val tileDistance = (xDistance + yDistance) / gp.tileSize
+    if !isOnPath && tileDistance < 5 then
+      val i = new Random().nextInt(100)+ 1
+      if i >= 50 then
+        isOnPath = true
 
   private def handlePlayerCollision(): Unit =
     val hasTouchedPlayer = gp.cCheck.checkPlayer(this)

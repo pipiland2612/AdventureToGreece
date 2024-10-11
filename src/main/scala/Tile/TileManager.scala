@@ -2,12 +2,13 @@ package Tile
 
 import game.GamePanel
 
-import java.awt.Graphics2D
+import java.awt.{Color, Graphics2D}
 import java.io.{BufferedReader, File, InputStreamReader}
 import utils.Tools
 
 class TileManager(var gp: GamePanel) :
   var tile: Array[Tile] = new Array[Tile](20)
+  var drawPath: Boolean = true
 
   var mapTileNum: Array[Array[Array[Int]]] = Array.ofDim[Int](gp.maxMap, gp.maxWorldRow, gp.maxWorldCol)
   def loadMap(path: String, mapIndex: Int) =
@@ -85,6 +86,14 @@ class TileManager(var gp: GamePanel) :
       ) then
         g.drawImage(tile(tileNum).image, screenTileX, screenTileY, null)
 
+    if drawPath then
+      g.setColor(new Color (255, 0, 0, 70))
+      for i <- gp.pFinder.pathList.indices do
+        val worldX = gp.pFinder.pathList(i).col * tileSize
+        val worldY = gp.pFinder.pathList(i).row * tileSize
+        val screenTileX = worldX - playerX + screenX
+        val screenTileY = worldY - playerY + screenY
+        g.fillRect(screenTileX, screenTileY, tileSize, tileSize)
 
 end TileManager
 

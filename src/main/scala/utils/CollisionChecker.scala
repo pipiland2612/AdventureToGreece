@@ -28,8 +28,8 @@ class CollisionChecker (var gp: GamePanel) :
       if gp.obj(gp.currentMap)(i) != null then
         val currentObj =  gp.obj(gp.currentMap)(i)
         Tools.updateSolidArea(entity)
-        currentObj.solidArea.x = currentObj.pos._1 + currentObj.solidAreaDefaultX
-        currentObj.solidArea.y = currentObj.pos._2 + currentObj.solidAreaDefaultY
+        currentObj.solidArea.x = currentObj.pos._1 + currentObj.solidArea.x
+        currentObj.solidArea.y = currentObj.pos._2 + currentObj.solidArea.y
 
         adjustSolidArea(entity)
         if (entity.solidArea.intersects(currentObj.solidArea)) then

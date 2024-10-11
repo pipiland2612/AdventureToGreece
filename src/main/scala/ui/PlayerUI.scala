@@ -85,6 +85,19 @@ object PlayerUI:
         g2.fillRoundRect(slotX, slotY, tileSize, tileSize, 10, 10 )
 
       g2.drawImage(currentItem.imageDisplayed, slotX + 5, slotY + 5, null)
+
+      // DISPLAY AMOUBNT
+      if creature == gp.player && currentItem.amount > 1 then
+        g2.setFont(g2.getFont.deriveFont(20f))
+        val string = s"${currentItem.amount}"
+        val amountX = Tools.getRightX(g2, string, slotX + 44)
+        val amountY =  slotY + tileSize
+        // SHADOW
+        g2.setColor(new Color(60, 60, 60))
+        g2.drawString(string, amountX, amountY)
+        g2.setColor(Color.WHITE)
+        g2.drawString(string, amountX - 3, amountY - 3)
+
       slotX += slotSize
       if index % 5 == 4 then
         slotX = slotXstart

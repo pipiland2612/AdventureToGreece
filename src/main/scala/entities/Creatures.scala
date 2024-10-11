@@ -1,6 +1,5 @@
 package entities
 
-import Enemy.Enemy
 import entities.Direction.ANY
 import game.GamePanel
 import items.{Item, Projectile, Shield, Weapon}
@@ -25,6 +24,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var maxMana: Int = 0
   var mana: Int = 0
 
+  var isOnPath: Boolean = false
   var isInvinc : Boolean = false
   var invincibleDuration = 0
   var maxInvincDuration: Int = 0
@@ -65,6 +65,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         (Direction.RIGHT, State.DEAD) -> deadAnimations(Direction.RIGHT),
       )
     else null
+
 
   def takeDamage(amount: Int): Unit =
     this.health -= amount
@@ -117,6 +118,13 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
   def update(): Unit =
     setAction()
+    checkCollision()
+
+    checkAnimationUpdate()
+    continueMove()
+//    if isOnPath
+
+  private def checkCollision(): Unit =
     isCollided = false
     gp.cCheck.checkTileCollision(this)
     gp.cCheck.checkObjectCollision(this, false)
@@ -124,7 +132,55 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
     gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
     val hasTouchedPlayer = gp.cCheck.checkPlayer(this)
 
-    checkAnimationUpdate()
-    continueMove()
+  def findPath(goalRow: Int, goalCol: Int): Unit =
+    val startCol = (this.pos._1 + this.solidArea.x) / gp.tileSize
+    val startRow = (this.pos._2 + this.solidArea.y) / gp.tileSize
+
+    gp.pFinder.setNodes(startRow, startCol, goalRow, goalCol)
+
+    val hasFoundPath = gp.pFinder.search()
+    if hasFoundPath then
+      val (nextX, nextY) = (gp.pFinder.pathList.head.col * gp.tileSize, gp.pFinder.pathList.head.row * gp.tileSize)
+      val enLeftX = this.pos._1 + solidArea.x
+      val enRightX = this.pos._1 + solidArea.x + solidArea.width
+      val enTopY = this.pos._2 + solidArea.y
+      val enBottomY = this.pos._2 + solidArea.y + solidArea.height
+
+      // BASE on position, find the relative nodes
+      if enTopY > nextY && enLeftX >= nextX && enRightX < nextX + gp.tileSize then
+        direction = Direction.UP
+      else if enTopY < nextY && enLeftX >= nextX && enRightX < nextX + gp.tileSize then
+        direction = Direction.DOWN
+      else if enTopY >= nextY && enBottomY < nextY + gp.tileSize then
+        if enLeftX > nextX then
+          direction = Direction.LEFT
+        if enLeftX < nextX then
+          direction = Direction.RIGHT
+      else if enTopY > nextY && enLeftX > nextX then
+        direction = Direction.UP
+        checkCollision()
+        if collision then
+          direction = Direction.LEFT
+      else if enTopY > nextY && enLeftX < nextX then
+        direction = Direction.UP
+        checkCollision()
+        if collision then
+          direction = Direction.RIGHT
+      else if enTopY < nextY && enLeftX > nextX then
+        direction = Direction.DOWN
+        checkCollision()
+        if collision then
+          direction = Direction.LEFT
+      else if enTopY < nextY && enLeftX < nextX then
+        direction = Direction.DOWN
+        checkCollision()
+        if collision then
+          direction = Direction.RIGHT
+
+      // STOP WHEN REACH GOALS
+      val nextRow = gp.pFinder.pathList.head.row
+      val nextCol = gp.pFinder.pathList.head.col
+      if nextCol == goalCol && nextRow == goalRow then
+        isOnPath = false
 
   override def draw(g: Graphics2D): Unit = super.draw(g)

@@ -15,10 +15,11 @@ abstract class Potion (var effect: Int, gp: GamePanel) extends Item (gp):
 
   def applyEffect(effect: Int, creature: Creatures): Unit
 
-  def usePotion(creature: Creatures): Unit =
+  override def use(creature: Creatures): Boolean =
     gp.gameState = DialogueState
     gp.gui.currentDialogue = s"You drink the $name! \nYou got ${effectName}ed!"
     applyEffect(effect, creature)
+    true
 
 end Potion
 

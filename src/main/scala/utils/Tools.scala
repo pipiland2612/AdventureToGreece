@@ -13,21 +13,21 @@ import javax.imageio.ImageIO
 object Tools:
   // Images helper methods
   def flipImageHorizontally(image: BufferedImage): BufferedImage =
-    val flippedImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType)
+    val flippedImage = new BufferedImage(image.getWidth, image.getHeight, image.getType)
     val g2d: Graphics2D = flippedImage.createGraphics()
   
     val at = AffineTransform.getScaleInstance(-1, 1)
-    at.translate(-image.getWidth(), 0)
+    at.translate(-image.getWidth, 0)
     g2d.drawImage(image, at, null)
 
     g2d.dispose()
     flippedImage
 
   def flipImageVertically(image: BufferedImage): BufferedImage =
-    val flippedImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType)
+    val flippedImage = new BufferedImage(image.getWidth, image.getHeight, image.getType)
     val g2d: Graphics2D = flippedImage.createGraphics()
     val at = AffineTransform.getScaleInstance(1, -1)
-    at.translate(0, -image.getHeight())
+    at.translate(0, -image.getHeight)
     g2d.drawImage(image, at, null)
 
     g2d.dispose()
@@ -66,13 +66,13 @@ object Tools:
 
   def updateSolidArea(entity: Entity): Unit =
     val (x,y) = entity.getPosition
-    entity.solidArea.x = x + entity.solidAreaDefaultX
-    entity.solidArea.y = y + entity.solidAreaDefaultY 
+    entity.solidArea.x = x + entity.solidArea.x
+    entity.solidArea.y = y + entity.solidArea.y
     
   def updateAreaHitBox(creatures: Creatures): Unit =
     val (x,y) = creatures.getPosition
-    creatures.areaHitBox.x = x + creatures.areaDefaultX
-    creatures.areaHitBox.y = y + creatures.areaDefaultY
+    creatures.areaHitBox.x = x + creatures.areaHitBox.x
+    creatures.areaHitBox.y = y + creatures.areaHitBox.y
   
   def resetAreaHitBox(creatures: Creatures): Unit =
     creatures.areaHitBox.x = creatures.areaDefaultX

@@ -1,11 +1,11 @@
 package entities
 
-import `object`.{OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword}
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword}
 import game.{GamePanel, GameState}
-import items.Item
 import utils.{Animation, Tools}
 
 import java.awt.Rectangle
+import scala.util.Random
 
 abstract class Npc(gp: GamePanel) extends Creatures(gp):
 
@@ -17,24 +17,27 @@ abstract class Npc(gp: GamePanel) extends Creatures(gp):
   var dialogues = new Array[String](20)
   var dialogueIndex = 0
 
+  var counter = 0
+
   def speak (): Unit =
     if dialogues(dialogueIndex) == null then
       dialogueIndex = 0
     gp.gui.currentDialogue = dialogues(dialogueIndex)
     dialogueIndex += 1
 
-    this.direction = this.direction match
-      case Direction.UP => Direction.DOWN
-      case Direction.DOWN => Direction.UP
-      case Direction.LEFT => Direction.RIGHT
-      case Direction.RIGHT => Direction.LEFT
-      case Direction.ANY => null
+//    this.direction = this.direction match
+//      case Direction.UP => Direction.DOWN
+//      case Direction.DOWN => Direction.UP
+//      case Direction.LEFT => Direction.RIGHT
+//      case Direction.RIGHT => Direction.LEFT
+//      case Direction.ANY => null
 
 end Npc
 
 
 class Merchant(gp : GamePanel, var pos: (Int, Int)) extends Npc(gp):
   var name = "Merchant"
+  speed = 2
 
   solidAreaDefaultX = 10
   solidAreaDefaultY = 22
@@ -67,7 +70,6 @@ class Merchant(gp : GamePanel, var pos: (Int, Int)) extends Npc(gp):
     super.speak()
     gp.gameState = GameState.TradeState
     gp.gui.merchant = this
-
 
 end Merchant
 

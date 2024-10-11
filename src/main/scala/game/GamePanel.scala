@@ -1,5 +1,6 @@
 package game
 
+import Behavior.PathFinder
 import Enemy.Enemy
 
 import java.awt.image.BufferedImage
@@ -51,6 +52,7 @@ class GamePanel extends JPanel with Runnable:
   val gui: UI = UI(this)
   val eHandler: EventHandler =  EventHandler(this)
   val config: Config = Config(this)
+  var pFinder: PathFinder = PathFinder(this)
   var gameThread: Thread = _
 
   //ENTITY, OBJECT

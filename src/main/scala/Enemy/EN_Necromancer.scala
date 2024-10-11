@@ -1,6 +1,6 @@
 package Enemy
 
-import `object`.OBJ_BronzeCoin
+import `object`.ObjectType.OBJ_BronzeCoin
 import entities.{Direction, Player, State}
 import game.GamePanel
 import items.Item
@@ -21,13 +21,14 @@ class EN_Necromancer(gp : GamePanel, var pos: (Int, Int)) extends Enemy(gp) :
   var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp))
 
   // world stats
-  var solidAreaX = 70
+  var solidAreaWidth = (9)
+  var solidAreaHeight = (12)
+  var solidAreaX = 65
+  
   var solidAreaY = 100
   solidAreaDefaultX = solidAreaX
   solidAreaDefaultY = solidAreaY
-  var solidAreaWidth = (12)
-  var solidAreaHeight = (12)
-  var solidArea = Rectangle(solidAreaX + gp.tileSize * 10 , solidAreaY + gp.tileSize * 15, (solidAreaWidth * 2), (solidAreaHeight * 2))
+  var solidArea = Rectangle(solidAreaX , solidAreaY, (solidAreaWidth * 2), (solidAreaHeight * 2))
 
   areaDefaultX = 70
   areaDefaultY = 55

@@ -1,15 +1,15 @@
 package entities
-import `object`.{OBJ_Fireball, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword}
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_Fireball, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
 import entities.Direction.{ANY, DOWN, LEFT, RIGHT, UP}
 
 import java.awt.image.BufferedImage
 import game.{GamePanel, GameState}
 import items.{Coin, Item, Potion, Projectile, Shield, Weapon}
+import levels.Obstacle
 import ui.PlayerUI
 import utils.{Animation, Tools}
 
 import java.awt.{AlphaComposite, Graphics2D, Rectangle}
-import scala.collection.mutable.ListBuffer
 
 class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   direction = Direction.RIGHT
@@ -149,7 +149,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       // attackAreaBecome solid Area
       solidArea.width = attackArea.width
       solidArea.height = attackArea.height
-      var enemyIndex = gp.cCheck.checkCollisionWithTargetsHitBox(this, gp.enemyList)
+      val enemyIndex = gp.cCheck.checkCollisionWithTargetsHitBox(this, gp.enemyList)
       attackEnemy(enemyIndex, attackDamage)
 
       this.pos = (currentWorldX, currentWorldy)
@@ -168,6 +168,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     this.inventory += currentShield
     this.inventory += currentProjectile
     this.inventory += OBJ_NormalHealFlask(gp)
+    this.inventory += OBJ_SilverKey(gp)
 
   def selectItem(): Unit =
     val itemIndex = PlayerUI.getItemIndexBySlot(PlayerUI.playerSlotCol, PlayerUI.playerSlotRow)
@@ -180,9 +181,43 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         case shield: Shield =>
           currentShield = shield
           defense = getDefense
-        case potion: Potion =>
-          potion.usePotion(this)
+        case coin: Coin =>
+          coin.pickupCoin(this)
           inventory.remove(itemIndex)
+        case potion: Potion =>
+          if potion.use(this) then
+            if potion.amount > 1 then potion.amount -= 1 else inventory.remove(itemIndex)
+          else
+            inventory.remove(itemIndex)
+        case item: Item =>
+          if item.use(this) then
+            inventory.remove(itemIndex)
+
+  def searchItemInInventory(itemName: String): Int =
+    var itemIndex = -1
+    for i <- inventory.indices do
+      if inventory(i).name.equals(itemName) then
+        itemIndex = i
+
+    itemIndex
+
+  def obtainItem(item: Item): Boolean =
+    var canObtain : Boolean = false
+    if item.isStackable then
+      val index = searchItemInInventory(item.name)
+
+      if index != -1 then
+        inventory(index).amount += 1
+        canObtain = true
+      else // New ITEM
+        if inventory.size != maxInventorySize then
+          inventory += item
+          canObtain = true
+    else // New ITEM
+        if inventory.size != maxInventorySize then
+          inventory += item
+          canObtain = true
+    canObtain
 
   override def die(): Unit =
     if !hasCallDie then
@@ -227,17 +262,18 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     if(index != -1) then
       var text: String = ""
       val obj = gp.obj(gp.currentMap)(index)
-
       obj match
         case coin: Coin =>
           coin.pickupCoin(this)
           gp.obj(gp.currentMap)(index) = null
         case item: Item =>
-          if inventory.size < maxInventorySize then
-            inventory += item
+          if obtainItem(item) then
             gp.obj(gp.currentMap)(index) = null
             text = s"Picked up: ${item.name}"
           else text = "Your inventory is full"
+        case obstacle :Obstacle =>
+          if gp.keyH.enterPressed then
+            obstacle.interact()
         case _ =>
       gp.gui.addMessage(text)
 
@@ -250,11 +286,12 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
   def attackEnemy(enemyIndex: Int, damageDealt: Int): Unit =
     if enemyIndex != -1 then
-      var currentEnemy = gp.enemyList(gp.currentMap)(enemyIndex)
+      val currentEnemy = gp.enemyList(gp.currentMap)(enemyIndex)
       if !currentEnemy.isInvinc then
         var damage = damageDealt - currentEnemy.defense
         if damage < 0 then damage = 0
         currentEnemy.takeDamage(damage)
+        currentEnemy.damageReaction()
         gp.gui.addMessage(damage + " damage!")
         currentEnemy.isInvinc = true
 
@@ -346,7 +383,9 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         && shootCounter == 60 && this.currentProjectile.haveEnoughMana(this) then
       currentProjectile.set(this.pos, this.direction, true, this)
       currentProjectile.useMana(this)
-      gp.projectileList += this.currentProjectile
+
+      gp.projectileList += currentProjectile
+
       shootCounter = 0
 
   private def handleGameOver(): Unit =

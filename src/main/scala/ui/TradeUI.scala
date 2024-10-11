@@ -1,7 +1,7 @@
 package ui
 
 import game.{GamePanel, GameState}
-import ui.PlayerUI.{g2, gp, tileSize}
+import ui.PlayerUI.tileSize
 import utils.Tools
 
 import java.awt.Graphics2D
@@ -9,8 +9,6 @@ import java.awt.Graphics2D
 object TradeUI:
   var g2: Graphics2D = _
   var gp: GamePanel = _
-
-
   def setGraphics(g: Graphics2D, gamePanel: GamePanel): Unit =
     g2 = g
     gp = gamePanel
@@ -77,13 +75,13 @@ object TradeUI:
           gp.gameState = GameState.DialogueState
           gp.gui.currentDialogue = "You do not have enough coin"
           gp.gui.drawDialogueScreen()
-        else if gp.player.inventory.size == gp.player.maxInventorySize then
-          gp.gui.subState = 0
-          gp.gameState = GameState.DialogueState
-          gp.gui.currentDialogue = "You do not have neough spaces"
         else
-          gp.player.coin -= price
-          gp.player.inventory += gp.gui.merchant.inventory(itemIndex)
+          if gp.player.obtainItem(gp.gui.merchant.inventory(itemIndex)) then
+            gp.player.coin -= price
+          else
+            gp.gui.subState = 0
+            gp.gui.currentDialogue = "You do not have enought spaces"
+
 
     x = gp.screenWidth - tileSize * 7
     y = tileSize * 9
@@ -121,5 +119,8 @@ object TradeUI:
           gp.gameState = GameState.DialogueState
           gp.gui.currentDialogue = "You can not sell an equipped item"
         else
-          gp.player.inventory.remove(itemIndex)
+          if gp.player.inventory(itemIndex).amount > 1 then
+            gp.player.inventory(itemIndex).amount -= 1
+          else
+            gp.player.inventory.remove(itemIndex)
           gp.player.coin += price

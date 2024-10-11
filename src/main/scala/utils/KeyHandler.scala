@@ -169,32 +169,32 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
 
   def playerInventory (code : Int): Unit =
     code match
-      case KeyEvent.VK_UP =>
+      case KeyEvent.VK_W =>
         if PlayerUI.playerSlotRow != 0 then
           PlayerUI.playerSlotRow -= 1
-      case KeyEvent.VK_DOWN =>
+      case KeyEvent.VK_S =>
         if PlayerUI.playerSlotRow != 3 then
           PlayerUI.playerSlotRow += 1
-      case KeyEvent.VK_LEFT =>
+      case KeyEvent.VK_A =>
         if PlayerUI.playerSlotCol != 0 then
           PlayerUI.playerSlotCol -= 1
-      case KeyEvent.VK_RIGHT =>
+      case KeyEvent.VK_D =>
         if PlayerUI.playerSlotCol != 4 then
           PlayerUI.playerSlotCol += 1
       case _ =>
 
   def npcInventory (code : Int): Unit =
     code match
-      case KeyEvent.VK_UP =>
+      case KeyEvent.VK_W =>
         if PlayerUI.npcSlotRow != 0 then
           PlayerUI.npcSlotRow -= 1
-      case KeyEvent.VK_DOWN =>
+      case KeyEvent.VK_S =>
         if PlayerUI.npcSlotRow != 3 then
           PlayerUI.npcSlotRow += 1
-      case KeyEvent.VK_LEFT =>
+      case KeyEvent.VK_A =>
         if PlayerUI.npcSlotCol != 0 then
           PlayerUI.npcSlotCol -= 1
-      case KeyEvent.VK_RIGHT =>
+      case KeyEvent.VK_D =>
         if PlayerUI.npcSlotCol != 4 then
           PlayerUI.npcSlotCol += 1
       case _ =>

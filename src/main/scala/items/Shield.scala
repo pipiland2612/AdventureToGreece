@@ -1,6 +1,4 @@
 package items
-
-import entities.Entity
 import game.GamePanel
 
 import java.awt.Rectangle

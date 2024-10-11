@@ -13,6 +13,7 @@ abstract class Coin (var value : Int, gp: GamePanel) extends Item(gp):
     gp.gui.addMessage(s"$name has value $value")
     gp.player.coin += value
 
+
   def getDescription: String = s"Coin $name \nhas $value value!"
 end Coin
 

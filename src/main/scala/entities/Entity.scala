@@ -5,6 +5,7 @@ import utils.Animation
 import java.awt.Rectangle
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
+import java.lang.annotation.Target
 
 abstract class Entity(var gp: GamePanel) :
 
@@ -24,7 +25,14 @@ abstract class Entity(var gp: GamePanel) :
 
   var attackArea: Rectangle = new Rectangle(0, 0, 0, 0)
   def getPosition: (Int, Int) = this.pos
-  
+  def getLeftX: Int = this.pos._1 + this.solidArea.x
+  def getRightX: Int = this.pos._1 + this.solidArea.x + this.solidArea.width
+  def getTopY: Int = this.pos._2 + this.solidArea.y
+  def getBottomY: Int = this.pos._2 + this.solidArea.y + solidArea.height
+
+  def getCol = (this.pos._1 + this.solidArea.x) / gp.tileSize
+  def getRow = (this.pos._2 + this.solidArea.y) / gp.tileSize
+
   protected def calculateScreenCoordinates(): (Int, Int) =
     val screenX = gp.player.screenX
     val screenY = gp.player.screenY
