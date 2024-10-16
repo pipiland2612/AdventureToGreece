@@ -127,6 +127,7 @@ object GameMenuUI:
         gp.gui.subState = 0
         gp.gui.commandNum = 0
         gp.gameState = GameState.TitleState
+        gp.resetGame(true)
 
     val text2 = "No"
     textX = frameX + tileSize * 4 - 20

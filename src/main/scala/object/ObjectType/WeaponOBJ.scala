@@ -28,7 +28,7 @@ class OBJ_NormalAxe(gp: GamePanel) extends Weapon (6, gp) :
 end OBJ_NormalAxe
 
 class OBJ_NormalShield(gp: GamePanel) extends Shield (3, gp) :
-  name = "Normal shield"
+  name = "Normal Shield"
   price = 15
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5 )
   image = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5 )

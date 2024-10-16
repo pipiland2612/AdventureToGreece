@@ -27,7 +27,8 @@ class ObjectManager(var gp : GamePanel) :
       (new OBJ_NormalHealFlask(gp),                  7,     Some(calcPos(10, 9))),
       (new OBJ_NormalHealFlask(gp),                  8,     Some(calcPos(11, 9))),
       (new OBJ_NormalHealFlask(gp),                  9,     Some(calcPos(12, 9))),
-      (new OBJ_Candle(gp),                          10,     Some(calcPos(24, 21)))
+      (new OBJ_LightCandle(gp),                     10,     Some(calcPos(24, 21))),
+      (new OBJ_CheckPoint(gp),                     11,     Some(calcPos(25, 21)))
     )
 
     objectData.foreach { case (obj, index, positionOpt) =>

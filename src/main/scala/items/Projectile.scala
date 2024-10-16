@@ -40,7 +40,7 @@ abstract class Projectile (gp: GamePanel) extends Item(gp):
       case Direction.DOWN => this.pos = (pos._1, this.speed + pos._2)
       case Direction.LEFT => this.pos = (pos._1 - this.speed, pos._2)
       case Direction.RIGHT => this.pos = (pos._1 + this.speed, pos._2)
-      case Direction.ANY => ???
+      case Direction.ANY => 
     health -= 1
     if health <= 0 then alive = false
     fly()

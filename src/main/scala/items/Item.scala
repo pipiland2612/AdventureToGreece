@@ -25,10 +25,10 @@ abstract class Item(gp : GamePanel) extends Entity(gp):
     var (nextWorldX, nextWorldY) = (user.getLeftX, user.getTopY)
 
     user.direction match
-      case Direction.UP => nextWorldY = user.getTopY - 1
-      case Direction.DOWN => nextWorldY = user.getBottomY + 1
-      case Direction.LEFT => nextWorldX = user.getLeftX - 1
-      case Direction.RIGHT => nextWorldX = user.getRightX + 1
+      case Direction.UP => nextWorldY = user.getTopY - gp.player.speed
+      case Direction.DOWN => nextWorldY = user.getBottomY + gp.player.speed
+      case Direction.LEFT => nextWorldX = user.getLeftX - gp.player.speed
+      case Direction.RIGHT => nextWorldX = user.getRightX + gp.player.speed
       case Direction.ANY =>
 
     val col = nextWorldX / gp.tileSize

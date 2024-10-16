@@ -40,7 +40,7 @@ class OBJ_Chest(size : Int, gp: GamePanel, var loot: Item) extends Obstacle (gp)
 end OBJ_Chest
 
 
-class OBJ_SilverKey( gp: GamePanel) extends Item (gp):
+class OBJ_SilverKey(gp: GamePanel) extends Item (gp):
   var name = "Silver Key"
   var pos: (Int, Int) = (0, 0)
   image = Tools.scaleImage(Tools.loadImage("Objects/silver_key.png"), size, size)

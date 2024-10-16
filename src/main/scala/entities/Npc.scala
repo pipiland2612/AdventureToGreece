@@ -15,8 +15,7 @@ abstract class Npc(gp: GamePanel) extends Creatures(gp):
 
   var dialogues = new Array[String](20)
   var dialogueIndex = 0
-
-  var counter = 0
+  var notMoving: Boolean = false
 
   def speak (): Unit =
     if dialogues(dialogueIndex) == null then
@@ -38,6 +37,7 @@ class Merchant(gp : GamePanel, var pos: (Int, Int)) extends Npc(gp):
   var name = "Merchant"
   speed = 2
 
+  notMoving = true
   solidAreaDefaultX = 10
   solidAreaDefaultY = 22
   var solidArea: Rectangle = new Rectangle(solidAreaDefaultX, solidAreaDefaultY, 24, 24)
@@ -69,6 +69,9 @@ class Merchant(gp : GamePanel, var pos: (Int, Int)) extends Npc(gp):
     super.speak()
     gp.gameState = GameState.TradeState
     gp.gui.merchant = this
+
+  override def update(): Unit = {}
+//    super.setAction()
 
 end Merchant
 

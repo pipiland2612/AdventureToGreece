@@ -26,7 +26,7 @@ class Map(gp : GamePanel) extends TileManager(gp):
         val x = gp.tileSize * col
         val y = gp.tileSize * row
         g2.drawImage(tile(tileNum).image, x, y, null)
-        g2.dispose()
+      g2.dispose()
   createWorldMap()
 
   def drawFullMapScreen(g2: Graphics2D) : Unit =

@@ -5,7 +5,6 @@ import utils.Animation
 import java.awt.Rectangle
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
-import java.lang.annotation.Target
 
 abstract class Entity(var gp: GamePanel) :
 
@@ -14,9 +13,10 @@ abstract class Entity(var gp: GamePanel) :
   var direction: Direction = Direction.DOWN
   var solidArea: Rectangle
   var solidAreaDefaultX, solidAreaDefaultY: Int = 0
+  var areaHitBox: Rectangle = new Rectangle(0, 0, 0, 0)
+  var areaDefaultX, areaDefaultY: Int = 0
   var pos : (Int, Int)
   val directions = Vector(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT)
- 
   
   var currentAnimation: Animation = _
   var image: BufferedImage = _

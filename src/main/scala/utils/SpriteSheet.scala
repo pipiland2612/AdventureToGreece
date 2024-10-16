@@ -12,7 +12,7 @@ object SpriteSheet :
     result
 
   //split and also scale the image
-  def splitSpriteSheet(spriteSheet: BufferedImage, frameWidth: Int, frameHeight: Int, scale: Int, numsRowToPrint: Int): Array[Array[BufferedImage]] =
+  def splitSpriteSheet(spriteSheet: BufferedImage, frameWidth: Int, frameHeight: Int, scaleX: Int, scaleY: Int, numsRowToPrint: Int): Array[Array[BufferedImage]] =
     val cols = spriteSheet.getWidth / frameWidth
     val rows = spriteSheet.getHeight / frameHeight
     val effectiveRows = Math.min(rows, numsRowToPrint)
@@ -20,6 +20,6 @@ object SpriteSheet :
       Array.tabulate(cols)(col =>
         val frame = spriteSheet.getSubimage(col * frameWidth, row * frameHeight, frameWidth, frameHeight)
         if(isBlank(frame)) then null
-        else Tools.scaleImage(frame, scale, scale)
+        else Tools.scaleImage(frame, scaleX, scaleY)
       ).filter(_ != null)
     )

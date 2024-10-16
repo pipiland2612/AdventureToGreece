@@ -18,6 +18,11 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var currentShield: Shield = _
   var currentProjectile: Projectile = _ 
   var currentLight: Light = _
+  val maxAttackCooldown: Int = 45
+  var attackCooldown: Int = maxAttackCooldown
+  var animationCounter = 0
+  var damagePower: Int = 0
+  var counter = 0
 
   var health: Int = 0
   var maxHealth: Int = 0
@@ -37,15 +42,13 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
   // ----------------------------------------------------------------------------------------------
   // Animation and Rendering
-
   var idleAnimations: Map[Direction, Animation]
   var runAnimations: Map[Direction, Animation]
   var attackAnimations: Map[Direction, Animation]
   var deadAnimations: Map[Direction, Animation]
 
+  var attackTimeAnimation: Int = 0
   var needsAnimationUpdate = false
-  var areaHitBox: Rectangle = _
-  var areaDefaultX, areaDefaultY: Int = 0
 
   def images: Map[(Direction, State), Animation] =
     if idleAnimations != null || runAnimations != null || attackAnimations != null then
@@ -105,6 +108,48 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
     needsAnimationUpdate = true
     checkAnimationUpdate()
 
+  def dealDamage(damagePower: Int): Unit = {}
+
+  def attack(): Unit =
+    if state != State.ATTACK && attackCooldown <= 0 then
+      state = State.ATTACK
+      needsAnimationUpdate = true
+      animationCounter = 0
+      attackCooldown = maxAttackCooldown
+
+      val attackAnimation = attackAnimations(direction)
+
+      // save current world x,y
+      val currentWorldX = pos._1
+      val currentWorldy = pos._2
+      val areaHitBoxWidth = this.areaHitBox.width
+      val areaHitBoxHeight = this.areaHitBox.height
+      // adjust player's worlds x,y
+      direction match
+        case Direction.UP => val newPosY = pos._2 - attackArea.height;  this.pos = (pos._1, newPosY)
+        case Direction.DOWN => val newPosY = pos._2 + attackArea.height;  this.pos = (pos._1, newPosY)
+        case Direction.LEFT => val newPosX = pos._1 - attackArea.width;  this.pos = (newPosX, pos._2)
+        case Direction.RIGHT => val newPosX = pos._1 + attackArea.width;  this.pos = (newPosX, pos._2)
+        case ANY =>
+      // attackAreaBecome solid Area
+      areaHitBox.width = attackArea.width
+      areaHitBox.height = attackArea.height
+
+      if this != gp.player then
+        if gp.cCheck.checkPlayerTargetHitBox(this) && attackAnimation.isInAttackInterval then
+          this.dealDamage(this.damagePower)
+      else if this == gp.player then
+        val enemyIndex = gp.cCheck.checkCollisionWithTargetsHitBox(this, gp.enemyList)
+        if attackAnimation.isInAttackInterval then
+          gp.player.attackEnemy(enemyIndex, gp.player.attackDamage)
+
+
+      this.pos = (currentWorldX, currentWorldy)
+      areaHitBox.width = areaHitBoxWidth
+      areaHitBox.height = areaHitBoxHeight
+//      attackAnimation.reset()
+
+
   def checkAnimationUpdate (): Unit =
     if(needsAnimationUpdate) then
       if currentAnimation != null then
@@ -128,11 +173,25 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   // Game Loop Update and Collision Handling
 
   def update(): Unit =
+    if attackCooldown > 0 then
+      attackCooldown -= 1
     setAction()
-    checkCollision()
 
+    state match
+      case State.ATTACK =>
+        handleAttackState()
+      case _ =>
+        checkCollision()
+        checkAnimationUpdate()
+        continueMove()
+
+  def handleAttackState(): Unit =
+    animationCounter += 1
+    if (animationCounter >= attackTimeAnimation) then
+      animationCounter = 0
+      state = State.IDLE
+    needsAnimationUpdate = true
     checkAnimationUpdate()
-    continueMove()
 
   private def checkCollision(): Unit =
     isCollided = false

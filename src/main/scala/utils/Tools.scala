@@ -52,36 +52,37 @@ object Tools:
   def flipFrames(frames: Vector[BufferedImage], flipFunction: BufferedImage => BufferedImage): Vector[BufferedImage] =
    frames.map(flipFunction)
 
-  def setupCommonAnimations (flipFunction: BufferedImage => BufferedImage, commonFrames :Vector[BufferedImage], framesRate: Int): Map[Direction, Animation] = Map (
-    Direction.UP -> Animation(commonFrames, framesRate),
-    Direction.RIGHT -> Animation(commonFrames, framesRate),
-    Direction.LEFT -> Animation(flipFrames(commonFrames, flipFunction), framesRate),
-    Direction.DOWN -> Animation(flipFrames(commonFrames, flipFunction), framesRate)
+  def setupCommonAnimations (flipFunction: BufferedImage => BufferedImage, commonFrames :Vector[BufferedImage], framesRate: Int, attackStartFrame: Int = -1, attackEndFrame: Int = -1): Map[Direction, Animation] = Map (
+    Direction.UP -> Animation(commonFrames, framesRate, attackStartFrame, attackEndFrame),
+    Direction.RIGHT -> Animation(commonFrames, framesRate, attackStartFrame, attackEndFrame),
+    Direction.LEFT -> Animation(flipFrames(commonFrames, flipFunction), framesRate, attackStartFrame, attackEndFrame),
+    Direction.DOWN -> Animation(flipFrames(commonFrames, flipFunction), framesRate, attackStartFrame, attackEndFrame)
   )
 
   // Position helper methods
-  def resetSolidArea(entity: Entity): Unit =
+  def resetSolidArea[T <: Entity](entity: T): Unit = 
     entity.solidArea.x = entity.solidAreaDefaultX
     entity.solidArea.y = entity.solidAreaDefaultY
-
-  def updateSolidArea(entity: Entity): Unit =
-    val (x,y) = entity.getPosition
+  
+  def updateSolidArea[T <: Entity](entity: T): Unit = 
+    val (x, y) = entity.getPosition
     entity.solidArea.x = x + entity.solidArea.x
     entity.solidArea.y = y + entity.solidArea.y
-    
-  def updateAreaHitBox(creatures: Creatures): Unit =
-    val (x,y) = creatures.getPosition
+  
+  def updateAreaHitBox[T <: Entity](creatures: T): Unit = 
+    val (x, y) = creatures.getPosition
     creatures.areaHitBox.x = x + creatures.areaHitBox.x
     creatures.areaHitBox.y = y + creatures.areaHitBox.y
   
-  def resetAreaHitBox(creatures: Creatures): Unit =
+  def resetAreaHitBox[T <: Entity](creatures: T): Unit = 
     creatures.areaHitBox.x = creatures.areaDefaultX
     creatures.areaHitBox.y = creatures.areaDefaultY
 
+
   // Frames help methods
-  def loadFrames (path: String, frameSizeX: Int, frameSizeY: Int , scale: Int, numsRow: Int): Array[Array[BufferedImage]] =
+  def loadFrames (path: String, frameSizeX: Int, frameSizeY: Int , scaleX: Int, scaleY: Int, numsRow: Int): Array[Array[BufferedImage]] =
     val image: BufferedImage = Tools.loadImage(path + ".png")
-    val frames: Array[Array[BufferedImage]] = SpriteSheet.splitSpriteSheet(image, frameSizeX, frameSizeY, scale, numsRow)
+    val frames: Array[Array[BufferedImage]] = SpriteSheet.splitSpriteSheet(image, frameSizeX, frameSizeY, scaleX, scaleY,numsRow)
     frames
 
   def getFrames (framesName: Array[Array[BufferedImage]], rowsNum : Int, colLimit: Int): Vector[BufferedImage] =
@@ -98,13 +99,14 @@ object Tools:
   def renderDebugInfo(g: Graphics2D, entity: Entity, objects: Array[Array[Entity]], creatures: Array[Array[Enemy]], gp: GamePanel): Unit =
     g.setColor(Color.RED)
     g.drawRect(entity.solidArea.x + gp.player.screenX , entity.solidArea.y + gp.player.screenY, entity.solidArea.width, entity.solidArea.height)
+    g.drawRect(entity.areaHitBox.x + gp.player.screenX , entity.areaHitBox.y + gp.player.screenY, entity.areaHitBox.width, entity.areaHitBox.height)
 
     for i <- objects(1).indices do
       if (objects(gp.currentMap)(i) != null) then
         g.setColor(Color.BLUE)
         g.drawRect(
-          objects(gp.currentMap)(i).solidArea.x + objects(gp.currentMap)(i).pos._1 - entity.getPosition._1 + gp.player.screenX,
-          objects(gp.currentMap)(i).solidArea.y + objects(gp.currentMap)(i).pos._2 - entity.getPosition._2 + gp.player.screenY,
+          objects(gp.currentMap)(i).solidArea.x + objects(gp.currentMap)(i).getPosition._1 - entity.getPosition._1 + gp.player.screenX,
+          objects(gp.currentMap)(i).solidArea.y + objects(gp.currentMap)(i).getPosition._2 - entity.getPosition._2 + gp.player.screenY,
           objects(gp.currentMap)(i).solidArea.width, objects(gp.currentMap)(i).solidArea.height)
 
     for i <- gp.npcList(1).indices do

@@ -1,6 +1,5 @@
 package entities
 import `object`.ObjectType.{ OBJ_Fireball, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
-import entities.Direction.{ANY, DOWN, LEFT, RIGHT, UP}
 
 import java.awt.image.BufferedImage
 import game.{GamePanel, GameState}
@@ -18,8 +17,6 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   currentProjectile = OBJ_Fireball(gp)
 
   state = State.IDLE
-  private var counter = 0
-
   // ----------------------------------------------------------------------------------
   // Player stats
   var name = "Warrior"
@@ -38,8 +35,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   var coin = 20
 
   // other stats
-  private var attackCooldown: Int = 0
-  private val maxAttackCooldown: Int = 45
+  attackTimeAnimation = 30
   maxInvincDuration = 60
   var lightUpdated: Boolean = false
   var hasCallDie = false
@@ -57,6 +53,10 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   var solidAreaHeight = (12 * 1.25).toInt + 5
   var solidArea = Rectangle(solidAreaX , solidAreaY , solidAreaWidth, solidAreaHeight)
 
+  areaDefaultX = solidAreaDefaultX
+  areaDefaultY = 15
+  areaHitBox = Rectangle(areaDefaultX, areaDefaultY, solidAreaWidth, solidAreaHeight * 2)
+
   // ----------------------------------------------------------------------------------------------
   // Screen and Rendering
   val screenX: Int = gp.screenWidth / 2 - (gp.tileSize / 2)
@@ -67,8 +67,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
   // ----------------------------------------------------------------------------------------------
   // ANIMATIONS
-  private val spriteFrames = Tools.loadFrames("Players/Player_spritesheet", frameSize, frameSize, playerScale, 21)
-  private val attackFrames = Tools.loadFrames("Players/attack_spritesheet", frameSize, frameSize,playerScale, 4)
+  private val spriteFrames = Tools.loadFrames("Players/Player_spritesheet", frameSize, frameSize, playerScale, playerScale, 21)
+  private val attackFrames = Tools.loadFrames("Players/attack_spritesheet", frameSize, frameSize,playerScale, playerScale,4)
   var idleAnimations = Map(
     Direction.UP -> Animation(Vector(spriteFrames(0)(0)), 1),
     Direction.LEFT -> Animation(Vector(spriteFrames(1)(0)), 1),
@@ -89,13 +89,13 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
   var attackAnimations = Map(
     Direction.UP -> Animation(
-      Tools.getFrames(attackFrames, 3, 6), 5),
+      Tools.getFrames(attackFrames, 3, 6), 5, 0, 4),
     Direction.LEFT -> Animation(
-      Tools.getFrames(attackFrames, 1, 6), 5),
+      Tools.getFrames(attackFrames, 1, 6), 5, 0, 4),
     Direction.DOWN -> Animation(
-      Tools.getFrames(attackFrames, 0, 6), 5),
+      Tools.getFrames(attackFrames, 0, 6), 5, 0, 4),
     Direction.RIGHT -> Animation(
-      Tools.getFrames(attackFrames, 2, 6), 5),
+      Tools.getFrames(attackFrames, 2, 6), 5, 0, 4),
   )
 
   var deadAnimations = Map (
@@ -121,8 +121,11 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   def getCurrentAnimation = this.currentAnimation
   def getDefense: Int = currentShield.defense * dexterity
   def getCurrentWeapon: Weapon = currentWeapon
+  def getCurrentWeaponIndex: Int = inventory.indexWhere(_ == this.currentWeapon)
   def getCurrentShield: Shield = currentShield
+  def getCurrentShieldIndex: Int = inventory.indexWhere(_ == this.currentShield)
   def getCurrentProjectile: Projectile = currentProjectile
+  def getCurrentProjectileIndex: Int = inventory.indexWhere(_ == this.currentProjectile)
   def getAttackDamage: Int =
     attackArea = currentWeapon.attackArea
     currentWeapon.damage * strength
@@ -141,37 +144,6 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     this.pos = (pos._1, newY)
     needsAnimationUpdate = true
 
-  def attack(): Unit =
-    if state != State.ATTACK && attackCooldown == 0 then
-      gp.keyH.attackPressed = false
-      updateDirection()
-      // save current world x,y
-      val currentWorldX = pos._1
-      val currentWorldy = pos._2
-      val solidAreaWidth = this.solidArea.width
-      val solidAreaHeight = this.solidArea.height
-      // adjust player's worlds x,y
-      direction match
-        case UP => val newPosY = pos._2 - attackArea.height;  this.pos = (pos._1, newPosY)
-        case DOWN => val newPosY = pos._2 + attackArea.height;  this.pos = (pos._1, newPosY)
-        case LEFT => val newPosX = pos._1 - attackArea.width;  this.pos = (newPosX, pos._2)
-        case RIGHT => val newPosX = pos._1 + attackArea.width;  this.pos = (newPosX, pos._2)
-        case ANY =>
-      // attackAreaBecome solid Area
-      solidArea.width = attackArea.width
-      solidArea.height = attackArea.height
-      val enemyIndex = gp.cCheck.checkCollisionWithTargetsHitBox(this, gp.enemyList)
-      attackEnemy(enemyIndex, attackDamage)
-
-      this.pos = (currentWorldX, currentWorldy)
-      solidArea.width = solidAreaWidth
-      solidArea.height = solidAreaHeight
-
-      state = State.ATTACK
-      needsAnimationUpdate = true
-      counter = 0
-      attackCooldown = maxAttackCooldown
-
   override def die(): Unit =
     if !hasCallDie then
       super.die()
@@ -184,7 +156,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     this.pos = (gp.tileSize * 23, gp.tileSize * 21)
     health = maxHealth
     mana = maxMana
-    this.level = 1
+    isInvinc = false
+    lightUpdated = false
 
   // ----------------------------------------------------------------------------------------------
   // Input and Movement Handling
@@ -207,14 +180,14 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     if !isCollided then
       continueMove()
     else
-        currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
+      currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
 
   private def handleIdleState(): Unit =
     if state != State.IDLE then
       state = State.IDLE
       needsAnimationUpdate = true
 
-  private def updateDirection(): Unit =
+  def updateDirection(): Unit =
     if (gp.keyH.upPressed) then
       this.direction = Direction.UP
     else if (gp.keyH.downPressed) then
@@ -334,14 +307,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
     if shootCounter < 60 then
       shootCounter += 1
-
-  private def handleAttackState(): Unit =
-    counter += 1
-    if (counter >= 30) then
-      counter = 0
-      state = State.IDLE
-    needsAnimationUpdate = true
-    checkAnimationUpdate()
+    gp.keyH.attackPressed = false
 
   private def handleGameOver(): Unit =
     if isDead then

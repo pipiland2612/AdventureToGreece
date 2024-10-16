@@ -1,7 +1,7 @@
 package levels
 
 
-import entities.{Creatures, Direction, Entity}
+import entities.{Creatures, Entity}
 import game.GamePanel
 
 abstract class Obstacle(gp : GamePanel) extends Entity(gp):

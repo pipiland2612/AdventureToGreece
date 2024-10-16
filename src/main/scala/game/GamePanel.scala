@@ -1,11 +1,12 @@
 package game
 
 import Behavior.PathFinder
+import Data.SaveLoad
 import Enemy.Enemy
 import Environment.EnvironmentManager
 
 import java.awt.image.BufferedImage
-import Tile.{TileManager, Map}
+import Tile.{Map, TileManager}
 import `object`.ObjectManager
 
 import java.awt.{Color, Dimension, Font, Graphics, Graphics2D}
@@ -55,10 +56,11 @@ class GamePanel extends JPanel with Runnable:
   var pFinder: PathFinder = PathFinder(this)
   var environmentManager = EnvironmentManager(this)
   var miniMap: Map = new Map(this)
+  var saveLoad: SaveLoad = new SaveLoad(this)
   var gameThread: Thread = _
 
   //ENTITY, OBJECT, NPCS< ENEMIES
-  val player = Player((tileSize * 23, tileSize * 21), this)
+  var player = Player((tileSize * 23, tileSize * 21), this)
   val obj: Array[Array[Entity]] = Array.ofDim[Entity](maxMap, 20)
   var enemyList: Array[Array[Enemy]] = Array.ofDim[Enemy](maxMap, 10)
   var npcList : Array[Array[Npc]] = Array.ofDim[Npc](maxMap, 1)
@@ -81,16 +83,14 @@ class GamePanel extends JPanel with Runnable:
     environmentManager.setup()
     playMusic(0)
 
-  def retry(): Unit =
-    player.isInvinc = false
+  def resetGame(restart: Boolean): Unit =
     player.reset()
-    setUpGame()
+    oManager.setEnemy()
+    oManager.setNpc()
 
-  def restart(): Unit =
-    player.isInvinc = false
-    player.reset()
-    player.setItems()
-    setUpGame()
+    if restart then
+      player = new Player((tileSize * 23, tileSize * 21), this)
+      oManager.setObject()
 
   //----------------------------------------------------------------------------------------------
   // MUSICS SOUNDS methods
@@ -190,8 +190,8 @@ class GamePanel extends JPanel with Runnable:
 
         g2d.drawString("Position x: " + player.getPosition._1, x,y);y += lineHeight
         g2d.drawString("Position y: " + player.getPosition._2, x,y);y += lineHeight
-        g2d.drawString("Row: " + (player.getPosition._1 + player.solidArea.x) / tileSize, x,y);y += lineHeight
-        g2d.drawString("Col: " + (player.getPosition._2 + player.solidArea.y) / tileSize, x,y);y += lineHeight
+        g2d.drawString("Col: " + (player.getPosition._1 + player.solidArea.x) / tileSize, x,y);y += lineHeight
+        g2d.drawString("Row: " + (player.getPosition._2 + player.solidArea.y) / tileSize, x,y);y += lineHeight
         g2d.drawString("Draw time: " + passTime, x,y)
 
     g2d.dispose()

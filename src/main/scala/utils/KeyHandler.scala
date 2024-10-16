@@ -35,17 +35,16 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
 
   override def keyReleased(e: KeyEvent): Unit =
     e.getKeyCode match
-      case KeyEvent.VK_W => upPressed = false
-      case KeyEvent.VK_S => downPressed = false
-      case KeyEvent.VK_A => leftPressed = false
-      case KeyEvent.VK_D => rightPressed = false
+      case KeyEvent.VK_W | KeyEvent.VK_UP => upPressed = false
+      case KeyEvent.VK_S | KeyEvent.VK_DOWN => downPressed = false
+      case KeyEvent.VK_A | KeyEvent.VK_LEFT => leftPressed = false
+      case KeyEvent.VK_D | KeyEvent.VK_RIGHT => rightPressed = false
       case KeyEvent.VK_G => attackPressed = false
       case KeyEvent.VK_U => shootKeyPressed = false
       case KeyEvent.VK_ENTER => enterPressed = false
       case _ =>
 
   override def keyTyped(e: KeyEvent): Unit = {}
-
 
   // Handle different game state
   private def handleDialogueState (code : Int) : Unit =
@@ -60,25 +59,27 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
 
   private def handleTitleState(code: Int): Unit =
     code match
-      case KeyEvent.VK_UP =>
+      case KeyEvent.VK_UP | KeyEvent.VK_W =>
         gp.gui.commandNum = (gp.gui.commandNum - 1)
         if gp.gui.commandNum < 0 then gp.gui.commandNum = 2
-      case KeyEvent.VK_DOWN =>
+      case KeyEvent.VK_DOWN | KeyEvent.VK_S =>
         gp.gui.commandNum = (gp.gui.commandNum + 1)
         if gp.gui.commandNum > 2 then gp.gui.commandNum = 0
       case KeyEvent.VK_ENTER =>
         gp.gui.commandNum match
           case 0 => gp.gameState = GameState.PlayState; gp.playMusic(0)
-          case 1 => {}
+          case 1 =>
+            gp.saveLoad.load()
+            gp.gameState = GameState.PlayState
           case 2 => System.exit(0)
       case _ =>
 
   private def handlePlayState(code : Int): Unit =
     code match
-      case KeyEvent.VK_W => upPressed = true
-      case KeyEvent.VK_S => downPressed = true
-      case KeyEvent.VK_A => leftPressed = true
-      case KeyEvent.VK_D => rightPressed = true
+      case KeyEvent.VK_W | KeyEvent.VK_UP => upPressed = true
+      case KeyEvent.VK_S | KeyEvent.VK_DOWN => downPressed = true
+      case KeyEvent.VK_A | KeyEvent.VK_LEFT => leftPressed = true
+      case KeyEvent.VK_D | KeyEvent.VK_RIGHT => rightPressed = true
       case KeyEvent.VK_J => attackPressed = true
       case KeyEvent.VK_U => shootKeyPressed = true
       case KeyEvent.VK_C => gp.gameState = CharacterState
@@ -106,7 +107,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
     playerInventory(code)
 
   private def handleGameMenuState(code : Int): Unit =
-    var maxCommanNum = gp.gui.subState match
+    val maxCommanNum = gp.gui.subState match
         case 0 => 4
         case 1 => 0
         case 2 => 1
@@ -115,19 +116,19 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
         gp.gameState = GameState.PlayState
       case KeyEvent.VK_ENTER =>
         enterPressed = true
-      case KeyEvent.VK_UP =>
+      case KeyEvent.VK_UP | KeyEvent.VK_W =>
           gp.gui.commandNum -= 1
           if gp.gui.commandNum < 0 then gp.gui.commandNum = maxCommanNum
-      case KeyEvent.VK_DOWN =>
+      case KeyEvent.VK_DOWN | KeyEvent.VK_S =>
           gp.gui.commandNum += 1
           if gp.gui.commandNum > maxCommanNum then gp.gui.commandNum = 0
-      case KeyEvent.VK_LEFT =>
+      case KeyEvent.VK_LEFT | KeyEvent.VK_A =>
         if gp.gui.subState == 0 then
           if gp.gui.commandNum == 0 && gp.sound.volumeScale > 0 then
             gp.sound.volumeScale -= 1; gp.sound.checkVolume()
           if gp.gui.commandNum == 1 && gp.se.volumeScale > 0 then
             gp.se.volumeScale -= 1
-      case KeyEvent.VK_RIGHT =>
+      case KeyEvent.VK_RIGHT | KeyEvent.VK_D =>
         if gp.gui.subState == 0 then
           if gp.gui.commandNum == 0 && gp.sound.volumeScale < 5 then
             gp.sound.volumeScale += 1; gp.sound.checkVolume()
@@ -137,19 +138,19 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
 
   private def handleGameOverState(code: Int): Unit  =
     code match
-      case KeyEvent.VK_UP =>
+      case KeyEvent.VK_UP | KeyEvent.VK_W =>
         gp.gui.commandNum -= 1
         if gp.gui.commandNum < 0 then gp.gui.commandNum = 1
-      case KeyEvent.VK_DOWN =>
+      case KeyEvent.VK_DOWN | KeyEvent.VK_S =>
         gp.gui.commandNum += 1
         if gp.gui.commandNum > 1 then gp.gui.commandNum = 0
       case KeyEvent.VK_ENTER =>
         if gp.gui.commandNum == 0 then
           gp.gameState = GameState.PlayState
-          gp.retry()
+          gp.resetGame(false)
         if gp.gui.commandNum == 1 then
           gp.gameState = GameState.TitleState
-          gp.restart()
+          gp.resetGame(true)
       case _ =>
   private def handleMapState(code: Int): Unit =
     code match
@@ -160,10 +161,10 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
 
       if code == KeyEvent.VK_ENTER then enterPressed = true
       if gp.gui.subState == 0 then
-        if code == KeyEvent.VK_UP then
+        if code == KeyEvent.VK_W || code == KeyEvent.VK_UP then
             gp.gui.commandNum -= 1
             if gp.gui.commandNum < 0 then gp.gui.commandNum = 2
-        if code == KeyEvent.VK_DOWN then
+        if code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN then
             gp.gui.commandNum += 1
             if gp.gui.commandNum > 2 then gp.gui.commandNum = 0
       if gp.gui.subState == 1 then
@@ -177,32 +178,32 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
 
   def playerInventory (code : Int): Unit =
     code match
-      case KeyEvent.VK_W =>
+      case KeyEvent.VK_W | KeyEvent.VK_UP =>
         if PlayerUI.playerSlotRow != 0 then
           PlayerUI.playerSlotRow -= 1
-      case KeyEvent.VK_S =>
+      case KeyEvent.VK_S | KeyEvent.VK_DOWN =>
         if PlayerUI.playerSlotRow != 3 then
           PlayerUI.playerSlotRow += 1
-      case KeyEvent.VK_A =>
+      case KeyEvent.VK_A | KeyEvent.VK_LEFT =>
         if PlayerUI.playerSlotCol != 0 then
           PlayerUI.playerSlotCol -= 1
-      case KeyEvent.VK_D =>
+      case KeyEvent.VK_D | KeyEvent.VK_RIGHT =>
         if PlayerUI.playerSlotCol != 4 then
           PlayerUI.playerSlotCol += 1
       case _ =>
 
   def npcInventory (code : Int): Unit =
     code match
-      case KeyEvent.VK_W =>
+      case KeyEvent.VK_W | KeyEvent.VK_UP =>
         if PlayerUI.npcSlotRow != 0 then
           PlayerUI.npcSlotRow -= 1
-      case KeyEvent.VK_S =>
+      case KeyEvent.VK_S | KeyEvent.VK_DOWN =>
         if PlayerUI.npcSlotRow != 3 then
           PlayerUI.npcSlotRow += 1
-      case KeyEvent.VK_A =>
+      case KeyEvent.VK_A | KeyEvent.VK_LEFT =>
         if PlayerUI.npcSlotCol != 0 then
           PlayerUI.npcSlotCol -= 1
-      case KeyEvent.VK_D =>
+      case KeyEvent.VK_D | KeyEvent.VK_RIGHT =>
         if PlayerUI.npcSlotCol != 4 then
           PlayerUI.npcSlotCol += 1
       case _ =>

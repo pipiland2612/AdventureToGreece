@@ -20,7 +20,7 @@ object SpriteSheetTest extends App :
   val frameWidth = 64
   val frameHeight = 32
 
-  val spriteFrames: Array[Array[BufferedImage]] = SpriteSheet.splitSpriteSheet(spriteSheet, frameWidth, frameHeight, 16, 4)
+  val spriteFrames: Array[Array[BufferedImage]] = SpriteSheet.splitSpriteSheet(spriteSheet, frameWidth, frameHeight, 16,16, 4)
 
   println(s"Sprite Sheet Dimensions: ${spriteSheet.getWidth}x${spriteSheet.getHeight}")
   println(s"Frame Size: ${frameWidth}x${frameHeight}")

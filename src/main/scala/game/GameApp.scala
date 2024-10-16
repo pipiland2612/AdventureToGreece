@@ -23,8 +23,3 @@ object GameApp extends App :
   gamePanel.config.loadConfig()
   gamePanel.setUpGame()
   gamePanel.startGameThread()
-
-
-
-
-

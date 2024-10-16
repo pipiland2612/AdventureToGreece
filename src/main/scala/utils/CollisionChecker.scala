@@ -19,7 +19,19 @@ class CollisionChecker (var gp: GamePanel) :
         entity.solidArea.x -= entity.speed
       case Direction.RIGHT =>
         entity.solidArea.x += entity.speed
-      case ANY => 
+      case ANY =>
+
+  private def adjustAreaHitBox (entity: Entity): Unit =
+    entity.direction match
+      case Direction.UP =>
+        entity.areaHitBox.y -= entity.speed
+      case Direction.DOWN =>
+        entity.areaHitBox.y += entity.speed
+      case Direction.LEFT =>
+        entity.areaHitBox.x -= entity.speed
+      case Direction.RIGHT =>
+        entity.areaHitBox.x += entity.speed
+      case ANY =>
 
   def checkObjectCollision (entity: Creatures, isPlayer: Boolean): Int =
     var index = -1
@@ -62,6 +74,10 @@ class CollisionChecker (var gp: GamePanel) :
     var entityBottomRow = entityBottomWorldY / tileSize
 
     var tile1, tile2: Int = 0
+    // IF ADDING KNOCK BACK
+    //    var direction = entity.direction
+    //    if entity.knockBacked then
+    //
 
     entity.direction match
       case Direction.UP =>
@@ -84,7 +100,6 @@ class CollisionChecker (var gp: GamePanel) :
         tile1 = tileManager.mapTileNum(gp.currentMap)(entityBottomRow)(entityRightCol)
         tile2 = tileManager.mapTileNum(gp.currentMap)(entityTopRow)(entityRightCol)
       case ANY =>
-      case null =>
 
     if tileManager.tile(tile1).collision || tileManager.tile(tile2).collision then
       entity.isCollided = true
@@ -116,16 +131,16 @@ class CollisionChecker (var gp: GamePanel) :
     for (i <- target(1).indices) do
       if target(gp.currentMap)(i) != null then
         val currentTarget = target(gp.currentMap)(i)
-        Tools.updateSolidArea(entity)
+        Tools.updateAreaHitBox(entity)
         Tools.updateAreaHitBox(currentTarget)
 
-        adjustSolidArea(entity)
+        adjustAreaHitBox(entity)
 
-        if (entity.solidArea.intersects(currentTarget.areaHitBox)) then
+        if (entity.areaHitBox.intersects(currentTarget.areaHitBox)) then
           if currentTarget != entity then
             index = i
 
-        Tools.resetSolidArea(entity)
+        Tools.resetAreaHitBox(entity)
         Tools.resetAreaHitBox(currentTarget)
 
     index
@@ -144,6 +159,21 @@ class CollisionChecker (var gp: GamePanel) :
 
     Tools.resetSolidArea(entity)
     Tools.resetSolidArea(gp.player)
+    touchedPlayer
+
+  def checkPlayerTargetHitBox(entity: Entity): Boolean =
+    var touchedPlayer: Boolean = false
+
+    Tools.updateAreaHitBox(entity)
+    Tools.updateAreaHitBox(gp.player)
+
+    adjustAreaHitBox(entity)
+
+    if (entity.areaHitBox.intersects(gp.player.areaHitBox)) then
+        touchedPlayer = true
+
+    Tools.resetAreaHitBox(entity)
+    Tools.resetAreaHitBox(gp.player)
     touchedPlayer
     
 end CollisionChecker

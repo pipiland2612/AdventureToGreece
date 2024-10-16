@@ -76,6 +76,12 @@ class EventHandler (var gp: GamePanel) :
 
     canCauseEvent = false
 
+  def saveGame(gameState : GameState): Unit =
+    if gp.keyH.enterPressed then
+      gp.gameState = gameState
+      gp.gui.currentDialogue = "Save Game"
+      gp.saveLoad.save()
+
   // Call by the game loop
   def checkEvent (): Unit =
     val xDistance = Math.abs(gp.player.getPosition._1 - previousEventX)
@@ -91,11 +97,13 @@ class EventHandler (var gp: GamePanel) :
       else if hasHit(0, 10 ,20, Direction.ANY) then heal(DialogueState)
       else if hasHit(0, 35, 25, Direction.ANY) then teleport(1, 4 ,3)
       else if hasHit(1, 4, 3, Direction.ANY) then teleport(0, 4 ,3)
+//      else if hasHit(0, 25, 21, Direction.ANY) then saveGame(DialogueState)
+
   def speak(npc : Npc): Unit =
     if gp.keyH.enterPressed then
       gp.gameState = GameState.DialogueState
       npc.speak()
-      
+
 end EventHandler
 
 

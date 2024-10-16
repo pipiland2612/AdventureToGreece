@@ -27,6 +27,7 @@ class OBJ_Fireball(gp : GamePanel) extends Projectile(gp) :
 
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_left.png"), size, size)
   image = Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_left.png"), size, size)
-  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
+  areaHitBox = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
+  solidArea = areaHitBox
 
 end OBJ_Fireball

@@ -2,7 +2,7 @@ package utils
 
 import java.awt.image.BufferedImage
 
-class Animation(val frames: Vector[BufferedImage], val frameDuration: Int) :
+class Animation(val frames: Vector[BufferedImage], val frameDuration: Int, var attackStartFrame: Int = -1, var attackEndFrame: Int = -1) :
   private var currentTimeFrame: Int = 0
   private var frameCount: Int = 0
   private var finished: Boolean = false
@@ -14,8 +14,16 @@ class Animation(val frames: Vector[BufferedImage], val frameDuration: Int) :
     if (frameCount >= frameDuration) then
       frameCount = 0
       currentTimeFrame = (currentTimeFrame + 1) % frames.length
+      if currentTimeFrame == 0 then
+        finished = true
 
   def reset(): Unit =
     currentTimeFrame = 0
     frameCount = 0
-  
+    finished = false
+
+  def isInAttackInterval: Boolean = currentTimeFrame >= attackStartFrame && currentTimeFrame <= attackEndFrame
+
+  def triggerAttack(): Boolean = isInAttackInterval
+
+  def isFinished: Boolean = finished
