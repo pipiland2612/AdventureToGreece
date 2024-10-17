@@ -18,7 +18,7 @@ object GameMenuUI:
   def gameMenuTop(frameX: Int, frameY: Int):Unit =
     val tileSize = gp.tileSize
     val text = "Options"
-    var textX = Tools.getCenterX(g2, gp, text) + 20
+    var textX = Tools.getCenterX(g2, gp, text) + gp.tileSize
     var textY = frameY + tileSize
     g2.drawString(text, textX, textY)
 

@@ -3,7 +3,7 @@ package game
 import Behavior.PathFinder
 import Data.SaveLoad
 import Enemy.Enemy
-import Environment.EnvironmentManager
+import Environment.{Area, EnvironmentManager}
 
 import java.awt.image.BufferedImage
 import Tile.{Map, TileManager}
@@ -14,7 +14,7 @@ import javax.swing.JPanel
 import entities.{Entity, Npc, Player}
 import items.Projectile
 import ui.UI
-import utils.{CollisionChecker, Config, EventHandler, KeyHandler, Sound, Tools}
+import utils.{CollisionChecker, Config, EntityGenerator, EventHandler, KeyHandler, Sound, Tools}
 
 import scala.collection.mutable.ListBuffer
 
@@ -39,7 +39,10 @@ class GamePanel extends JPanel with Runnable:
 
   //----------------------------------------------------------------------------------------------
   //INITIALIZATION
-  var backGroundImage: BufferedImage = Tools.loadImage("Maps/backgroundImage.png")
+  val backGroundImageOverWorld: BufferedImage = Tools.loadImage("Maps/overworld_background.png")
+  val backGroundImageDungeon: BufferedImage = Tools.loadImage("Maps/dungeon_background.png")
+  var backGroundImage: BufferedImage = backGroundImageOverWorld
+
   this.setPreferredSize(new Dimension(screenWidth, screenHeight))
   this.setBackground(Color.BLACK)
 
@@ -57,18 +60,22 @@ class GamePanel extends JPanel with Runnable:
   var environmentManager = EnvironmentManager(this)
   var miniMap: Map = new Map(this)
   var saveLoad: SaveLoad = new SaveLoad(this)
+  val entityGen = new EntityGenerator(this)
   var gameThread: Thread = _
 
-  //ENTITY, OBJECT, NPCS< ENEMIES
+  //ENTITY, OBJECT, NPCS, ENEMIES
   var player = Player((tileSize * 23, tileSize * 21), this)
   val obj: Array[Array[Entity]] = Array.ofDim[Entity](maxMap, 20)
   var enemyList: Array[Array[Enemy]] = Array.ofDim[Enemy](maxMap, 10)
-  var npcList : Array[Array[Npc]] = Array.ofDim[Npc](maxMap, 1)
+  var npcList : Array[Array[Npc]] = Array.ofDim[Npc](maxMap, 5)
   var projectileList: ListBuffer[Projectile] = ListBuffer[Projectile]()
   var entityList: ListBuffer[Entity] = ListBuffer[Entity]()
 
   //GAME STATE
   var gameState: GameState = GameState.TitleState
+  // AREA
+  var currentArea: Area = Area.OverWorld
+  var nextArea: Area = Area.Dungeon
 
   //----------------------------------------------------------------------------------------------
   // SET UP METHODS
@@ -98,23 +105,30 @@ class GamePanel extends JPanel with Runnable:
   def stopMusic (): Unit = this.sound.stop()
   def playSE (int : Int) = this.se.setFile(int); this.se.play()
 
+  def changeArea(): Unit =
+//    if nextArea != currentArea then
+    currentArea = nextArea
+    oManager.setEnemy()
+
   // ----------------------------------------------------------------------------------------------
   // Game Loop Update
   def update(): Unit =
     if gameState == GameState.PlayState then
       this.player.update()
 
+      updateBackGroundImage()
+
       for i <- npcList(1).indices do
         if npcList(currentMap)(i) != null then
           npcList(currentMap)(i).update()
 
-      for i <- enemyList(1).indices do
-        val currentEnemy = enemyList(currentMap)(i)
-        if currentEnemy != null then
-          currentEnemy.update()
-          if currentEnemy.dying then
-            currentEnemy.checkDrop()
-            enemyList(currentMap)(i) = null
+//      for i <- enemyList(1).indices do
+//        val currentEnemy = enemyList(currentMap)(i)
+//        if currentEnemy != null then
+//          currentEnemy.update()
+//          if currentEnemy.dying then
+//            currentEnemy.checkDrop()
+//            enemyList(currentMap)(i) = null
 
       for projectile <- projectileList do
         if projectile != null then
@@ -123,6 +137,15 @@ class GamePanel extends JPanel with Runnable:
       environmentManager.update()
 
     else if gameState == GameState.PauseState then {}
+
+  def updateBackGroundImage(): Unit =
+    currentArea match
+      case Area.OverWorld =>
+        if backGroundImage != backGroundImageOverWorld then
+          backGroundImage = backGroundImageOverWorld
+      case Area.Dungeon =>
+        if backGroundImage != backGroundImageDungeon then
+          backGroundImage = backGroundImageDungeon
 
   // RENDERING METHODS
   override def paintComponent(g: Graphics): Unit =
@@ -173,7 +196,8 @@ class GamePanel extends JPanel with Runnable:
       entityList.clear()
       Tools.renderDebugInfo (g2d, player, obj, enemyList, this)
       // ENVIRONMENT
-//      environmentManager.draw(g2d)
+
+      environmentManager.draw(g2d)
       miniMap.drawMiniMap(g2d)
       //UI
       gui.drawUI(g2d)

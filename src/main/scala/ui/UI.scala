@@ -1,6 +1,6 @@
 package ui
 
-import entities.Npc
+import entities.Entity
 import game.{GamePanel, GameState}
 import utils.Tools
 
@@ -14,12 +14,14 @@ class UI (var gp: GamePanel):
   var message: ListBuffer[String] = ListBuffer()
   var messageCounter: ListBuffer[Int] = ListBuffer()
 
-  var merchant: Npc = _
+  var npc: Entity = _
   var isFinished = false
   var currentDialogue: String = ""
   var commandNum = 0
   var counter: Int = 0
 
+  var charIndex: Int = 0
+  var combinedText: String = ""
 
   var g2 : Graphics2D = _
   val tileSize = gp.tileSize
@@ -135,8 +137,30 @@ class UI (var gp: GamePanel):
 
     g2.setFont(g2.getFont.deriveFont(Font.PLAIN, 25F))
     x += tileSize; y += tileSize
+
+    if npc.dialogues(npc.dialogueSet)(npc.dialogueIndex) != null then
+//      currentDialogue = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex)
+      val charactersSet: Array[Char] = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex).toCharArray
+      if charIndex < charactersSet.length then
+        //play se
+        //
+        combinedText += charactersSet(charIndex).toString
+        currentDialogue = combinedText
+        charIndex += 1
+
+      if gp.keyH.enterPressed then
+        charIndex = 0
+        combinedText = ""
+        if gp.gameState == GameState.DialogueState then
+          npc.dialogueIndex += 1
+          gp.keyH.enterPressed = false
+    else
+      npc.dialogueIndex = 0
+      if gp.gameState == GameState.DialogueState then
+        gp.gameState = GameState.PlayState
+
     currentDialogue.split("\n").foreach( line =>
-      g2.drawString(line, x, y )
+      g2.drawString(line, x, y)
       y += 40
     )
 
@@ -149,7 +173,7 @@ class UI (var gp: GamePanel):
   def drawGameMenu(): Unit =
     g2.setColor(Color.WHITE)
     g2.setFont(g2.getFont.deriveFont(28F))
-    val frameX = (tileSize * 9)
+    val frameX = (tileSize * 7)
     val frameY = tileSize
     val frameWidth = tileSize * 8
     val frameHeight = tileSize * 10
@@ -209,5 +233,6 @@ class UI (var gp: GamePanel):
       gp.player.pos = (gp.eHandler.tempRow * gp.tileSize, gp.eHandler.tempCol * gp.tileSize)
       gp.eHandler.previousEventX = gp.player.pos._1
       gp.eHandler.previousEventY = gp.player.pos._2
+      gp.changeArea()
 
 end UI

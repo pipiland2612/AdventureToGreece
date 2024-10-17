@@ -1,7 +1,7 @@
 package ui
 
 import `object`.{OBJ_Heart, OBJ_Mana}
-import entities.Creatures
+import entities.{Creatures, Entity}
 import game.GamePanel
 import utils.Tools
 
@@ -13,8 +13,8 @@ object PlayerUI:
   var gp: GamePanel = _
 
   var tileSize: Int = _
-  var heart: OBJ_Heart = new OBJ_Heart(25 , gp)
-  var mana : OBJ_Mana = new OBJ_Mana(25, gp)
+  var heart: OBJ_Heart = new OBJ_Heart(gp)
+  var mana : OBJ_Mana = new OBJ_Mana(gp)
 
   var playerSlotCol = 0
   var playerSlotRow = 0
@@ -43,7 +43,7 @@ object PlayerUI:
 
     drawPlayerStats(spacing, y, totalMana, currentMana, mana.image, mana.image2, mana.image3, mana.image4, mana.image5)
 
-  def drawInventory(creature: Creatures, cursor : Boolean): Unit =
+  def drawInventory(creature: Entity, cursor : Boolean): Unit =
     // Frame
     var slotRow: Int = 0
     var slotCol: Int = 0

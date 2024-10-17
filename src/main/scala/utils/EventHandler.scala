@@ -1,8 +1,16 @@
 package utils
 
-import entities.{Direction, Npc}
+import Environment.Area
+import entities.{Direction, Entity, Npc}
 import game.GameState.DialogueState
 import game.{GamePanel, GameState}
+
+import java.awt.Rectangle
+
+class EventMaster(gp: GamePanel) extends Entity(gp):
+  var name = ""
+  var pos = (0,0)
+  var solidArea: Rectangle = Rectangle(0,0,0,0)
 
 class EventHandler (var gp: GamePanel) :
   val eventRect: Array[Array[Array[EventRect]]] = Array.ofDim[EventRect](gp.maxMap, gp.maxWorldRow, gp.maxWorldCol)
@@ -10,6 +18,13 @@ class EventHandler (var gp: GamePanel) :
   var canCauseEvent: Boolean = true
   var counter = 60
   var tempMap, tempCol, tempRow : Int = _
+  var eventMaster = new EventMaster(gp)
+  var lastTriggeredEvent: Option[EventRect] = None
+
+  def setDialogue(): Unit =
+    eventMaster.dialogues(0)(0) = "You have been trapped"
+    eventMaster.dialogues(1)(0) = "Heal"
+    eventMaster.dialogues(2)(0) = "Save Game"
 
   def loadEventRect (): Unit =
     for
@@ -48,7 +63,7 @@ class EventHandler (var gp: GamePanel) :
           counter = 0
 
           thisEventRect.hasHappened = true
-
+          this.lastTriggeredEvent = Some(thisEventRect)
 
       Tools.resetSolidArea(gp.player)
       thisEventRect.x = thisEventRect.eventRectDefaultX
@@ -58,28 +73,31 @@ class EventHandler (var gp: GamePanel) :
   // Event heal, damage, etc..
   def damagePit (gameState : GameState) =
     gp.gameState = gameState
-    gp.gui.currentDialogue = "You have been trapped"
+    eventMaster.startDialoque(eventMaster, 0)
     gp.player.takeDamage(20)
     canCauseEvent = false
     counter = 0
 
   def heal (gameState : GameState): Unit =
     gp.gameState = gameState
-    gp.gui.currentDialogue = "Heal"
+    eventMaster.startDialoque(eventMaster, 1)
     gp.player.health = Math.min(gp.player.health + 10, gp.player.maxHealth)
 
-  def teleport(map: Int, row: Int, col: Int): Unit =
+  def teleport(map: Int, row: Int, col: Int, area: Area): Unit =
     gp.gameState = GameState.TransitionState
+    gp.nextArea = area
     tempMap = map
     tempRow = row
     tempCol = col
 
     canCauseEvent = false
+    counter = 0
+
 
   def saveGame(gameState : GameState): Unit =
     if gp.keyH.enterPressed then
       gp.gameState = gameState
-      gp.gui.currentDialogue = "Save Game"
+      eventMaster.startDialoque(eventMaster, 2)
       gp.saveLoad.save()
 
   // Call by the game loop
@@ -92,17 +110,19 @@ class EventHandler (var gp: GamePanel) :
     if distance > gp.tileSize || counter >= 60 then
       canCauseEvent = true
 
+      lastTriggeredEvent.foreach(event => event.hasHappened = false)
+
     if canCauseEvent then
       if hasHit(0, 48, 48, Direction.ANY) then damagePit(DialogueState)
       else if hasHit(0, 10 ,20, Direction.ANY) then heal(DialogueState)
-      else if hasHit(0, 35, 25, Direction.ANY) then teleport(1, 4 ,3)
-      else if hasHit(1, 4, 3, Direction.ANY) then teleport(0, 4 ,3)
-//      else if hasHit(0, 25, 21, Direction.ANY) then saveGame(DialogueState)
+      else if hasHit(0, 37, 25, Direction.ANY) then teleport(1, 4 ,3, Area.Dungeon) // To DUNGEON
+      else if hasHit(1, 4, 3, Direction.ANY) then teleport(0, 37 ,25, Area.OverWorld) // Back to Over World
 
   def speak(npc : Npc): Unit =
     if gp.keyH.enterPressed then
       gp.gameState = GameState.DialogueState
       npc.speak()
+
 
 end EventHandler
 

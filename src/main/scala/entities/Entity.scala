@@ -1,12 +1,18 @@
 package entities
-import game.GamePanel
+import game.{GamePanel, GameState}
+import items.{Item, Light, Projectile, Shield, Weapon}
 import utils.Animation
 
 import java.awt.Rectangle
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
+import scala.collection.mutable.ListBuffer
 
 abstract class Entity(var gp: GamePanel) :
+  var currentWeapon: Weapon = _
+  var currentShield: Shield = _
+  var currentProjectile: Projectile = _
+  var currentLight: Light = _
 
   var isCollided: Boolean = false
   var speed: Int = 0
@@ -23,6 +29,16 @@ abstract class Entity(var gp: GamePanel) :
   var name: String
   var collision: Boolean = false
 
+  var dialogues: Array[Array[String]] = Array.ofDim(20, 20)
+  var dialogueSet: Int = 0
+  var dialogueIndex = 0
+
+  val maxInventorySize = 20
+  var inventory : ListBuffer[Item] = ListBuffer()
+  var loot: Item = _
+  var opened: Boolean = false
+  def setLoot (loot: Item) : Unit = this.loot = loot
+
   var attackArea: Rectangle = new Rectangle(0, 0, 0, 0)
   def getPosition: (Int, Int) = this.pos
   def getLeftX: Int = this.pos._1 + this.solidArea.x
@@ -32,6 +48,11 @@ abstract class Entity(var gp: GamePanel) :
 
   def getCol = (this.pos._1 + this.solidArea.x) / gp.tileSize
   def getRow = (this.pos._2 + this.solidArea.y) / gp.tileSize
+
+  def startDialoque(entity: Entity, setNum: Int): Unit =
+    gp.gameState = GameState.DialogueState
+    gp.gui.npc = entity
+    dialogueSet = setNum
 
   protected def calculateScreenCoordinates(): (Int, Int) =
     val screenX = gp.player.screenX

@@ -1,10 +1,9 @@
 package entities
-import `object`.ObjectType.{ OBJ_Fireball, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
+import `object`.ObjectType.{OBJ_Fireball, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
 
 import java.awt.image.BufferedImage
 import game.{GamePanel, GameState}
-import items.{Coin, Item, Light, Potion, Projectile, Shield, Weapon}
-import levels.Obstacle
+import items.{Coin, InteractiveObjects, Item, Light, Potion, Projectile, Shield, Weapon}
 import ui.PlayerUI
 import utils.{Animation, Tools}
 
@@ -152,8 +151,13 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         gp.gui.isFinished = true
       hasCallDie = true
 
+  def resetCounter (): Unit =
+    counter = 0
+    shootCounter = 0
+
   def reset(): Unit =
     this.pos = (gp.tileSize * 23, gp.tileSize * 21)
+    resetCounter()
     health = maxHealth
     mana = maxMana
     isInvinc = false
@@ -261,8 +265,9 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   def searchItemInInventory(itemName: String): Int = inventory.indexWhere(_.name.equals(itemName))
 
   def obtainItem(item: Item): Boolean =
-    if item.isStackable then handleStackableItem(item)
-    else handleNewItem(item)
+    val newItem = gp.entityGen.getObject(item.name).asInstanceOf[Item]
+    if item.isStackable then handleStackableItem(newItem)
+    else handleNewItem(newItem)
 
   private def handleStackableItem(item: Item): Boolean =
     val index = searchItemInInventory(item.name)
@@ -333,9 +338,9 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
             gp.obj(gp.currentMap)(index) = null
             text = s"Picked up: ${item.name}"
           else text = "Your inventory is full"
-        case obstacle :Obstacle =>
+        case interactiveObjecy :InteractiveObjects =>
           if gp.keyH.enterPressed then
-            obstacle.interact()
+            interactiveObjecy.interact()
         case _ =>
       gp.gui.addMessage(text)
 
@@ -375,5 +380,6 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
       defense = getDefense
       // play level up sound/////
       gp.gameState = GameState.DialogueState
-      gp.gui.currentDialogue = "You are at level " + level + " now!"
 
+      dialogues(0)(0) = "You are at level " + level + " now!"
+      startDialoque(this, 0)

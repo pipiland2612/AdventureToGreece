@@ -7,8 +7,8 @@ import utils.Tools
 
 import java.awt.Rectangle
 
-class OBJ_Fireball(gp : GamePanel) extends Projectile(gp) :
-  var name = "Fire Ball"
+class OBJ_Fireball(gp: GamePanel) extends Projectile(gp):
+  var name = OBJ_Fireball.Name // Use the static name from the companion object
   speed = 5
   var damage = 2
   var costMana = 20
@@ -18,7 +18,7 @@ class OBJ_Fireball(gp : GamePanel) extends Projectile(gp) :
 
   var scale = 48
   // Images
-  def flyAnimation = Map (
+  def flyAnimation = Map(
     Direction.UP -> Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_up.png"), scale, scale),
     Direction.LEFT -> Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_left.png"), scale, scale),
     Direction.DOWN -> Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_down.png"), scale, scale),
@@ -29,5 +29,8 @@ class OBJ_Fireball(gp : GamePanel) extends Projectile(gp) :
   image = Tools.scaleImage(Tools.loadImage("Objects/Fireball/fireball_left.png"), size, size)
   areaHitBox = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
   solidArea = areaHitBox
+
+object OBJ_Fireball:
+  val Name: String = "Fire Ball"
 
 end OBJ_Fireball

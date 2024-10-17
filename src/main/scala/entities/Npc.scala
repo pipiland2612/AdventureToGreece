@@ -13,30 +13,25 @@ abstract class Npc(gp: GamePanel) extends Creatures(gp):
   var attackAnimations: Map[Direction, Animation] = _
   var deadAnimations: Map[Direction, Animation] = _
 
-  var dialogues = new Array[String](20)
-  var dialogueIndex = 0
   var notMoving: Boolean = false
 
   def speak (): Unit =
-    if dialogues(dialogueIndex) == null then
-      dialogueIndex = 0
-    gp.gui.currentDialogue = dialogues(dialogueIndex)
-    dialogueIndex += 1
+    facePlayer()
+    startDialoque(this, dialogueSet)
 
-//    this.direction = this.direction match
-//      case Direction.UP => Direction.DOWN
-//      case Direction.DOWN => Direction.UP
-//      case Direction.LEFT => Direction.RIGHT
-//      case Direction.RIGHT => Direction.LEFT
-//      case Direction.ANY =>
+  def facePlayer (): Unit =
+    this.direction = gp.player.direction match
+      case Direction.UP => Direction.DOWN
+      case Direction.DOWN => Direction.UP
+      case Direction.LEFT => Direction.RIGHT
+      case Direction.RIGHT => Direction.LEFT
 
 end Npc
 
-
-class Merchant(gp : GamePanel, var pos: (Int, Int)) extends Npc(gp):
+class Merchant(gp : GamePanel) extends Npc(gp):
+  var pos: (Int, Int) = (0,0)
   var name = "Merchant"
   speed = 2
-
   notMoving = true
   solidAreaDefaultX = 10
   solidAreaDefaultY = 22
@@ -44,16 +39,12 @@ class Merchant(gp : GamePanel, var pos: (Int, Int)) extends Npc(gp):
   image = Tools.scaleImage(Tools.loadImage("npc/merchant_npc.png"), gp.tileSize, gp.tileSize)
 
   def setDialogue(): Unit =
-    dialogues(0) = "Welcome, traveler! I have wares if you have coin."
-    dialogues(1) = "Ah, I see you have a discerning eye!\nPerhaps you'd like to take a look at my finest potions."
-    dialogues(2) = "No refunds!\nJust kidding, but be careful with that sword—it’s sharp!"
-    dialogues(3) = "Business is slow these days...\nmaybe I should start selling enchanted carrots."
-    dialogues(4) = "Looking for something special?\nPerhaps an amulet to ward off those pesky goblins?"
-    dialogues(5) = "I once traveled far and wide,\nbut now, I let the adventurers come to me.\nMuch easier on the boots."
-    dialogues(6) = "Oh, you’ve got a good eye for quality!\nThis one’s been enchanted by\nthe finest wizard in the kingdom."
-    dialogues(7) = "Need supplies for your journey?\nI’ve got potions, charms,\nand a little bit of good luck for sale."
-    dialogues(8) = "Watch out for bandits out there!\nAnd remember, \na well-equipped adventurer is a happy adventurer!"
-    dialogues(9) = "I may look like an old man,\nbut I tell you, \nI could beat you in a haggling contest any day!"
+    dialogues(0)(0) = "Welcome, traveler! I have wares if you have coin.\n"
+    dialogues(3)(0) = "Come again !"
+    dialogues(4)(0) = "You do not have enough coin"
+    dialogues(5)(0) = "You do not have enough spaces"
+    dialogues(6)(0) = "You can not sell an equipped item"
+
   setDialogue()
 
   def setItem(): Unit =
@@ -68,10 +59,48 @@ class Merchant(gp : GamePanel, var pos: (Int, Int)) extends Npc(gp):
   override def speak(): Unit =
     super.speak()
     gp.gameState = GameState.TradeState
-    gp.gui.merchant = this
+    gp.gui.npc = this
 
   override def update(): Unit = {}
 //    super.setAction()
 
 end Merchant
 
+class Socerer (gp: GamePanel) extends Npc(gp):
+  var pos: (Int, Int) = (0,0)
+  var name = "Socerer"
+  speed = 2
+  notMoving = true
+  solidAreaDefaultX = 10
+  solidAreaDefaultY = 22
+  var solidArea: Rectangle = new Rectangle(solidAreaDefaultX, solidAreaDefaultY, 24, 24)
+  image = Tools.scaleImage(Tools.loadImage("npc/socerer.png"), gp.tileSize * 2, gp.tileSize * 2)
+  dialogueSet = -1
+
+  def setDialogue(): Unit =
+    dialogues(0)(0) = "Greetings, adventurer.\nThe magic of this world is deeper than you think.\n"
+    dialogues(0)(1) = "Power comes at a price,\nand you must be prepared to pay it.\n"
+    dialogues(0)(2) = "Do not underestimate the shadows,\nfor they hold secrets not meant for the faint-hearted.\n"
+    dialogues(0)(3) = "The arcane arts require focus and sacrifice.\nBe careful what you seek.\n"
+    dialogues(0)(4) = "There are forces in this realm\nthat even I dare not trifle with.\nTread carefully.\n"
+
+    dialogues(1)(0) = "The stars speak to those who listen,\nbut their whispers are not always kind.\n"
+    dialogues(1)(1) = "Once, I was like you—\nfull of hope and ambition.\nThe world changes us all.\n"
+    dialogues(1)(2) = "Magic is not just a tool,\nit is a way of life, a bond with the unseen forces.\n"
+    dialogues(1)(3) = "The runes you see etched on my robes?\nThey are reminders of battles fought and lost.\n"
+    dialogues(1)(4) = "Legends speak of a forgotten spell\nhidden deep in the heart of the ancient woods.\nSome things are best left forgotten.\n"
+    dialogues(1)(5) = "Do not be swayed by the allure of power,\nfor it often leads to ruin.\n"
+    dialogues(1)(6) = "Every spell leaves a mark on the soul.\nBe mindful of how many marks you carry.\n"
+
+  setDialogue()
+
+  override def speak(): Unit =
+    super.speak()
+
+    dialogueSet += 1
+    if dialogues(dialogueSet)(0) == null then dialogueSet = 0
+
+  override def update(): Unit = {}
+//    super.setAction()
+
+end Socerer

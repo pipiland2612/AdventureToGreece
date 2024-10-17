@@ -61,7 +61,8 @@ class Lighting (gp: GamePanel) :
       gp.player.lightUpdated = false
 
   def draw (g2: Graphics2D): Unit =
-    g2.drawImage(darkNessFilter, 0, 0, null)
+    if gp.currentArea == Area.Dungeon then
+      g2.drawImage(darkNessFilter, 0, 0, null)
 
 end Lighting
 

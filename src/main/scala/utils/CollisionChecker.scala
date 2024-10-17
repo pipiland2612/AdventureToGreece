@@ -131,16 +131,16 @@ class CollisionChecker (var gp: GamePanel) :
     for (i <- target(1).indices) do
       if target(gp.currentMap)(i) != null then
         val currentTarget = target(gp.currentMap)(i)
-        Tools.updateAreaHitBox(entity)
+        Tools.updateSolidArea(entity)
         Tools.updateAreaHitBox(currentTarget)
 
-        adjustAreaHitBox(entity)
+        adjustSolidArea(entity)
 
-        if (entity.areaHitBox.intersects(currentTarget.areaHitBox)) then
+        if (entity.solidArea.intersects(currentTarget.areaHitBox)) then
           if currentTarget != entity then
             index = i
 
-        Tools.resetAreaHitBox(entity)
+        Tools.resetSolidArea(entity)
         Tools.resetAreaHitBox(currentTarget)
 
     index

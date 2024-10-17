@@ -14,6 +14,8 @@ class DataStorage extends Serializable:
   var exp: Int = 0
   var nextLevelExp: Int = 0
   var coin: Int = 0
+  var playerPositionX: Int = 0
+  var playerPositionY: Int = 0
 
   // Player INVENTORY
   var itemNames : ListBuffer[String] = new ListBuffer[String]()
@@ -31,5 +33,3 @@ class DataStorage extends Serializable:
   var chestOpened: Array[Array[Boolean]] = _
 
 end DataStorage
-
-

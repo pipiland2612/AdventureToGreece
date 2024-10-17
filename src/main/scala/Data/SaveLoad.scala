@@ -1,26 +1,11 @@
 package Data
 
-import `object`.OBJ_LightCandle
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Fireball, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
 import game.GamePanel
 import items.{Item, Projectile, Shield, Weapon}
 
 import java.io.{File, FileInputStream, FileOutputStream, ObjectInputStream, ObjectOutputStream}
 
 class SaveLoad (gp: GamePanel):
-
-  def getObject(name : String): Item =
-    val item : Item =
-      name match
-        case "Silver Key" => new OBJ_SilverKey(gp)
-        case "Bronze Coin" => new OBJ_BronzeCoin(gp)
-        case "Light Candle" => new OBJ_LightCandle(gp)
-        case "Normal Sword" => new OBJ_NormalSword(gp)
-        case "Normal Axe" => new OBJ_NormalAxe(gp)
-        case "Normal Shield" => new OBJ_NormalShield(gp)
-        case "Fire Ball" => new OBJ_Fireball(gp)
-        case "Normal Heal Flask" => new OBJ_NormalHealFlask(gp)
-    item
 
   def save(): Unit =
     try
@@ -36,6 +21,8 @@ class SaveLoad (gp: GamePanel):
       ds.exp = gp.player.exp
       ds.nextLevelExp = gp.player.nextLevelExp
       ds.coin = gp.player.coin
+      ds.playerPositionX = gp.player.pos._1
+      ds.playerPositionY = gp.player.pos._2
 
       for item <- gp.player.inventory do
         ds.itemNames += item.name
@@ -60,8 +47,10 @@ class SaveLoad (gp: GamePanel):
             ds.mapObjNames(mapNum)(i) = gp.obj(mapNum)(i).name
             ds.mapObjX(mapNum)(i) = gp.obj(mapNum)(i).pos._1
             ds.mapObjY(mapNum)(i) = gp.obj(mapNum)(i).pos._2
-            
-          
+            if gp.obj(mapNum)(i).loot != null then
+              ds.mapObjLootNames(mapNum)(i) = gp.obj(mapNum)(i).loot.name
+            ds.chestOpened(mapNum)(i) = gp.obj(mapNum)(i).opened
+
       oos.writeObject(ds)
 
     catch
@@ -82,11 +71,12 @@ class SaveLoad (gp: GamePanel):
       gp.player.exp = ds.exp
       gp.player.nextLevelExp = ds.nextLevelExp
       gp.player.coin = ds.coin
+      gp.player.pos = (ds.playerPositionX, ds.playerPositionY)
 
       gp.player.inventory.clear()
       for index <- ds.itemNames.indices do
-        if getObject(ds.itemNames(index)) != null then
-          gp.player.inventory += getObject(ds.itemNames(index))
+        if gp.entityGen.getObject(ds.itemNames(index)) != null then
+          gp.player.inventory += gp.entityGen.getObject(ds.itemNames(index)).asInstanceOf[Item]
           gp.player.inventory(index).amount = ds.itemAmount(index)
 
       if ds.currentWeaponSlot >= 0 && ds.currentWeaponSlot < gp.player.inventory.size then
@@ -98,8 +88,19 @@ class SaveLoad (gp: GamePanel):
       if ds.currentProjectileSlot >= 0 && ds.currentProjectileSlot < gp.player.inventory.size then
         gp.player.currentProjectile = gp.player.inventory(ds.currentProjectileSlot).asInstanceOf[Projectile]
 
-      gp.player.getAttackDamage
-      gp.player.getDefense
+      gp.player.attackDamage = gp.player.getAttackDamage
+      gp.player.defense = gp.player.getDefense
+
+      for mapNum <- 0 until gp.maxMap do
+        for i <- gp.obj(1).indices do
+          if ds.mapObjNames(mapNum)(i).equals("N/A") then
+            gp.obj(mapNum)(i) = null
+          else
+            gp.obj(mapNum)(i) = gp.entityGen.getObject(ds.mapObjNames(mapNum)(i))
+            gp.obj(mapNum)(i).pos = (ds.mapObjX(mapNum)(i), ds.mapObjY(mapNum)(i))
+            if ds.mapObjLootNames(mapNum)(i) != null  then
+              gp.obj(mapNum)(i).loot = gp.entityGen.getObject(ds.mapObjLootNames(mapNum)(i)).asInstanceOf[Item]
+            gp.obj(mapNum)(i).opened = ds.chestOpened(mapNum)(i)
 
     catch
       case e: Exception => e.printStackTrace()

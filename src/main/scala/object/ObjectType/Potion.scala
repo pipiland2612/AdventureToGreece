@@ -7,10 +7,9 @@ import utils.Tools
 
 import java.awt.Rectangle
 
-
-class OBJ_NormalHealFlask(gp: GamePanel) extends Potion (10, gp) :
-  name = "Normal Heal Flask"
-  effectName = "Heal"
+class OBJ_NormalHealFlask(gp: GamePanel) extends Potion(10, gp):
+  name = OBJ_NormalHealFlask.Name       // Use the static name from the companion object
+  effectName = OBJ_NormalHealFlask.EffectName  // Use the static effect name from the companion object
   price = 10
   isStackable = true
   var scale = 32
@@ -21,5 +20,9 @@ class OBJ_NormalHealFlask(gp: GamePanel) extends Potion (10, gp) :
   override def applyEffect(effect: Int, creatures: Creatures): Unit =
     creatures.health += effect
     if creatures.health > creatures.maxHealth then creatures.health = creatures.maxHealth
+
+object OBJ_NormalHealFlask:
+  val Name: String = "Normal Heal Flask"
+  val EffectName: String = "Heal"
 
 end OBJ_NormalHealFlask

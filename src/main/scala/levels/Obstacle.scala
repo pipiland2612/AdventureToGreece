@@ -3,6 +3,7 @@ package levels
 
 import entities.{Creatures, Entity}
 import game.GamePanel
+import items.Item
 
 abstract class Obstacle(gp : GamePanel) extends Entity(gp):
   def activate(): Unit = {}
@@ -12,4 +13,4 @@ abstract class Obstacle(gp : GamePanel) extends Entity(gp):
   def dealDamage(entity: Creatures): Unit =
     entity.takeDamage(1)
     
-  def interact(): Unit = {}
+

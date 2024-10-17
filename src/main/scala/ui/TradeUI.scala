@@ -1,6 +1,6 @@
 package ui
 
-import game.{GamePanel, GameState}
+import game.GamePanel
 import ui.PlayerUI.tileSize
 import utils.Tools
 
@@ -23,6 +23,7 @@ object TradeUI:
     gp.keyH.enterPressed = false
 
   def selectTrade(): Unit =
+    gp.gui.npc.dialogueSet = 0
     gp.gui.drawDialogueScreen()
     var x = tileSize * 15
     var y = tileSize * 4 + 10
@@ -51,12 +52,11 @@ object TradeUI:
       g2.drawString(">", x - 20, y)
       if gp.keyH.enterPressed then
         gp.gui.commandNum = 0
-        gp.gameState = GameState.DialogueState
-        gp.gui.currentDialogue = "Come again !"
+        gp.gui.npc.startDialoque(gp.gui.npc, 3)
 
   def buyTrade(): Unit =
     PlayerUI.drawInventory(gp.player, false)
-    PlayerUI.drawInventory(gp.gui.merchant, true)
+    PlayerUI.drawInventory(gp.gui.npc, true)
 
     var x = tileSize * 2
     var y = tileSize * 9
@@ -66,22 +66,19 @@ object TradeUI:
     g2.drawString("[ESC] Back", x + 20, y + 30)
 
     var itemIndex = PlayerUI.getItemIndexBySlot(PlayerUI.npcSlotCol, PlayerUI.npcSlotRow)
-    if itemIndex < gp.gui.merchant.inventory.size then
-      var price = gp.gui.merchant.inventory(itemIndex).price
+    if itemIndex < gp.gui.npc.inventory.size then
+      var price = gp.gui.npc.inventory(itemIndex).price
       g2.drawString(s"Cost: ${price}", (x + tileSize * 4) + 3, y - 20)
       if gp.keyH.enterPressed then
         if price > gp.player.coin then
           gp.gui.subState = 0
-          gp.gameState = GameState.DialogueState
-          gp.gui.currentDialogue = "You do not have enough coin"
-          gp.gui.drawDialogueScreen()
+          gp.gui.npc.startDialoque(gp.gui.npc, 4)
         else
-          if gp.player.obtainItem(gp.gui.merchant.inventory(itemIndex)) then
+          if gp.player.obtainItem(gp.gui.npc.inventory(itemIndex)) then
             gp.player.coin -= price
           else
             gp.gui.subState = 0
-            gp.gui.currentDialogue = "You do not have enought spaces"
-
+            gp.gui.npc.startDialoque(gp.gui.npc, 5)
 
     x = gp.screenWidth - tileSize * 7
     y = tileSize * 9
@@ -116,8 +113,7 @@ object TradeUI:
       if gp.keyH.enterPressed then
         if gp.player.inventory(itemIndex) == gp.player.currentWeapon || gp.player.inventory(itemIndex) == gp.player.currentShield then
           gp.gui.commandNum = 0
-          gp.gameState = GameState.DialogueState
-          gp.gui.currentDialogue = "You can not sell an equipped item"
+          gp.gui.npc.startDialoque(gp.gui.npc, 6)
         else
           if gp.player.inventory(itemIndex).amount > 1 then
             gp.player.inventory(itemIndex).amount -= 1

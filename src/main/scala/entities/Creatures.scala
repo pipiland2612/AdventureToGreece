@@ -1,7 +1,7 @@
 package entities
 
 import entities.Direction.ANY
-import game.GamePanel
+import game.{GamePanel, GameState}
 import items.{Item, Light, Projectile, Shield, Weapon}
 import utils.Animation
 
@@ -14,10 +14,6 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   // Creature States and Attributes
 
   var state: State = State.IDLE
-  var currentWeapon: Weapon = _
-  var currentShield: Shield = _
-  var currentProjectile: Projectile = _ 
-  var currentLight: Light = _
   val maxAttackCooldown: Int = 45
   var attackCooldown: Int = maxAttackCooldown
   var animationCounter = 0
@@ -36,8 +32,6 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var dying = false
   var dyingCounter = 0
   var shootCounter = 0
-  val maxInventorySize = 20
-  var inventory : ListBuffer[Item] = ListBuffer()
 
 
   // ----------------------------------------------------------------------------------------------

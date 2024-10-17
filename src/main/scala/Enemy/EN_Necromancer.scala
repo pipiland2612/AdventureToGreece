@@ -8,8 +8,9 @@ import utils.Tools
 import utils.Animation
 
 import java.awt.Rectangle
-class EN_Necromancer(gp : GamePanel, var pos: (Int, Int)) extends Enemy(gp) :
+class EN_Necromancer(gp : GamePanel) extends Enemy(gp) :
   // stats
+  var pos = (0,0)
   var name = "Necromancer"
   speed = 1
   maxHealth = 40

@@ -49,7 +49,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
   // Handle different game state
   private def handleDialogueState (code : Int) : Unit =
     code match
-      case KeyEvent.VK_ENTER => gp.gameState = GameState.PlayState
+      case KeyEvent.VK_ENTER => enterPressed = true
       case _ =>
 
   private def handlePauseState(code : Int) : Unit =
