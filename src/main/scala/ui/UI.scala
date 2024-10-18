@@ -1,84 +1,90 @@
 package ui
 
-import entities.Entity
+import Enemy.Enemy
+import entities.{Entity, Npc}
 import game.{GamePanel, GameState}
 import utils.Tools
 
 import java.awt.{Color, Font, Graphics2D}
 import scala.collection.mutable.ListBuffer
 
+class UI(var gp: GamePanel):
+  // Fonts and graphics
+  var font_40: Font = new Font("Arial", Font.PLAIN, 40)
+  var g2: Graphics2D = _
 
-class UI (var gp: GamePanel):
-  var font_40: Font = new Font("Arial", Font.PLAIN ,40)
-  var messageOn : Boolean = false
+  // Messages
+  var messageOn: Boolean = false
   var message: ListBuffer[String] = ListBuffer()
   var messageCounter: ListBuffer[Int] = ListBuffer()
 
+  // Dialogue and NPC
   var npc: Entity = _
-  var isFinished = false
   var currentDialogue: String = ""
-  var commandNum = 0
-  var counter: Int = 0
-
   var charIndex: Int = 0
   var combinedText: String = ""
 
-  var g2 : Graphics2D = _
-  val tileSize = gp.tileSize
-
+  // UI State
+  var isFinished = false
+  var commandNum = 0
+  var counter: Int = 0
   var subState = 0
 
+  val tileSize = gp.tileSize
+
+  // Set graphics
   def setGraphics(g: Graphics2D): Unit =
     g2 = g
     PlayerUI.setGraphics(g, gp)
     GameMenuUI.setGraphics(g, gp)
     TradeUI.setGraphics(g, gp)
 
-  def drawUI (g : Graphics2D): Unit =
+  // Main draw function
+  def drawUI(g: Graphics2D): Unit =
     setGraphics(g)
     g.setFont(font_40)
     g.setColor(Color.WHITE)
 
     gp.gameState match
-      case GameState.PlayState =>
-        PlayerUI.drawPlayerLife()
-        PlayerUI.drawPlayerMana()
-        drawMessage()
-      case GameState.PauseState =>
-        PlayerUI.drawPlayerLife()
-        PlayerUI.drawPlayerMana()
-        drawPauseScreen()
-      case GameState.DialogueState =>
-        PlayerUI.drawPlayerLife()
-        PlayerUI.drawPlayerMana()
-        drawDialogueScreen()
-      case GameState.TitleState =>
-        drawTitleScreen()
-      case GameState.CharacterState =>
-        PlayerUI.drawCharacterState()
-        PlayerUI.drawInventory(gp.player, true)
-      case GameState.GameMenu =>
-        drawGameMenu()
-      case GameState.GameOver =>
-        drawGameOver()
-      case GameState.TransitionState =>
-        drawTransitionState()
-      case GameState.TradeState =>
-        TradeUI.drawTradeState()
-      case GameState.MapState => 
+      case GameState.PlayState       => drawPlayState()
+      case GameState.PauseState      => drawPauseState()
+      case GameState.DialogueState   => drawDialogueState()
+      case GameState.TitleState      => drawTitleScreen()
+      case GameState.CharacterState  => drawCharacterState()
+      case GameState.GameMenu        => drawGameMenu()
+      case GameState.GameOver        => drawGameOver()
+      case GameState.TransitionState => drawTransitionState()
+      case GameState.TradeState      => TradeUI.drawTradeState()
+      case GameState.MapState        =>
 
-  def drawMessage(): Unit =
+  // Draw different UI components
+  private def drawPlayState(): Unit =
+    PlayerUI.drawPlayerLife()
+    PlayerUI.drawPlayerMana()
+    drawMessage()
+
+  private def drawPauseState(): Unit =
+    PlayerUI.drawPlayerLife()
+    PlayerUI.drawPlayerMana()
+    drawPauseScreen()
+
+  private def drawDialogueState(): Unit =
+    PlayerUI.drawPlayerLife()
+    PlayerUI.drawPlayerMana()
+    drawDialogueScreen()
+
+  private def drawCharacterState(): Unit =
+    PlayerUI.drawCharacterState()
+    PlayerUI.drawInventory(gp.player, true)
+
+  private def drawMessage(): Unit =
     val messageX = tileSize / 2
     var messageY = tileSize * 4
     g2.setFont(g2.getFont.deriveFont(Font.BOLD, 15F))
 
     for index <- message.indices.reverse do
       if message(index) != null then
-        g2.setColor(Color.BLACK)
-        g2.drawString(message(index), messageX + 1, messageY + 1)
-        g2.setColor(Color.WHITE)
-        g2.drawString(message(index), messageX, messageY)
-
+        drawMessageText(message(index), messageX, messageY)
         val counter = messageCounter(index) + 1
         messageCounter(index) = counter
         messageY += 30
@@ -87,47 +93,41 @@ class UI (var gp: GamePanel):
           message.remove(index)
           messageCounter.remove(index)
 
-  def drawTitleScreen(): Unit =
+  private def drawMessageText(text: String, x: Int, y: Int): Unit =
+    g2.setColor(Color.BLACK)
+    g2.drawString(text, x + 1, y + 1)
+    g2.setColor(Color.WHITE)
+    g2.drawString(text, x, y)
+
+  private def drawTitleScreen(): Unit =
     g2.setColor(new Color(208, 147, 62))
     g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)
 
     g2.setFont(g2.getFont.deriveFont(Font.BOLD, 70F))
-    var text = "Adventure to Greece"
-    var x = Tools.getCenterX(g2, gp, text)
-    var y = tileSize * 3
-    //Shadow
+    drawTitleText("Adventure to Greece", tileSize * 3)
+
+    // Menu options
+    g2.setFont(g2.getFont.deriveFont(Font.BOLD, 40F))
+    var y = tileSize * 4
+    drawMenuOption("NEW GAME", 0, y); y += tileSize
+    drawMenuOption("LOAD GAME", 1, y); y += tileSize
+    drawMenuOption("QUIT GAME", 2, y)
+
+  private def drawTitleText(text: String, y: Int): Unit =
+    val x = Tools.getCenterX(g2, gp, text)
     g2.setColor(Color.BLACK)
     g2.drawString(text, x + 5, y + 5)
-    //
     g2.setColor(Color.WHITE)
-    g2.drawString(text, x ,y)
-
-    //Player image
-    x = gp.screenWidth / 2
-    y += tileSize * 2
-//    g2.drawImage( x, y, tileSize, tileSize, null)
-    //MENU
-    g2.setFont(g2.getFont.deriveFont(Font.BOLD, 40F))
-    text = "NEW GAME"
-    x = Tools.getCenterX(g2, gp, text)
-    y += tileSize * 4
     g2.drawString(text, x, y)
-    if commandNum == 0 then g2.drawString(">", x - tileSize, y)
 
-    text = "LOAD GAME"
-    x = Tools.getCenterX(g2, gp, text)
-    y += tileSize
+  private def drawMenuOption(text: String, commandIndex: Int, offsetY: Int): Unit =
+    val x = Tools.getCenterX(g2, gp, text)
+    val y = tileSize * 3 + offsetY
     g2.drawString(text, x, y)
-    if commandNum == 1 then g2.drawString(">", x - tileSize, y)
-
-    text = "QUIT GAME"
-    x = Tools.getCenterX(g2, gp, text)
-    y += tileSize
-    g2.drawString(text, x, y)
-    if commandNum == 2 then g2.drawString(">", x - tileSize, y)
+    if commandNum == commandIndex then g2.drawString(">", x - tileSize, y)
 
   def drawDialogueScreen(): Unit =
-    var (x, y , width, height) = (
+    var (x, y, width, height) = (
       tileSize * 3,
       tileSize / 2,
       gp.screenWidth - (tileSize * 6),
@@ -138,15 +138,25 @@ class UI (var gp: GamePanel):
     g2.setFont(g2.getFont.deriveFont(Font.PLAIN, 25F))
     x += tileSize; y += tileSize
 
+    handleDialogueText()
+
+    currentDialogue.split("\n").foreach { line =>
+      g2.drawString(line, x, y)
+      y += 40
+    }
+
+  private def handleDialogueText(): Unit =
     if npc.dialogues(npc.dialogueSet)(npc.dialogueIndex) != null then
-//      currentDialogue = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex)
-      val charactersSet: Array[Char] = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex).toCharArray
-      if charIndex < charactersSet.length then
-        //play se
-        //
-        combinedText += charactersSet(charIndex).toString
-        currentDialogue = combinedText
-        charIndex += 1
+
+      npc match
+        case npc : Npc =>
+          val charactersSet: Array[Char] = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex).toCharArray
+          if charIndex < charactersSet.length then
+            combinedText += charactersSet(charIndex).toString
+            currentDialogue = combinedText
+            charIndex += 1
+        case _ =>
+          currentDialogue = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex)
 
       if gp.keyH.enterPressed then
         charIndex = 0
@@ -159,18 +169,13 @@ class UI (var gp: GamePanel):
       if gp.gameState == GameState.DialogueState then
         gp.gameState = GameState.PlayState
 
-    currentDialogue.split("\n").foreach( line =>
-      g2.drawString(line, x, y)
-      y += 40
-    )
-
-  def drawPauseScreen(): Unit =
+  private def drawPauseScreen(): Unit =
     val text: String = "PAUSE"
     val x: Int = Tools.getCenterX(g2, gp, text)
     val y: Int = gp.screenHeight / 2
-    g2.drawString(text, x ,y)
+    g2.drawString(text, x, y)
 
-  def drawGameMenu(): Unit =
+  private def drawGameMenu(): Unit =
     g2.setColor(Color.WHITE)
     g2.setFont(g2.getFont.deriveFont(28F))
     val frameX = (tileSize * 7)
@@ -186,42 +191,34 @@ class UI (var gp: GamePanel):
       case _ =>
     gp.keyH.enterPressed = false
 
-  def addMessage(text : String) =
+  def addMessage(text: String): Unit =
     message += text
     messageCounter += 0
 
-  def drawGameOver(): Unit =
+  private def drawGameOver(): Unit =
     g2.setColor(new Color(0, 0, 0, 150))
     g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)
 
     g2.setFont(g2.getFont.deriveFont(100F))
-    var text = "You Died! Game Over"
-    var x = Tools.getCenterX(g2, gp, text)
-    var y = tileSize * 4
-    // SHADOW
+    drawGameOverText("You Died! Game Over", tileSize * 4)
+    g2.setFont(g2.getFont.deriveFont(50F))
+    drawGameOverOption("Retry", 0, tileSize * 4)
+    drawGameOverOption("Quit", 1, 55)
+
+  private def drawGameOverText(text: String, y: Int): Unit =
+    val x = Tools.getCenterX(g2, gp, text)
     g2.setColor(Color.BLACK)
     g2.drawString(text, x, y)
-    // MAIN
     g2.setColor(Color.WHITE)
     g2.drawString(text, x - 4, y - 4)
-    // RETRY
-    g2.setFont(g2.getFont.deriveFont(50F))
-    text = "Retry"
-    x = Tools.getCenterX(g2, gp, text)
-    y += tileSize * 4
-    g2.drawString(text, x, y)
-    if commandNum == 0 then
-      g2.drawString(">", x-40, y)
 
-    // QUIT
-    text = "Quit"
-    x = Tools.getCenterX(g2, gp, text)
-    y += 55
+  private def drawGameOverOption(text: String, commandIndex: Int, offsetY: Int): Unit =
+    val x = Tools.getCenterX(g2, gp, text)
+    val y = tileSize * 4 + offsetY
     g2.drawString(text, x, y)
-    if commandNum == 1 then
-      g2.drawString(">", x-40, y)
+    if commandNum == commandIndex then g2.drawString(">", x - 40, y)
 
-  def drawTransitionState(): Unit =
+  private def drawTransitionState(): Unit =
     counter += 1
     g2.setColor(new Color(0, 0, 0, counter * 5))
     g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)

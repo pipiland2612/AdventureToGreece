@@ -16,6 +16,8 @@ class DataStorage extends Serializable:
   var coin: Int = 0
   var playerPositionX: Int = 0
   var playerPositionY: Int = 0
+  var currentMap: Int = 0
+  var currentArea: String = ""
 
   // Player INVENTORY
   var itemNames : ListBuffer[String] = new ListBuffer[String]()

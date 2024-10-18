@@ -7,31 +7,31 @@ import utils.Tools
 
 import java.awt.Rectangle
 
-class OBJ_Chest(gp: GamePanel) extends InteractiveObjects (gp):
-  var name = OBJ_Chest.Name
-  var pos: (Int, Int) = (0,0)
-
-  var size = 48
-  image = Tools.scaleImage(Tools.loadImage("Objects/chest.png"), size, size)
-  collision = true
+class OBJ_Chest(gp: GamePanel) extends InteractiveObjects(gp):
+  var name      = OBJ_Chest.Name
+  var pos       = (0, 0)
+  var size      = 48
   var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
+  image         = Tools.scaleImage(Tools.loadImage("Objects/chest.png"), size, size)
+  collision     = true
 
   setDialogue()
   def setDialogue(): Unit =
     dialogues(0)(0) = "You need a key to open this"
     dialogues(1)(0) = "Empty chest!"
 
+  override def setLoot(loot: Item): Unit = this.loot = loot
   override def interact(): Unit =
     gp.gameState = GameState.DialogueState
     if !opened then
-      startDialoque(this, 0)
+      startDialogue(this, 0)
     else
-      startDialoque(this, 1)
+      startDialogue(this, 1)
 
   def openChest(): Unit =
     gp.gameState = GameState.DialogueState
     var sb = new StringBuilder()
-    if !opened then
+    if !opened && loot != null then
       sb.append(s"Open chest and find a ${loot.name}!")
       if !gp.player.obtainItem(loot) then
         sb.append(s"\nBut, you can not carry more items")
@@ -39,19 +39,20 @@ class OBJ_Chest(gp: GamePanel) extends InteractiveObjects (gp):
         sb.append(s"\nLoot ${loot.name}")
         opened = true
       dialogues(2)(0) = sb.toString()
-      startDialoque(this, 2)
+      startDialogue(this, 2)
     else
       dialogues(3)(0) = s"Empty"
-      startDialoque(this, 3)
+      startDialogue(this, 3)
 end OBJ_Chest
 
 
-class OBJ_SilverKey(gp: GamePanel) extends Item (gp):
-  var name = OBJ_SilverKey.Name
-  var pos: (Int, Int) = (0, 0)
-  image = Tools.scaleImage(Tools.loadImage("Objects/silver_key.png"), size, size)
+class OBJ_SilverKey(gp: GamePanel) extends Item(gp):
+  var name          = OBJ_SilverKey.Name
+  var pos           = (0, 0)
+  var solidArea     = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/silver_key.png"), 32, 32)
-  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
+  image             = Tools.scaleImage(Tools.loadImage("Objects/silver_key.png"), size, size)
+
   setDialogue()
 
   def setDialogue(): Unit =
@@ -70,14 +71,14 @@ class OBJ_SilverKey(gp: GamePanel) extends Item (gp):
       val chest = gp.obj(gp.currentMap)(objIndex)
       chest match
         case chest1: OBJ_Chest if !chest1.opened =>
-          startDialoque(this, 0)
+          startDialogue(this, 0)
           chest1.openChest()
           true
         case _ =>
-          startDialoque(this, 1)
+          startDialogue(this, 1)
           false
     else
-      startDialoque(this, 2)
+      startDialogue(this, 2)
       false
 
 end OBJ_SilverKey

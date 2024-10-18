@@ -9,8 +9,8 @@ class Sound :
   var volumeScale: Int = 3
   var volume: Float = _
   var soundUrl: Array[File] = new Array[File](30)
-  soundUrl(0) = new File("/Users/batman/Desktop/Adventure to Greece/src/main/resources/sounds/adventure.wav")
-  soundUrl(1) = new File("/Users/batman/Desktop/Adventure to Greece/src/main/resources/sounds/boss_fight.wav")
+  soundUrl(0) = new File("src/main/resources/sounds/adventure.wav")
+  soundUrl(1) = new File("src/main/resources/sounds/boss_fight.wav")
 
   def setFile (int : Int): Unit =
     try

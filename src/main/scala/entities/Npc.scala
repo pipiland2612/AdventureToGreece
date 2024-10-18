@@ -17,7 +17,7 @@ abstract class Npc(gp: GamePanel) extends Creatures(gp):
 
   def speak (): Unit =
     facePlayer()
-    startDialoque(this, dialogueSet)
+    startDialogue(this, dialogueSet)
 
   def facePlayer (): Unit =
     this.direction = gp.player.direction match

@@ -1,5 +1,6 @@
 package Data
 
+import Environment.Area.{Dungeon, OverWorld}
 import game.GamePanel
 import items.{Item, Projectile, Shield, Weapon}
 
@@ -21,8 +22,12 @@ class SaveLoad (gp: GamePanel):
       ds.exp = gp.player.exp
       ds.nextLevelExp = gp.player.nextLevelExp
       ds.coin = gp.player.coin
-      ds.playerPositionX = gp.player.pos._1
-      ds.playerPositionY = gp.player.pos._2
+      ds.playerPositionX = gp.player.lastSavePoint._1
+      ds.playerPositionY = gp.player.lastSavePoint._2
+      ds.currentMap = gp.player.lastSavePointMap
+      ds.currentArea = gp.player.lastSavePointMap match
+        case 0 => "OverWorld"
+        case 1 => "Dungeon"
 
       for item <- gp.player.inventory do
         ds.itemNames += item.name
@@ -72,6 +77,10 @@ class SaveLoad (gp: GamePanel):
       gp.player.nextLevelExp = ds.nextLevelExp
       gp.player.coin = ds.coin
       gp.player.pos = (ds.playerPositionX, ds.playerPositionY)
+      gp.currentMap = ds.currentMap
+      gp.currentArea = ds.currentArea match
+        case "OverWorld" => OverWorld
+        case "Dungeon" => Dungeon
 
       gp.player.inventory.clear()
       for index <- ds.itemNames.indices do

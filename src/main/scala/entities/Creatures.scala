@@ -1,12 +1,10 @@
 package entities
 
 import entities.Direction.ANY
-import game.{GamePanel, GameState}
-import items.{Item, Light, Projectile, Shield, Weapon}
+import game.GamePanel
 import utils.Animation
 
 import java.awt.{Graphics2D, Rectangle}
-import scala.collection.mutable.ListBuffer
 
 abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
@@ -69,6 +67,11 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
       )
     else null
 
+  def attackHitBox: Rectangle = direction match
+    case Direction.UP => Rectangle(pos._1 + (areaHitBox.x / 1.5).toInt , pos._2 + areaHitBox.y - attackArea.height, attackArea.width, attackArea.height)
+    case Direction.DOWN => Rectangle(pos._1 + (areaHitBox.x / 1.5).toInt, pos._2 + areaHitBox.y + areaHitBox.height /2 + attackArea.height, attackArea.width, attackArea.height)
+    case Direction.LEFT => Rectangle(pos._1 + areaHitBox.x - attackArea.width, pos._2 + (areaHitBox.y * 3/2), attackArea.width, attackArea.height)
+    case Direction.RIGHT => Rectangle(pos._1 + areaHitBox.x - areaHitBox.width + attackArea.width, pos._2 + (areaHitBox.y * 3/2), attackArea.width, attackArea.height)
   // ----------------------------------------------------------------------------------------------
   // Creature Actions and State Management
 
@@ -106,43 +109,20 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
   def attack(): Unit =
     if state != State.ATTACK && attackCooldown <= 0 then
+      val attackAnimation = attackAnimations(direction)
+
+      if this != gp.player then
+        if gp.cCheck.checkPlayerWithOtherHitBox(this, attackHitBox) && attackAnimation.isInAttackInterval then
+          this.dealDamage(this.damagePower)
+      else if this == gp.player then
+        val enemyIndex = gp.cCheck.checkCollisionWithOtherHitBox(this, gp.enemyList, attackHitBox)
+        if attackAnimation.isInAttackInterval then
+          gp.player.attackEnemy(enemyIndex, gp.player.attackDamage)
+
       state = State.ATTACK
       needsAnimationUpdate = true
       animationCounter = 0
       attackCooldown = maxAttackCooldown
-
-      val attackAnimation = attackAnimations(direction)
-
-      // save current world x,y
-      val currentWorldX = pos._1
-      val currentWorldy = pos._2
-      val areaHitBoxWidth = this.areaHitBox.width
-      val areaHitBoxHeight = this.areaHitBox.height
-      // adjust player's worlds x,y
-      direction match
-        case Direction.UP => val newPosY = pos._2 - attackArea.height;  this.pos = (pos._1, newPosY)
-        case Direction.DOWN => val newPosY = pos._2 + attackArea.height;  this.pos = (pos._1, newPosY)
-        case Direction.LEFT => val newPosX = pos._1 - attackArea.width;  this.pos = (newPosX, pos._2)
-        case Direction.RIGHT => val newPosX = pos._1 + attackArea.width;  this.pos = (newPosX, pos._2)
-        case ANY =>
-      // attackAreaBecome solid Area
-      areaHitBox.width = attackArea.width
-      areaHitBox.height = attackArea.height
-
-      if this != gp.player then
-        if gp.cCheck.checkPlayerTargetHitBox(this) && attackAnimation.isInAttackInterval then
-          this.dealDamage(this.damagePower)
-      else if this == gp.player then
-        val enemyIndex = gp.cCheck.checkCollisionWithTargetsHitBox(this, gp.enemyList)
-        if attackAnimation.isInAttackInterval then
-          gp.player.attackEnemy(enemyIndex, gp.player.attackDamage)
-
-
-      this.pos = (currentWorldX, currentWorldy)
-      areaHitBox.width = areaHitBoxWidth
-      areaHitBox.height = areaHitBoxHeight
-//      attackAnimation.reset()
-
 
   def checkAnimationUpdate (): Unit =
     if(needsAnimationUpdate) then
@@ -202,7 +182,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
     gp.pFinder.setNodes(startRow, startCol, goalRow, goalCol)
 
     val hasFoundPath = gp.pFinder.search()
-    if hasFoundPath then
+    if hasFoundPath && gp.pFinder.pathList.nonEmpty then
       val (nextX, nextY) = (gp.pFinder.pathList.head.col * gp.tileSize, gp.pFinder.pathList.head.row * gp.tileSize)
       val enLeftX = this.pos._1 + solidArea.x
       val enRightX = this.pos._1 + solidArea.x + solidArea.width
@@ -248,4 +228,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
 
   // Rendering Methods
-  override def draw(g: Graphics2D): Unit = super.draw(g)
+  override def draw(g: Graphics2D): Unit = 
+    super.draw(g)
+
+  

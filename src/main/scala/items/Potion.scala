@@ -17,7 +17,8 @@ abstract class Potion (var effect: Int, gp: GamePanel) extends Item (gp):
 
   override def use(creature: Creatures): Boolean =
     gp.gameState = DialogueState
-    gp.gui.currentDialogue = s"You drink the $name! \nYou got ${effectName}ed!"
+    dialogues(0)(0) = s"You drink the $name! \nYou got ${effectName}ed!"
+    startDialogue(this, 0)
     applyEffect(effect, creature)
     true
 

@@ -52,7 +52,7 @@ object TradeUI:
       g2.drawString(">", x - 20, y)
       if gp.keyH.enterPressed then
         gp.gui.commandNum = 0
-        gp.gui.npc.startDialoque(gp.gui.npc, 3)
+        gp.gui.npc.startDialogue(gp.gui.npc, 3)
 
   def buyTrade(): Unit =
     PlayerUI.drawInventory(gp.player, false)
@@ -72,13 +72,13 @@ object TradeUI:
       if gp.keyH.enterPressed then
         if price > gp.player.coin then
           gp.gui.subState = 0
-          gp.gui.npc.startDialoque(gp.gui.npc, 4)
+          gp.gui.npc.startDialogue(gp.gui.npc, 4)
         else
           if gp.player.obtainItem(gp.gui.npc.inventory(itemIndex)) then
             gp.player.coin -= price
           else
             gp.gui.subState = 0
-            gp.gui.npc.startDialoque(gp.gui.npc, 5)
+            gp.gui.npc.startDialogue(gp.gui.npc, 5)
 
     x = gp.screenWidth - tileSize * 7
     y = tileSize * 9
@@ -113,7 +113,7 @@ object TradeUI:
       if gp.keyH.enterPressed then
         if gp.player.inventory(itemIndex) == gp.player.currentWeapon || gp.player.inventory(itemIndex) == gp.player.currentShield then
           gp.gui.commandNum = 0
-          gp.gui.npc.startDialoque(gp.gui.npc, 6)
+          gp.gui.npc.startDialogue(gp.gui.npc, 6)
         else
           if gp.player.inventory(itemIndex).amount > 1 then
             gp.player.inventory(itemIndex).amount -= 1

@@ -91,9 +91,13 @@ class GamePanel extends JPanel with Runnable:
     playMusic(0)
 
   def resetGame(restart: Boolean): Unit =
+    this.currentMap = 0
+    currentArea = Area.OverWorld
     player.reset()
     oManager.setEnemy()
     oManager.setNpc()
+    projectileList.clear()
+    entityList.clear()
 
     if restart then
       player = new Player((tileSize * 23, tileSize * 21), this)
@@ -108,7 +112,6 @@ class GamePanel extends JPanel with Runnable:
   def changeArea(): Unit =
 //    if nextArea != currentArea then
     currentArea = nextArea
-    oManager.setEnemy()
 
   // ----------------------------------------------------------------------------------------------
   // Game Loop Update
@@ -122,13 +125,13 @@ class GamePanel extends JPanel with Runnable:
         if npcList(currentMap)(i) != null then
           npcList(currentMap)(i).update()
 
-//      for i <- enemyList(1).indices do
-//        val currentEnemy = enemyList(currentMap)(i)
-//        if currentEnemy != null then
-//          currentEnemy.update()
-//          if currentEnemy.dying then
-//            currentEnemy.checkDrop()
-//            enemyList(currentMap)(i) = null
+      for i <- enemyList(1).indices do
+        val currentEnemy = enemyList(currentMap)(i)
+        if currentEnemy != null then
+          currentEnemy.update()
+          if currentEnemy.dying then
+            currentEnemy.checkDrop()
+            enemyList(currentMap)(i) = null
 
       for projectile <- projectileList do
         if projectile != null then

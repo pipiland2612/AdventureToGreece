@@ -15,6 +15,7 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   var spawnCounter: Int = 0
   var hasSpawn: Boolean = false
   val thisIndex = gp.enemyList(gp.currentMap).indexOf(this)
+  val directions = Vector(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT)
 
   var pos: (Int, Int)
   var defense: Int
@@ -30,8 +31,8 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
 
   // -----------------------------------------------
   // Distance Calculations
-  def getXDistance(entity: Entity): Int = Math.abs(this.pos._1 - entity.pos._1)
-  def getYDistance(entity: Entity): Int = Math.abs(this.pos._2 - entity.pos._2)
+  def getXDistance(entity: Entity): Int = Math.abs((this.pos._1 + this.areaHitBox.x) - (entity.pos._1 + entity.areaHitBox.x))
+  def getYDistance(entity: Entity): Int = Math.abs((this.pos._2 + this.areaHitBox.y) - (entity.pos._2 + entity.areaHitBox.y))
   def getTileDistance(entity: Entity): Int = (getXDistance(entity) + getYDistance(entity)) / gp.tileSize
   def getGoalCol(entity: Entity): Int = (entity.pos._1 + entity.solidArea.x) / gp.tileSize
   def getGoalRow(entity: Entity): Int = (entity.pos._2 + entity.solidArea.y) / gp.tileSize
@@ -42,7 +43,6 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
     val tileDistance = getTileDistance(entity)
     if tileDistance > distance then
       val i = new Random().nextInt(rate)
-      println(s"[DEBUG] Random value for stop chase: i=$i, rate=$rate")
       if i == 0 then
         isOnPath = false
 
@@ -58,16 +58,16 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
 
     this.direction match
       case Direction.UP =>
-        if gp.player.pos._2 < this.pos._2 && yDis < vertical && xDis < horizontal then
+        if gp.player.pos._2 + gp.player.areaHitBox.y < this.pos._2 + this.areaHitBox.y && yDis < vertical && xDis < horizontal then
           targetInRange = true
       case Direction.DOWN =>
-        if gp.player.pos._2 > this.pos._2 && yDis < vertical && xDis < horizontal then
+        if gp.player.pos._2 + gp.player.areaHitBox.y > this.pos._2 + this.areaHitBox.y && yDis < vertical + (gp.tileSize / 3) && xDis < horizontal then
           targetInRange = true
       case Direction.LEFT =>
-        if gp.player.pos._1 < this.pos._1 && yDis < vertical && xDis < horizontal then
+        if gp.player.pos._1 + gp.player.areaHitBox.x < this.pos._1 + this.areaHitBox.x && yDis < vertical && xDis < horizontal then
           targetInRange = true
       case Direction.RIGHT =>
-        if gp.player.pos._1 > this.pos._1 && yDis < vertical && xDis < horizontal then
+        if gp.player.pos._1 + gp.player.areaHitBox.x > this.pos._1 + this.areaHitBox.x && yDis < vertical && xDis < horizontal then
           targetInRange = true
       case Direction.ANY =>
 

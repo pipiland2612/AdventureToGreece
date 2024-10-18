@@ -7,14 +7,14 @@ import java.awt.Rectangle
 
 // SWORD
 class OBJ_NormalSword(gp: GamePanel) extends Weapon(15, gp):
-  var scale = 48
-  price = 5
-  name = OBJ_NormalSword.Name
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), scale * 4/5 , scale * 4/5)
-  image = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), scale, scale)
-  attackArea.width = 32
+  var scale       = 48
+  name            = OBJ_NormalSword.Name
+  price           = 5
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), scale * 4 / 5, scale * 4 / 5)
+  image           = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), scale, scale)
+  attackArea.width  = 32
   attackArea.height = 16
-  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
+  solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
 end OBJ_NormalSword
 
 object OBJ_NormalSword:
@@ -22,13 +22,13 @@ object OBJ_NormalSword:
 
 // AXE
 class OBJ_NormalAxe(gp: GamePanel) extends Weapon(6, gp):
-  name = OBJ_NormalAxe.Name
-  price = 20
+  name            = OBJ_NormalAxe.Name
+  price           = 20
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/axe_normal.png"), size - size / 5, size - size / 5)
-  image = Tools.scaleImage(Tools.loadImage("Objects/axe_normal.png"), size - size / 5, size - size / 5)
-  attackArea.width = 32
+  image           = Tools.scaleImage(Tools.loadImage("Objects/axe_normal.png"), size - size / 5, size - size / 5)
+  attackArea.width  = 32
   attackArea.height = 20
-  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
+  solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
 end OBJ_NormalAxe
 
 object OBJ_NormalAxe:
@@ -36,13 +36,13 @@ object OBJ_NormalAxe:
 
 // SHIELD
 class OBJ_NormalShield(gp: GamePanel) extends Shield(3, gp):
-  name = OBJ_NormalShield.Name
-  price = 15
+  name            = OBJ_NormalShield.Name
+  price           = 15
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5)
-  image = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5)
-  attackArea.width = 10
+  image           = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5)
+  attackArea.width  = 10
   attackArea.height = 10
-  solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
+  solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
 end OBJ_NormalShield
 
 object OBJ_NormalShield:

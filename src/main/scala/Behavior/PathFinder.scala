@@ -2,16 +2,20 @@ package Behavior
 
 import game.GamePanel
 
+import scala.collection.mutable.PriorityQueue
 import scala.collection.mutable.ListBuffer
 
 class PathFinder(gp: GamePanel):
   // USING A* ALGORITHM TO FIND PATH
   var nodeList: Array[Array[Node]] = Array.ofDim(gp.maxWorldRow, gp.maxWorldCol)
-  var openList: ListBuffer[Node] = new ListBuffer[Node]
+
   var pathList: ListBuffer[Node] = new ListBuffer[Node]
   var startNode, goalNode, currentNode: Node = _
   var goalReached: Boolean = false
   var step = 0
+
+  given Ordering[Node] = Ordering.by(node => (-node.fCost, -node.hCost)) // Min-Heap by fCost, tie by hCost
+  var openList: PriorityQueue[Node] = PriorityQueue.empty
 
   def initialiseNode(): Unit =
     for
@@ -19,6 +23,8 @@ class PathFinder(gp: GamePanel):
       col <- 0 until gp.maxWorldCol
     do
       nodeList(row)(col) = new Node(row, col)
+      // initialize solid nodes
+
   initialiseNode()
 
   def resetNodes(): Unit =
@@ -47,20 +53,20 @@ class PathFinder(gp: GamePanel):
       row <- 0 until gp.maxWorldRow
       col <- 0 until gp.maxWorldCol
     do
-      // CHECK TILES
+      
       val tileNum = gp.tileManager.mapTileNum(gp.currentMap)(row)(col)
       if gp.tileManager.tile(tileNum).collision then
         nodeList(row)(col).solid = true
-
       // SET COST
       setCost(nodeList(row)(col))
-    
-//    for i <- gp.obj(1).indices do
-//      if gp.obj(gp.currentMap)(i) != null && gp.obj(gp.currentMap)(i).collision then
-//        val objCol = (gp.obj(gp.currentMap)(i).getPosition._1 + gp.obj(gp.currentMap)(i).solidAreaDefaultX) / gp.tileSize
-//        val objRow = (gp.obj(gp.currentMap)(i).getPosition._2 + gp.obj(gp.currentMap)(i).solidAreaDefaultY) / gp.tileSize
-//        if objRow >= 0 && objRow < gp.maxWorldRow && objCol >= 0 && objCol < gp.maxWorldCol then
-//          gp.pFinder.nodeList(objRow)(objCol).solid = true
+
+//      for i <- gp.obj(1).indices do
+//        if gp.obj(gp.currentMap)(i) != null && gp.obj(gp.currentMap)(i).collision then
+//          val objCol = (gp.obj(gp.currentMap)(i).getPosition._1 + gp.obj(gp.currentMap)(i).solidAreaDefaultX) / gp.tileSize
+//          val objRow = (gp.obj(gp.currentMap)(i).getPosition._2 + gp.obj(gp.currentMap)(i).solidAreaDefaultY) / gp.tileSize
+//          if objRow >= 0 && objRow < gp.maxWorldRow && objCol >= 0 && objCol < gp.maxWorldCol then
+//            gp.pFinder.nodeList(objRow)(objCol).solid = true
+
 
 //    for i <- gp.npcList(1).indices do
 //      if gp.npcList(gp.currentMap)(i) != null && gp.npcList(gp.currentMap)(i).notMoving then
@@ -82,37 +88,22 @@ class PathFinder(gp: GamePanel):
 
   def search(): Boolean =
     while !goalReached && step < 300 && openList.nonEmpty do
-      val row = currentNode.row
-      val col = currentNode.col
+      if openList.isEmpty then return false 
+
+      currentNode = openList.dequeue()
       currentNode.checked = true
-      openList -= currentNode
 
-      // Open neighboring nodes
-      if row - 1 >= 0 then
-        openNode(nodeList(row - 1)(col))
-      if col - 1 >= 0 then
-        openNode(nodeList(row)(col - 1))
-      if row + 1 < gp.maxWorldRow then
-        openNode(nodeList(row + 1)(col))
-      if col + 1 < gp.maxWorldCol then
-        openNode(nodeList(row)(col + 1))
-
-      var bestNodeIndex = 0
-      var bestNodeFCost = Int.MaxValue
-
-      for i <- openList.indices do
-        if openList(i).fCost < bestNodeFCost then
-          bestNodeIndex = i
-          bestNodeFCost = openList(i).fCost
-        else if openList(i).fCost == bestNodeFCost then
-          if openList(i).hCost < openList(bestNodeIndex).hCost then
-            bestNodeIndex = i
-
-      currentNode = openList(bestNodeIndex)
-      if (currentNode == goalNode) then
+      if currentNode == goalNode then
         goalReached = true
         trackPath()
+        return true
 
+      val row = currentNode.row
+      val col = currentNode.col
+      if row - 1 >= 0 then openNode(nodeList(row - 1)(col))
+      if col - 1 >= 0 then openNode(nodeList(row)(col - 1))
+      if row + 1 < gp.maxWorldRow then openNode(nodeList(row + 1)(col))
+      if col + 1 < gp.maxWorldCol then openNode(nodeList(row)(col + 1))
       step += 1
 
     goalReached
@@ -125,6 +116,6 @@ class PathFinder(gp: GamePanel):
 
   def trackPath(): Unit =
     var current: Node = goalNode
-    while current != startNode do
+    while current != startNode && current != null do
       pathList.prepend(current)
       current = current.parent
