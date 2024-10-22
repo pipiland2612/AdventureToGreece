@@ -8,8 +8,8 @@ import utils.Tools
 import java.awt.Rectangle
 
 class OBJ_NormalHealFlask(gp: GamePanel) extends Potion(10, gp):
-  name = OBJ_NormalHealFlask.Name       // Use the static name from the companion object
-  effectName = OBJ_NormalHealFlask.EffectName  // Use the static effect name from the companion object
+  name = OBJ_NormalHealFlask.Name
+  effectName = OBJ_NormalHealFlask.EffectName
   price = 10
   isStackable = true
   var scale = 32

@@ -1,6 +1,6 @@
 package `object`
 
-import Enemy.EN_Necromancer
+import Enemy.{EN_Beetle, EN_KingOfDeath, EN_Mantis, EN_Necromancer, EN_Orc_Heavy, EN_Orc_Light}
 import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalSword}
 import entities.{Entity, Merchant, Socerer}
 import game.GamePanel
@@ -45,14 +45,28 @@ class ObjectManager(var gp : GamePanel) :
     this.loadEntity(objectData1, gp.obj(1))
 
   def setEnemy (): Unit =
+    // OBJ                                      INDEX  POSITION    (COL, ROW)
     val enemyData0 = List(
-      (new EN_Necromancer(gp),                  0,     Some(calcPos (23, 24))),
-      (new EN_Necromancer(gp),                  1,     Some(calcPos (13, 14)))
+//      (new EN_Beetle(gp),                       0,     Some(calcPos (23, 24))),
+//      (new EN_Beetle(gp),                       1,     Some(calcPos (13, 14))),
+//      (new EN_Mantis(gp),                       2,     Some(calcPos (15, 17))),
+//      (new EN_Mantis(gp),                       3,     Some(calcPos (17, 19))),
+      (new EN_KingOfDeath(gp),                    0,     Some(calcPos (35, 26))),
+
     )
 
     this.loadEntity(enemyData0, gp.enemyList(0))
 
+    val enemyData1 = List(
+      (new EN_Necromancer(gp),                  0,     Some(calcPos (23, 24))),
+      (new EN_Orc_Light(gp),                    1,     Some(calcPos (3, 3))),
+//      (new EN_Necromancer(gp),                  1,     Some(calcPos (13, 14))),
+//      (new EN_Orc_Heavy(gp),                    3,     Some(calcPos (5, 5))),
+    )
+    this.loadEntity(enemyData1, gp.enemyList(1))
+
   def setNpc(): Unit =
+    // OBJ                                      INDEX  POSITION    (COL, ROW)
     val npcData0 = List(
       (new Merchant(gp),                        0,     Some(calcPos (13, 14))),
       (new Socerer(gp),                         1,     Some(calcPos (15, 14)))

@@ -1,6 +1,5 @@
 package ui
 
-import Enemy.Enemy
 import entities.{Entity, Npc}
 import game.{GamePanel, GameState}
 import utils.Tools
@@ -199,11 +198,12 @@ class UI(var gp: GamePanel):
     g2.setColor(new Color(0, 0, 0, 150))
     g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)
 
-    g2.setFont(g2.getFont.deriveFont(100F))
+    g2.setFont(g2.getFont.deriveFont(90F))
     drawGameOverText("You Died! Game Over", tileSize * 4)
     g2.setFont(g2.getFont.deriveFont(50F))
-    drawGameOverOption("Retry", 0, tileSize * 4)
-    drawGameOverOption("Quit", 1, 55)
+    val y = tileSize * 3
+    drawGameOverOption("Retry", 0, y)
+    drawGameOverOption("Quit", 1, y + tileSize * 3)
 
   private def drawGameOverText(text: String, y: Int): Unit =
     val x = Tools.getCenterX(g2, gp, text)

@@ -15,6 +15,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   currentShield = OBJ_NormalShield(gp)
   currentProjectile = OBJ_Fireball(gp)
 
+  var isGodMode = true
+
   state = State.IDLE
   // ----------------------------------------------------------------------------------
   // Player stats
@@ -70,7 +72,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   // ----------------------------------------------------------------------------------------------
   // ANIMATIONS
   private val spriteFrames = Tools.loadFrames("Players/Player_spritesheet", frameSize, frameSize, playerScale, playerScale, 21)
-  private val attackFrames = Tools.loadFrames("Players/attack_spritesheet", frameSize, frameSize,playerScale, playerScale,4)
+  private val attackFrames = Tools.loadFrames("Players/attack_spritesheet", frameSize, frameSize, playerScale, playerScale, 4)
   var idleAnimations = Map(
     Direction.UP -> Animation(Vector(spriteFrames(0)(0)), 1),
     Direction.LEFT -> Animation(Vector(spriteFrames(1)(0)), 1),
@@ -91,13 +93,13 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
   var attackAnimations = Map(
     Direction.UP -> Animation(
-      Tools.getFrames(attackFrames, 3, 6), 5, 0, 4),
+      Tools.getFrames(attackFrames, 3, 6), 5, 0, 5),
     Direction.LEFT -> Animation(
-      Tools.getFrames(attackFrames, 1, 6), 5, 0, 4),
+      Tools.getFrames(attackFrames, 1, 6), 5, 0, 5),
     Direction.DOWN -> Animation(
-      Tools.getFrames(attackFrames, 0, 6), 5, 0, 4),
+      Tools.getFrames(attackFrames, 0, 6), 5, 0, 5),
     Direction.RIGHT -> Animation(
-      Tools.getFrames(attackFrames, 2, 6), 5, 0, 4),
+      Tools.getFrames(attackFrames, 2, 6), 5, 0, 5),
   )
 
   var deadAnimations = Map (
@@ -128,6 +130,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   def getCurrentShieldIndex: Int = inventory.indexWhere(_ == this.currentShield)
   def getCurrentProjectile: Projectile = currentProjectile
   def getCurrentProjectileIndex: Int = inventory.indexWhere(_ == this.currentProjectile)
+  def getCurrentLightIndex: Int = inventory.indexWhere(_ == this.currentLight)
   def getAttackDamage: Int =
     attackArea = currentWeapon.attackArea
     currentWeapon.damage * strength
@@ -262,6 +265,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         currentLight = light
       lightUpdated = true
     case item: Item =>
+
       if item.use(this) then
         inventory.remove(itemIndex)
 
@@ -305,7 +309,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   // GAME LOOP UPDATE
   override def update(): Unit =
     handleInvincibility()
-    handleGameOver()
+    if !isGodMode then
+      handleGameOver()
     if attackCooldown > 0 then
       attackCooldown -= 1
 
@@ -341,9 +346,9 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
             gp.obj(gp.currentMap)(index) = null
             text = s"Picked up: ${item.name}"
           else text = "Your inventory is full"
-        case interactiveObjecy :InteractiveObjects =>
+        case interactiveObject :InteractiveObjects =>
           if gp.keyH.enterPressed then
-            interactiveObjecy.interact()
+            interactiveObject.interact()
         case _ =>
       gp.gui.addMessage(text)
 

@@ -86,6 +86,7 @@ class OBJ_CheckPoint(gp: GamePanel) extends InteractiveObjects(gp):
   var name      = OBJ_CheckPoint.Name
   var pos       = (0, 0)
   var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, 20, 32)
+  
   solidAreaDefaultX = 16
   solidAreaDefaultY = 10
   image         = Tools.scaleImage(Tools.loadImage("Objects/check_point.png"), 48, 48)

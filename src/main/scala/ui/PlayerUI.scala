@@ -1,7 +1,7 @@
 package ui
 
 import `object`.{OBJ_Heart, OBJ_Mana}
-import entities.{Creatures, Entity}
+import entities.Entity
 import game.GamePanel
 import utils.Tools
 

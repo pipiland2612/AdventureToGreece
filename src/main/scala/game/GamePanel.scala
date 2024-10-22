@@ -15,9 +15,7 @@ import entities.{Entity, Npc, Player}
 import items.Projectile
 import ui.UI
 import utils.{CollisionChecker, Config, EntityGenerator, EventHandler, KeyHandler, Sound, Tools}
-
 import scala.collection.mutable.ListBuffer
-
 
 class GamePanel extends JPanel with Runnable:
   // ----------------------------------------------------------------------------------------------
@@ -30,7 +28,7 @@ class GamePanel extends JPanel with Runnable:
   val screenWidth = maxScreenColumn * tileSize
   val screenHeight = maxScreenRow * tileSize
 
-  // worlds settings
+  // Worlds settings
   val maxWorldCol = 50
   val maxWorldRow = 50
   val maxMap = 2
@@ -110,16 +108,15 @@ class GamePanel extends JPanel with Runnable:
   def playSE (int : Int) = this.se.setFile(int); this.se.play()
 
   def changeArea(): Unit =
-//    if nextArea != currentArea then
-    currentArea = nextArea
+    if nextArea != currentArea then
+      currentArea = nextArea
+    updateBackGroundImage()
 
   // ----------------------------------------------------------------------------------------------
   // Game Loop Update
   def update(): Unit =
     if gameState == GameState.PlayState then
       this.player.update()
-
-      updateBackGroundImage()
 
       for i <- npcList(1).indices do
         if npcList(currentMap)(i) != null then
@@ -168,6 +165,7 @@ class GamePanel extends JPanel with Runnable:
     else if gameState == GameState.MapState then
       miniMap.drawFullMapScreen(g2d)
     else
+      // PLAYSTATE
       //TILE
       tileManager.drawTiles(g2d)
 
@@ -190,16 +188,18 @@ class GamePanel extends JPanel with Runnable:
       for (projectile <- projectileList) do
         if projectile != null then
           entityList += projectile
-      // SORT LIST
+
+      // SORT LIST BY Y POSITION
       entityList = entityList.sortBy(entity => entity.getPosition._2 + entity.solidAreaDefaultY)
+
       //DRAW
       for entity <- entityList do
         entity.draw(g2d)
       //EMPTY LIST
       entityList.clear()
       Tools.renderDebugInfo (g2d, player, obj, enemyList, this)
-      // ENVIRONMENT
 
+      // ENVIRONMENT
       environmentManager.draw(g2d)
       miniMap.drawMiniMap(g2d)
       //UI

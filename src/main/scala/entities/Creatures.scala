@@ -1,5 +1,6 @@
 package entities
 
+import Enemy.Enemy
 import entities.Direction.ANY
 import game.GamePanel
 import utils.Animation
@@ -11,7 +12,6 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   // ----------------------------------------------------------------------------------------------
   // Creature States and Attributes
 
-  var state: State = State.IDLE
   val maxAttackCooldown: Int = 45
   var attackCooldown: Int = maxAttackCooldown
   var animationCounter = 0
@@ -31,13 +31,11 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
   var dyingCounter = 0
   var shootCounter = 0
 
-
   // ----------------------------------------------------------------------------------------------
   // Animation and Rendering
   var idleAnimations: Map[Direction, Animation]
   var runAnimations: Map[Direction, Animation]
   var attackAnimations: Map[Direction, Animation]
-  var deadAnimations: Map[Direction, Animation]
 
   var attackTimeAnimation: Int = 0
   var needsAnimationUpdate = false
@@ -60,10 +58,6 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         (Direction.LEFT, State.ATTACK) -> attackAnimations(Direction.LEFT),
         (Direction.RIGHT, State.ATTACK) -> attackAnimations(Direction.RIGHT),
 
-        (Direction.UP, State.DEAD) -> deadAnimations(Direction.UP),
-        (Direction.DOWN, State.DEAD) -> deadAnimations(Direction.DOWN),
-        (Direction.LEFT, State.DEAD) -> deadAnimations(Direction.LEFT),
-        (Direction.RIGHT, State.DEAD) -> deadAnimations(Direction.RIGHT),
       )
     else null
 
@@ -109,6 +103,11 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
 
   def attack(): Unit =
     if state != State.ATTACK && attackCooldown <= 0 then
+      state = State.ATTACK
+      needsAnimationUpdate = true
+      animationCounter = 0
+      attackCooldown = maxAttackCooldown
+
       val attackAnimation = attackAnimations(direction)
 
       if this != gp.player then
@@ -119,11 +118,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         if attackAnimation.isInAttackInterval then
           gp.player.attackEnemy(enemyIndex, gp.player.attackDamage)
 
-      state = State.ATTACK
-      needsAnimationUpdate = true
-      animationCounter = 0
-      attackCooldown = maxAttackCooldown
-
+  // Animations
   def checkAnimationUpdate (): Unit =
     if(needsAnimationUpdate) then
       if currentAnimation != null then
@@ -140,8 +135,13 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
         case Direction.RIGHT => this.move(this.speed, 0)
         case ANY =>
     else
-      if currentAnimation != null then
-        currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
+      this match
+        case enemy: Enemy => 
+          enemy.checkToAttack(enemy.attackRate, enemy.verticalScanRange, enemy.horizontalScanRange)
+        case player: Player => 
+          if currentAnimation != null then
+            currentAnimation = images.getOrElse((direction, state), images((direction, State.IDLE)))
+        case _ =>
 
   // ----------------------------------------------------------------------------------------------
   // Game Loop Update and Collision Handling
@@ -154,6 +154,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
     state match
       case State.ATTACK =>
         handleAttackState()
+      case State.DEAD =>
       case _ =>
         checkCollision()
         checkAnimationUpdate()
@@ -189,7 +190,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
       val enTopY = this.pos._2 + solidArea.y
       val enBottomY = this.pos._2 + solidArea.y + solidArea.height
 
-      // BASE on position, find the relative nodes
+      // BASE on position, find the relative nodes, check different situations
       if enTopY > nextY && enLeftX >= nextX && enRightX < nextX + gp.tileSize then
         direction = Direction.UP
       else if enTopY < nextY && enLeftX >= nextX && enRightX < nextX + gp.tileSize then

@@ -13,6 +13,7 @@ abstract class Entity(var gp: GamePanel):
   // ----------------------------------------------------------------------------------------------
   // Attributes
 
+  var state: State = State.IDLE
   var pos: (Int, Int)                                // Position (x, y)
   var speed: Int = 0                                 // Movement speed
   var direction: Direction = Direction.DOWN          // Current direction
@@ -29,7 +30,7 @@ abstract class Entity(var gp: GamePanel):
   val maxInventorySize = 20
   var inventory: ListBuffer[Item] = ListBuffer()     // Player inventory
   var loot: Item = _                                 // Lootable item
-  var opened: Boolean = false                        // Is the entity opened (for chests,)
+  var opened: Boolean = false                        // Is the entity opened (for chests)
 
   // ----------------------------------------------------------------------------------------------
   // Collision Areas
@@ -37,7 +38,7 @@ abstract class Entity(var gp: GamePanel):
   var solidArea: Rectangle                           // Collision area
   var solidAreaDefaultX, solidAreaDefaultY: Int = 0  // Default positions for solid area
 
-  var areaHitBox: Rectangle = new Rectangle(0, 0, 0, 0) // Hitbox for specific purposes (e.g., attack)
+  var areaHitBox: Rectangle = Rectangle(0, 0, 0, 0)  // Hitbox for specific purposes (e.g., attack)
   var areaDefaultX, areaDefaultY: Int = 0            // Default hitbox positions
 
   var attackArea: Rectangle = new Rectangle(0, 0, 0, 0) // Area for attack hitbox
@@ -47,6 +48,11 @@ abstract class Entity(var gp: GamePanel):
 
   var currentAnimation: Animation = _
   var image: BufferedImage = _
+  var offsetX: Int = 0
+  var offsetY: Int = 0
+  // For more precision
+  var imageWidthCenter: Int = 0
+  var imageHeightCenter: Int = 0
 
   // ----------------------------------------------------------------------------------------------
   // Dialogue System
@@ -68,8 +74,8 @@ abstract class Entity(var gp: GamePanel):
   def getTopY: Int = this.pos._2 + this.solidArea.y
   def getBottomY: Int = this.pos._2 + this.solidArea.y + solidArea.height
 
-  def getCol: Int = (this.pos._1 + this.solidArea.x) / gp.tileSize
-  def getRow: Int = (this.pos._2 + this.solidArea.y) / gp.tileSize
+  def getCol: Int = (this.pos._1 + this.solidAreaDefaultX) / gp.tileSize
+  def getRow: Int = (this.pos._2 + this.solidAreaDefaultY) / gp.tileSize
 
   // ----------------------------------------------------------------------------------------------
   // Methods for Gameplay Actions
@@ -101,6 +107,10 @@ abstract class Entity(var gp: GamePanel):
     val screenX = gp.player.screenX
     val screenY = gp.player.screenY
 
+    val adjustedScreenTileX = if this.state == State.ATTACK then screenTileX - offsetX else screenTileX
+    val adjustedScreenTileY = if this.state == State.ATTACK then screenTileY - offsetY else screenTileY
+
+
     if (
       worldX + drawRange > playerX - screenX &&
       worldX - drawRange < playerX + screenX &&
@@ -111,4 +121,4 @@ abstract class Entity(var gp: GamePanel):
         if currentAnimation != null then currentAnimation.getCurrentFrame
         else image
 
-      g.drawImage(imageToDraw, screenTileX, screenTileY, null)
+      g.drawImage(imageToDraw, adjustedScreenTileX, adjustedScreenTileY, null)

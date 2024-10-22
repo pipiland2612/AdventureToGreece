@@ -4,6 +4,7 @@ import scala.collection.mutable.ListBuffer
 
 class DataStorage extends Serializable:
 
+  // Player Stats
   var level: Int = 0
   var maxHealth: Int = 0
   var health: Int = 0
@@ -14,6 +15,7 @@ class DataStorage extends Serializable:
   var exp: Int = 0
   var nextLevelExp: Int = 0
   var coin: Int = 0
+  // Player's position at last save point
   var playerPositionX: Int = 0
   var playerPositionY: Int = 0
   var currentMap: Int = 0
@@ -26,6 +28,7 @@ class DataStorage extends Serializable:
   var currentWeaponSlot: Int = 0
   var currentShieldSlot: Int = 0
   var currentProjectileSlot: Int = 0
+  var currentLightSlot: Int = 0
 
   // MAP OBJECT
   var mapObjNames: Array[Array[String]] = _

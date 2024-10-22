@@ -14,7 +14,8 @@ class PathFinder(gp: GamePanel):
   var goalReached: Boolean = false
   var step = 0
 
-  given Ordering[Node] = Ordering.by(node => (-node.fCost, -node.hCost)) // Min-Heap by fCost, tie by hCost
+  // Min-Heap by fCost, tie by hCost
+  given Ordering[Node] = Ordering.by(node => (-node.fCost, -node.hCost))
   var openList: PriorityQueue[Node] = PriorityQueue.empty
 
   def initialiseNode(): Unit =
@@ -23,7 +24,6 @@ class PathFinder(gp: GamePanel):
       col <- 0 until gp.maxWorldCol
     do
       nodeList(row)(col) = new Node(row, col)
-      // initialize solid nodes
 
   initialiseNode()
 
@@ -55,11 +55,13 @@ class PathFinder(gp: GamePanel):
     do
       
       val tileNum = gp.tileManager.mapTileNum(gp.currentMap)(row)(col)
+      // initialize solid nodes
       if gp.tileManager.tile(tileNum).collision then
         nodeList(row)(col).solid = true
       // SET COST
       setCost(nodeList(row)(col))
 
+      //Check for objs and npcs
 //      for i <- gp.obj(1).indices do
 //        if gp.obj(gp.currentMap)(i) != null && gp.obj(gp.currentMap)(i).collision then
 //          val objCol = (gp.obj(gp.currentMap)(i).getPosition._1 + gp.obj(gp.currentMap)(i).solidAreaDefaultX) / gp.tileSize
@@ -94,12 +96,14 @@ class PathFinder(gp: GamePanel):
       currentNode.checked = true
 
       if currentNode == goalNode then
+        //When reached, Track the path and follow
         goalReached = true
         trackPath()
         return true
 
       val row = currentNode.row
       val col = currentNode.col
+      // Open neighbor nodes
       if row - 1 >= 0 then openNode(nodeList(row - 1)(col))
       if col - 1 >= 0 then openNode(nodeList(row)(col - 1))
       if row + 1 < gp.maxWorldRow then openNode(nodeList(row + 1)(col))

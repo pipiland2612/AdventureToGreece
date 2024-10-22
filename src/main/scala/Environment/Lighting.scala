@@ -15,7 +15,7 @@ class Lighting (gp: GamePanel) :
     g2 = darkNessFilter.createGraphics
 
     if gp.player.currentLight == null then
-      g2.setColor(new Color(0, 0, 0.07f, 0.98f))
+      g2.setColor(new Color(0, 0, 0.07f, 0.95f))
     else
       val centerX = gp.player.screenX + gp.tileSize / 2
       val centerY = gp.player.screenY + gp.tileSize / 2
@@ -32,9 +32,9 @@ class Lighting (gp: GamePanel) :
       color(6) = Color(0,0,0.07f,0.82f)
       color(7) = Color(0,0,0.07f,0.87f)
       color(8) = Color(0,0,0.07f,0.91f)
-      color(9) = Color(0,0,0.07f,0.94f)
-      color(10) = Color(0,0,0.07f,0.96f)
-      color(11) = Color(0,0,0.07f,0.98f)
+      color(9) = Color(0,0,0.07f,0.92f)
+      color(10) = Color(0,0,0.07f,0.93f)
+      color(11) = Color(0,0,0.07f,0.94f)
 
       fraction(0) = 0f
       fraction(1) = 0.4f
@@ -61,6 +61,7 @@ class Lighting (gp: GamePanel) :
       gp.player.lightUpdated = false
 
   def draw (g2: Graphics2D): Unit =
+    // Only play dark screen in dungeon
     if gp.currentArea == Area.Dungeon then
       g2.drawImage(darkNessFilter, 0, 0, null)
 

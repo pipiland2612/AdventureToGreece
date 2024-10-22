@@ -3,6 +3,7 @@ package items
 import entities.{Creatures, Direction, Entity}
 import game.GamePanel
 
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
 abstract class Item(gp : GamePanel) extends Entity(gp):

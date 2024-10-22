@@ -8,9 +8,9 @@ import utils.Tools
 import java.awt.Rectangle
 
 class OBJ_Fireball(gp: GamePanel) extends Projectile(gp):
-  var name = OBJ_Fireball.Name // Use the static name from the companion object
-  speed = 5
-  var damage = 2
+  var name = OBJ_Fireball.Name
+  speed = 8
+  var damage = 10
   var costMana = 20
   val maxHealth = 80
   attackArea.width = 32

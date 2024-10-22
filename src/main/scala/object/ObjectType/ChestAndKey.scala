@@ -6,13 +6,14 @@ import items.{InteractiveObjects, Item}
 import utils.Tools
 
 import java.awt.Rectangle
+import java.awt.image.BufferedImage
 
 class OBJ_Chest(gp: GamePanel) extends InteractiveObjects(gp):
   var name      = OBJ_Chest.Name
   var pos       = (0, 0)
   var size      = 48
-  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
-  image         = Tools.scaleImage(Tools.loadImage("Objects/chest.png"), size, size)
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size , size)
+  image         = getImage
   collision     = true
 
   setDialogue()
@@ -20,17 +21,22 @@ class OBJ_Chest(gp: GamePanel) extends InteractiveObjects(gp):
     dialogues(0)(0) = "You need a key to open this"
     dialogues(1)(0) = "Empty chest!"
 
+  def getImage: BufferedImage =
+    if !opened then Tools.scaleImage(Tools.loadImage("Objects/chest_closed.png"), size, size)
+    else Tools.scaleImage(Tools.loadImage("Objects/chest_opened.png"), size, size)
+
   override def setLoot(loot: Item): Unit = this.loot = loot
+
   override def interact(): Unit =
     gp.gameState = GameState.DialogueState
     if !opened then
       startDialogue(this, 0)
     else
       startDialogue(this, 1)
-
+      
   def openChest(): Unit =
     gp.gameState = GameState.DialogueState
-    var sb = new StringBuilder()
+    val sb = new StringBuilder()
     if !opened && loot != null then
       sb.append(s"Open chest and find a ${loot.name}!")
       if !gp.player.obtainItem(loot) then
@@ -43,8 +49,8 @@ class OBJ_Chest(gp: GamePanel) extends InteractiveObjects(gp):
     else
       dialogues(3)(0) = s"Empty"
       startDialogue(this, 3)
+    image         = getImage
 end OBJ_Chest
-
 
 class OBJ_SilverKey(gp: GamePanel) extends Item(gp):
   var name          = OBJ_SilverKey.Name

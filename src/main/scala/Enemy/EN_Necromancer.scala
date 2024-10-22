@@ -21,12 +21,17 @@ class EN_Necromancer(gp : GamePanel) extends Enemy(gp) :
   var expGet: Int = 5
   var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp))
 
-  var attackRate = 30
-  var verticalScanRange: Int = (gp.tileSize * 1.5).toInt
-  var horizontalScanRange: Int = (gp.tileSize * 1.25).toInt
+  var attackRate = 1
+  var verticalScanRange: Int = (gp.tileSize * 2).toInt
+  var horizontalScanRange: Int = (gp.tileSize * 1.5).toInt
   attackTimeAnimation = 45
   attackArea.width = (gp.tileSize * 1.5).toInt
   attackArea.height = (gp.tileSize * 1.5).toInt
+  
+  var spawnCounter: Int = 0
+  var hasSpawn: Boolean = false
+  hasOwnDyingAnimation = true
+  var changeDirectionInterval = 120
 
   // world stats
   var solidAreaWidth = 9 * 2
@@ -63,12 +68,20 @@ class EN_Necromancer(gp : GamePanel) extends Enemy(gp) :
   var spawnAnimations = Tools.setupCommonAnimations(Tools.flipImageHorizontally, commonSpawnFrames, 7)
   var attackAnimations = Tools.setupCommonAnimations(Tools.flipImageHorizontally, commonAttackFrames, 3, 25, 35)
 
+  imageWidthCenter = idleAnimations(Direction.UP).getCurrentFrame.getWidth / 2
+  imageHeightCenter = idleAnimations(Direction.UP).getCurrentFrame.getHeight / 2
+
   override def images: Map[(Direction, State), Animation] =
     super.images ++ Map (
       (Direction.UP, State.SPAWN) -> spawnAnimations(Direction.UP),
       (Direction.DOWN, State.SPAWN) -> spawnAnimations(Direction.DOWN),
       (Direction.LEFT, State.SPAWN) -> spawnAnimations(Direction.LEFT),
-      (Direction.RIGHT, State.SPAWN) -> spawnAnimations(Direction.RIGHT)
+      (Direction.RIGHT, State.SPAWN) -> spawnAnimations(Direction.RIGHT),
+
+      (Direction.UP, State.DEAD) -> deadAnimations(Direction.UP),
+      (Direction.DOWN, State.DEAD) -> deadAnimations(Direction.DOWN),
+      (Direction.LEFT, State.DEAD) -> deadAnimations(Direction.LEFT),
+      (Direction.RIGHT, State.DEAD) -> deadAnimations(Direction.RIGHT),
     )
 
   override def attackHitBox: Rectangle = direction match
@@ -78,5 +91,21 @@ class EN_Necromancer(gp : GamePanel) extends Enemy(gp) :
     case Direction.RIGHT => Rectangle(pos._1 + (areaHitBox.width / 2) + attackArea.width, pos._2 + areaHitBox.y, attackArea.width, attackArea.height)
 
   currentAnimation = idleAnimations(this.direction)
+
+  def spawn(): Unit =
+    if !hasSpawn then
+      spawnCounter += 1
+      state = State.SPAWN
+      if spawnCounter > 150 then
+        hasSpawn = true
+        this.state = State.IDLE
+    needsAnimationUpdate = true
+    checkAnimationUpdate()
+
+  override def update(): Unit =
+    if !hasSpawn then
+      spawn()
+      return
+    super.update()
 
 

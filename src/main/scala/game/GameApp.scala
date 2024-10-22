@@ -3,7 +3,7 @@ package game
 import java.awt.Dimension
 import javax.swing.*
 
-
+// RUN GAME HERE
 object GameApp extends App :
   val frame = new JFrame("Adventure to Greece")
   val gamePanel = new GamePanel()

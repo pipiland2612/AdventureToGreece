@@ -14,6 +14,7 @@ abstract class Npc(gp: GamePanel) extends Creatures(gp):
   var deadAnimations: Map[Direction, Animation] = _
 
   var notMoving: Boolean = false
+  areaHitBox = Rectangle(0, 0, 0, 0)
 
   def speak (): Unit =
     facePlayer()

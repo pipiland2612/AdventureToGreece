@@ -1,8 +1,9 @@
 package Data
 
 import Environment.Area.{Dungeon, OverWorld}
+import `object`.ObjectType.OBJ_Chest
 import game.GamePanel
-import items.{Item, Projectile, Shield, Weapon}
+import items.{Item, Light, Projectile, Shield, Weapon}
 
 import java.io.{File, FileInputStream, FileOutputStream, ObjectInputStream, ObjectOutputStream}
 
@@ -12,6 +13,7 @@ class SaveLoad (gp: GamePanel):
     try
       val oos = new ObjectOutputStream(new FileOutputStream(new File("src/main/resources/save.dat")))
       val ds = new DataStorage()
+      // Players stats
       ds.level = gp.player.level
       ds.maxHealth = gp.player.maxHealth
       ds.health = gp.player.health
@@ -29,6 +31,7 @@ class SaveLoad (gp: GamePanel):
         case 0 => "OverWorld"
         case 1 => "Dungeon"
 
+      // Player inventory
       for item <- gp.player.inventory do
         ds.itemNames += item.name
         ds.itemAmount += item.amount
@@ -36,8 +39,9 @@ class SaveLoad (gp: GamePanel):
       ds.currentWeaponSlot = gp.player.getCurrentWeaponIndex
       ds.currentShieldSlot = gp.player.getCurrentShieldIndex
       ds.currentProjectileSlot = gp.player.getCurrentProjectileIndex
+      ds.currentLightSlot = gp.player.getCurrentLightIndex
 
-      // OBJS
+      // OBJS on map
       ds.mapObjNames = Array.ofDim(gp.maxMap, gp.obj(1).length)
       ds.mapObjX = Array.ofDim(gp.maxMap, gp.obj(1).length)
       ds.mapObjY = Array.ofDim(gp.maxMap, gp.obj(1).length)
@@ -96,6 +100,8 @@ class SaveLoad (gp: GamePanel):
 
       if ds.currentProjectileSlot >= 0 && ds.currentProjectileSlot < gp.player.inventory.size then
         gp.player.currentProjectile = gp.player.inventory(ds.currentProjectileSlot).asInstanceOf[Projectile]
+      if ds.currentLightSlot >= 0 && ds.currentLightSlot < gp.player.inventory.size then
+        gp.player.currentLight = gp.player.inventory(ds.currentLightSlot).asInstanceOf[Light]
 
       gp.player.attackDamage = gp.player.getAttackDamage
       gp.player.defense = gp.player.getDefense
@@ -110,6 +116,7 @@ class SaveLoad (gp: GamePanel):
             if ds.mapObjLootNames(mapNum)(i) != null  then
               gp.obj(mapNum)(i).loot = gp.entityGen.getObject(ds.mapObjLootNames(mapNum)(i)).asInstanceOf[Item]
             gp.obj(mapNum)(i).opened = ds.chestOpened(mapNum)(i)
+            if gp.obj(mapNum)(i).opened then gp.obj(mapNum)(i).image = gp.obj(mapNum)(i).asInstanceOf[OBJ_Chest].getImage
 
     catch
       case e: Exception => e.printStackTrace()
