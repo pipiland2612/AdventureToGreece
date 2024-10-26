@@ -26,10 +26,13 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
 
   var hpBarOn: Boolean = false
   var hpBarCounter: Int = 0
+  var isBoss: Boolean = false
 
   var itemDropped: Vector[Item]
 
   var hasOwnDyingAnimation: Boolean = false
+
+  var isSleeping: Boolean = false
 
   // -----------------------------------------------
   // Distance Calculations
@@ -147,16 +150,17 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   // -----------------------------------------------
   // Game Loop Update
   override def update(): Unit =
-    if isDead && hasOwnDyingAnimation then
-      state = State.DEAD
-      super.die()
-      dyingCounter += 1
-      if dyingCounter >= 180 then
-        dying = true
+    if !isSleeping then
+      if isDead && hasOwnDyingAnimation then
+        state = State.DEAD
+        super.die()
+        dyingCounter += 1
+        if dyingCounter >= 180 then
+          dying = true
 
-    handleInvincibility()
+      handleInvincibility()
 
-    super.update()
+      super.update()
 
   override def setAction(): Unit =
     val tileDistance = getTileDistance(gp.player)
@@ -173,19 +177,6 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   // Rendering Methods
   override def draw(g: Graphics2D): Unit =
     val (screenX, screenY) = calculateScreenCoordinates()
-
-    if hpBarOn then
-      val oneScale: Double = gp.tileSize / this.maxHealth
-      val hpBarValue = oneScale * this.health
-      g.setColor(new Color(35, 35, 35))
-      g.fillRect(screenX + gp.tileSize - 1, screenY - 6, hpBarValue.toInt, 8)
-      g.setColor(new Color(255, 0, 30))
-      g.fillRect(screenX + gp.tileSize, screenY - 5, hpBarValue.toInt, 6)
-      hpBarCounter += 1
-      if hpBarCounter > 800 then
-        this.health = maxHealth
-        hpBarCounter = 0
-        hpBarOn = false
 
     if isInvinc then
       hpBarOn = true

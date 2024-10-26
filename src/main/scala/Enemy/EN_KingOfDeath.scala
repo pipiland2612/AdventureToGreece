@@ -2,7 +2,7 @@ package Enemy
 
 import `object`.ObjectType.OBJ_BronzeCoin
 import entities.{Direction, State}
-import game.GamePanel
+import game.{GamePanel, GameProgress}
 import items.Item
 import utils.{Animation, Tools}
 
@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage
 class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
 
   var pos = (0,0)
-  var name = "King Of Death"
+  var name = EN_KingOfDeath.Name
   speed = 4
   maxHealth = 50
   health = maxHealth
@@ -33,6 +33,7 @@ class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
 
   var frameSize = 64
   var scale: Int = 64 * 2
+  isBoss = true
 
   // world stats
   var solidAreaWidth = scale / 4
@@ -52,6 +53,7 @@ class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
 
   val spriteFrames = Tools.loadFrames("Enemy/KingOfDeath/king_death", frameSize, frameSize, scale, scale, 12)
   val attackFrames = Tools.loadFrames("Enemy/KingOfDeath/king_death_attack", frameSize * 2, (frameSize * 1.5).toInt, scale * 2, (scale * 1.5).toInt, 4)
+  isSleeping = true
 
   var idleAnimations = Map(
     Direction.UP -> Animation(Vector(spriteFrames(0)(0)), 1),
@@ -106,7 +108,20 @@ class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
 
     if state != State.ATTACK then checkToAttack(attackRate, verticalScanRange, horizontalScanRange)
 
+  def setDialoque(): Unit =
+    dialogues(0)(0) = s"So, you’ve finally made it this far.\nI’ll give you credit for your persistence, but that’s where your luck ends."
+    dialogues(0)(1) = s"You’ve made a mistake coming here, mortal.\nPrepare to meet your end!"
+    dialogues(0)(2) = s"I grow tired of this.\nWITNESS MY TRUE POWER!"
+  setDialoque()
+
+  override def checkDrop(): Unit =
+    GameProgress.KingOfDeathDefeated = true
+    gp.onBossBattle = false
+    gp.removeTemporaryObj()
+    super.checkDrop()
+
 end EN_KingOfDeath
 
 
-
+object EN_KingOfDeath:
+  val Name = "King Of Death"

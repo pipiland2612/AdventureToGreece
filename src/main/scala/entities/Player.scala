@@ -41,6 +41,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   var lightUpdated: Boolean = false
   var hasCallDie = false
 
+  var drawing: Boolean = true
+
   // Inventory
   setItems()
 
@@ -210,21 +212,21 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   // ----------------------------------------------------------------------------------------------
   // Collision and Event Handling
   private def performCollisionsAndEvents(): Unit =
-      isCollided = false
-      // CHECK TILE
-      gp.cCheck.checkTileCollision(this)
-      // CHECK OBJECT
-      val objectIndex = gp.cCheck.checkObjectCollision(this, true)
-      pickUpObject(objectIndex)
-      // CHECK NPC
-      val npcIndex = gp.cCheck.checkCollisionWithTargets(this, gp.npcList)
-      interactNPC(npcIndex)
-      // CHECK EVENT
-      val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
+    isCollided = false
+    // CHECK TILE
+    gp.cCheck.checkTileCollision(this)
+    // CHECK OBJECT
+    val objectIndex = gp.cCheck.checkObjectCollision(this, true)
+    pickUpObject(objectIndex)
+    // CHECK NPC
+    val npcIndex = gp.cCheck.checkCollisionWithTargets(this, gp.npcList)
+    interactNPC(npcIndex)
+    // CHECK EVENT
+    val enemyIndex = gp.cCheck.checkCollisionWithTargets(this, gp.enemyList)
 //      if enemyIndex != -1 then
 //        println(enemyIndex)
 //        gp.enemyList(enemyIndex).attackPlayer(gp.enemyList(enemyIndex).attackPower)
-      gp.eHandler.checkEvent()
+    gp.eHandler.checkEvent()
 
   // ----------------------------------------------------------------------------------------------
   // Inventory and Items
@@ -299,6 +301,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     if isDead then if !hasCallDie then die()
     currentAnimation.getCurrentFrame match
       case frame =>
+        if drawing then
           g.drawImage(frame,
             (this.screenX),
             (this.screenY),

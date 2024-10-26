@@ -51,7 +51,7 @@ abstract class Projectile (gp: GamePanel) extends Item(gp):
     if user == gp.player then
       val enemyIndex = gp.cCheck.checkCollisionWithTargetsHitBox(this, gp.enemyList)
       if enemyIndex != -1 then
-        gp.player.attackEnemy(enemyIndex, this.damage)
+        gp.player.attackEnemy(enemyIndex, this.damage * (gp.player.level / 2))
         alive = false
     else
       val hasTouchPlayer = gp.cCheck.checkPlayer(this)

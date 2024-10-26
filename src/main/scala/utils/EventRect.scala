@@ -1,7 +1,5 @@
 package utils
 
-import game.GamePanel
-
 import java.awt.Rectangle
 
 class EventRect() extends Rectangle:

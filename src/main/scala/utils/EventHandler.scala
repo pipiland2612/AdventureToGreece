@@ -2,7 +2,7 @@ package utils
 
 import Environment.Area
 import entities.{Direction, Entity, Npc}
-import game.{GamePanel, GameState}
+import game.{GamePanel, GameProgress, GameState}
 
 import java.awt.Rectangle
 
@@ -82,12 +82,12 @@ class EventHandler(var gp: GamePanel):
     eventMaster.startDialogue(eventMaster, 1)
     gp.player.health = Math.min(gp.player.health + 10, gp.player.maxHealth)
 
-  def teleport(map: Int, row: Int, col: Int, area: Area): Unit =
+  def teleport(map: Int, col: Int, row: Int, area: Area): Unit =
     gp.gameState = GameState.TransitionState
     gp.nextArea = area
     tempMap = map
-    tempRow = row
     tempCol = col
+    tempRow = row
     canCauseEvent = false
     counter = 0
 
@@ -109,14 +109,21 @@ class EventHandler(var gp: GamePanel):
 
     if canCauseEvent then
       if hasHit(0, 48, 48, Direction.ANY) then damagePit()
-      else if hasHit(0, 10, 20, Direction.ANY) then heal()
-      else if hasHit(0, 37, 25, Direction.ANY) then teleport(1, 4, 3, Area.Dungeon) // To Dungeon
-      else if hasHit(1, 4, 3, Direction.ANY) then teleport(0, 37, 25, Area.OverWorld) // Back to OverWorld
+      else if hasHit(0, 37, 25, Direction.ANY) then teleport(1, 4, 4, Area.Dungeon) // To Dungeon 1
+      else if hasHit(1, 4, 4, Direction.ANY) then teleport(0, 37, 25, Area.OverWorld) // Back to OverWorld
+      else if hasHit(1, 47, 33, Direction.ANY) then teleport(2, 4, 44, Area.Dungeon) // TO FINAL BOSS (DUNGEON 2)
+      else if hasHit(2, 4, 44, Direction.ANY) then teleport(1, 47, 33, Area.Dungeon) // TO DUNGEON 1
+      else if hasHit(2, 24, 32, Direction.ANY) then kingOfDeath() // CutScene
 
   // NPC interaction
   def speak(npc: Npc): Unit =
     if gp.keyH.enterPressed then
       gp.gameState = GameState.DialogueState
       npc.speak()
+
+  def kingOfDeath(): Unit =
+    if !gp.onBossBattle && !GameProgress.KingOfDeathDefeated then
+      gp.gameState = GameState.CutSceneState
+      gp.cutSceneManager.sceneNum = gp.cutSceneManager.kingOfDeath
 
 end EventHandler

@@ -7,7 +7,7 @@ import java.io.{BufferedReader, File, InputStreamReader}
 import utils.Tools
 
 class TileManager(var gp: GamePanel) :
-  var tile: Array[Tile] = new Array[Tile](20)
+  var tile: Array[Tile] = new Array[Tile](35)
   var drawPath: Boolean = true
 
   var mapTileNum: Array[Array[Array[Int]]] = Array.ofDim[Int](gp.maxMap, gp.maxWorldRow, gp.maxWorldCol)
@@ -29,22 +29,36 @@ class TileManager(var gp: GamePanel) :
 
   loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/map.txt", 0)
   loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/dungeon_map.txt", 1)
+  loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/boss_map.txt", 2)
 
   def loadTileImage (): Unit =
-    setUp(0, "grass", false)
-    setUp(1, "grass_flower1", false)
-    setUp(2, "grass_flower2", false)
-    setUp(3, "stone_path", false)
-    setUp(4, "ruinedstone_path", false)
-    setUp(5, "ruinedstone_path2", false)
-    setUp(6, "wall", true)
-    setUp(7, "wall", true)
-    setUp(8, "wall", true)
-    setUp(9, "water", true)
+    // OVERWORLD TILE
+    setUp(0, "OverWorld/grass", false)
+    setUp(1, "OverWorld/grass_flower1", false)
+    setUp(2, "OverWorld/grass_flower2", false)
+    setUp(3, "OverWorld/stone_path", false)
+    setUp(4, "OverWorld/ruinedstone_path", false)
+    setUp(5, "OverWorld/ruinedstone_path2", false)
+    setUp(6, "OverWorld/wall", true)
+    setUp(7, "OverWorld/wall", true)
+    setUp(8, "OverWorld/wall", true)
+    setUp(9, "OverWorld/water", true)
 
-    setUp(10, "dungeon_path", false)
-    setUp(11, "dungeon_path2", false)
-    setUp(12, "dungeon_wall", true)
+    // DUNGEON TILE
+    setUp(10, "Dungeon/black", true)
+    setUp(11, "Dungeon/floor_tile", false)
+    setUp(12, "Dungeon/wall_1", true)
+    setUp(13, "Dungeon/wall_2", true)
+    setUp(14, "Dungeon/wall_3", true)
+    setUp(15, "Dungeon/wall_0", true)
+    setUp(16, "Dungeon/wall_3", true)
+    setUp(17, "Dungeon/wall_5", true)
+    setUp(18, "Dungeon/stair", false)
+    setUp(19, "Dungeon/wall_4", true)
+    setUp(20, "Dungeon/dark_tile", true)
+    setUp(21, "Dungeon/wall_7", true)
+    setUp(22, "Dungeon/wall_6", true)
+    setUp(23, "Dungeon/down_stair", false)
   loadTileImage()
 
   def setUp(index: Int, imageName: String, collision: Boolean): Unit =

@@ -1,5 +1,6 @@
 package ui
 
+import Enemy.Enemy
 import entities.{Entity, Npc}
 import game.{GamePanel, GameState}
 import utils.Tools
@@ -55,11 +56,13 @@ class UI(var gp: GamePanel):
       case GameState.TransitionState => drawTransitionState()
       case GameState.TradeState      => TradeUI.drawTradeState()
       case GameState.MapState        =>
+      case GameState.CutSceneState   => 
 
   // Draw different UI components
   private def drawPlayState(): Unit =
     PlayerUI.drawPlayerLife()
     PlayerUI.drawPlayerMana()
+    this.drawEnemyHealth()
     drawMessage()
 
   private def drawPauseState(): Unit =
@@ -132,6 +135,7 @@ class UI(var gp: GamePanel):
       gp.screenWidth - (tileSize * 6),
       tileSize * 3
     )
+
     Tools.drawSubWindow(g2, x, y, width, height)
 
     g2.setFont(g2.getFont.deriveFont(Font.PLAIN, 25F))
@@ -146,9 +150,14 @@ class UI(var gp: GamePanel):
 
   private def handleDialogueText(): Unit =
     if npc.dialogues(npc.dialogueSet)(npc.dialogueIndex) != null then
-
       npc match
         case npc : Npc =>
+          val charactersSet: Array[Char] = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex).toCharArray
+          if charIndex < charactersSet.length then
+            combinedText += charactersSet(charIndex).toString
+            currentDialogue = combinedText
+            charIndex += 1
+        case enemy: Enemy =>
           val charactersSet: Array[Char] = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex).toCharArray
           if charIndex < charactersSet.length then
             combinedText += charactersSet(charIndex).toString
@@ -160,13 +169,15 @@ class UI(var gp: GamePanel):
       if gp.keyH.enterPressed then
         charIndex = 0
         combinedText = ""
-        if gp.gameState == GameState.DialogueState then
+        if gp.gameState == GameState.DialogueState || gp.gameState == GameState.CutSceneState then
           npc.dialogueIndex += 1
           gp.keyH.enterPressed = false
     else
       npc.dialogueIndex = 0
       if gp.gameState == GameState.DialogueState then
         gp.gameState = GameState.PlayState
+      if gp.gameState == GameState.CutSceneState then
+        gp.cutSceneManager.scenePhase += 1
 
   private def drawPauseScreen(): Unit =
     val text: String = "PAUSE"
@@ -227,9 +238,48 @@ class UI(var gp: GamePanel):
       counter = 0
       gp.gameState = GameState.PlayState
       gp.currentMap = gp.eHandler.tempMap
-      gp.player.pos = (gp.eHandler.tempRow * gp.tileSize, gp.eHandler.tempCol * gp.tileSize)
+      gp.player.pos = (gp.eHandler.tempCol * gp.tileSize, gp.eHandler.tempRow * gp.tileSize)
       gp.eHandler.previousEventX = gp.player.pos._1
       gp.eHandler.previousEventY = gp.player.pos._2
       gp.changeArea()
 
+  private def drawEnemyHealth(): Unit =
+
+    for i <- gp.enemyList(1).indices do
+
+      val currentEnemy = gp.enemyList(gp.currentMap)(i)
+      if currentEnemy != null && currentEnemy.isInCamera then
+        val (screenX, screenY) = currentEnemy.calculateScreenCoordinates()
+
+        if currentEnemy.hpBarOn && !currentEnemy.isBoss then
+          val oneScale: Double = gp.tileSize / currentEnemy.maxHealth
+          val hpBarValue = oneScale * currentEnemy.health
+          // Border
+          g2.setColor(new Color(35, 35, 35))
+          g2.fillRect(screenX + gp.tileSize - 1, screenY - 6, hpBarValue.toInt, 8)
+          // Health Bar
+          g2.setColor(new Color(255, 0, 30))
+          g2.fillRect(screenX + gp.tileSize, screenY - 5, hpBarValue.toInt, 6)
+
+          currentEnemy.hpBarCounter += 1
+          if currentEnemy.hpBarCounter > 800 then
+            currentEnemy.health = currentEnemy.maxHealth
+            currentEnemy.hpBarCounter = 0
+            currentEnemy.hpBarOn = false
+
+        else if currentEnemy.isBoss then
+          val oneScale: Double = gp.tileSize * 8 / currentEnemy.maxHealth
+          val hpBarValue = oneScale * currentEnemy.health
+          var x = gp.screenWidth / 2 - gp.tileSize * 4
+          var y = gp.tileSize * 10
+          // Border
+          g2.setColor(new Color(35, 35, 35))
+          g2.fillRect(x - 1 , y - 1, hpBarValue.toInt, 22)
+          // Health Bar
+          g2.setColor(new Color(255, 0, 30))
+          g2.fillRect(x, y , hpBarValue.toInt, 20)
+
+          g2.setFont(g2.getFont.deriveFont(Font.BOLD, 24F))
+          g2.setColor(Color.WHITE)
+          g2.drawString(currentEnemy.name, x + 4, y - 10)
 end UI

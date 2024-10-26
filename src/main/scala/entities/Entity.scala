@@ -64,6 +64,8 @@ abstract class Entity(var gp: GamePanel):
   var dialogueSet: Int = 0
   var dialogueIndex: Int = 0
 
+  var isTemp = false
+
   // ----------------------------------------------------------------------------------------------
   // Helper Methods
 
@@ -85,7 +87,7 @@ abstract class Entity(var gp: GamePanel):
     gp.gui.npc = entity
     dialogueSet = setNum
 
-  protected def calculateScreenCoordinates(): (Int, Int) =
+  def calculateScreenCoordinates(): (Int, Int) =
     val screenX = gp.player.screenX
     val screenY = gp.player.screenY
 
@@ -96,27 +98,29 @@ abstract class Entity(var gp: GamePanel):
 
     (screenTileX, screenTileY)
 
+
   // ----------------------------------------------------------------------------------------------
   // Rendering Method
-
-  def draw(g: Graphics2D): Unit =
-    val (screenTileX, screenTileY) = calculateScreenCoordinates()
+  def isInCamera: Boolean =
     val drawRange = gp.tileSize * 2
     val (worldX, worldY) = this.pos
     val (playerX, playerY) = gp.player.getPosition
     val screenX = gp.player.screenX
     val screenY = gp.player.screenY
+    // Condition
+    worldX + drawRange > playerX - screenX &&
+    worldX - drawRange < playerX + screenX &&
+    worldY + drawRange > playerY - screenY &&
+    worldY - drawRange < playerY + screenY
+
+
+  def draw(g: Graphics2D): Unit =
+    val (screenTileX, screenTileY) = calculateScreenCoordinates()
 
     val adjustedScreenTileX = if this.state == State.ATTACK then screenTileX - offsetX else screenTileX
     val adjustedScreenTileY = if this.state == State.ATTACK then screenTileY - offsetY else screenTileY
 
-
-    if (
-      worldX + drawRange > playerX - screenX &&
-      worldX - drawRange < playerX + screenX &&
-      worldY + drawRange > playerY - screenY &&
-      worldY - drawRange < playerY + screenY
-    ) then
+    if isInCamera then
       val imageToDraw =
         if currentAnimation != null then currentAnimation.getCurrentFrame
         else image

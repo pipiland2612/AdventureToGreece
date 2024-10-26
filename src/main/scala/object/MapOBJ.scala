@@ -75,7 +75,7 @@ class OBJ_LightCandle(gp: GamePanel) extends Light(gp):
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/candle_light.png"), 32, 32)
   image            = Tools.scaleImage(Tools.loadImage("Objects/candle_light.png"), 32, 32)
   price            = 100
-  var lightRadius  = 250
+  var lightRadius  = 450
 
 object OBJ_LightCandle:
   val Name: String = "Light Candle"
@@ -119,3 +119,72 @@ object OBJ_DungeonGate:
   val Name: String = "Dungeon Gate"
 
 end OBJ_DungeonGate
+
+class OBJ_Pillar(gp: GamePanel) extends Entity(gp):
+  var name      = OBJ_Pillar.Name
+  var pos       = (0, 0)
+  solidAreaDefaultX = 0
+  solidAreaDefaultY = gp.tileSize * 2
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
+  image         = Tools.scaleImage(Tools.loadImage("Objects/dungeon_pillar.png"), gp.tileSize, gp.tileSize * 3)
+  collision     = true
+
+object OBJ_Pillar:
+  val Name: String = "Dungeon Pillar"
+
+end OBJ_Pillar
+
+class OBJ_BossPillar(gp: GamePanel) extends Entity(gp):
+  var name      = OBJ_BossPillar.Name
+  var pos       = (0, 0)
+  solidAreaDefaultX = 0
+  solidAreaDefaultY = (gp.tileSize * 1.5).toInt
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
+  image         = Tools.scaleImage(Tools.loadImage("Objects/boss_pillar.png"), gp.tileSize, (gp.tileSize * 2.5).toInt)
+  collision     = true
+
+object OBJ_BossPillar:
+  val Name: String = "Dungeon Boss Pillar"
+
+end OBJ_BossPillar
+
+class OBJ_DungeonFence(gp: GamePanel) extends Entity(gp):
+  var name      = OBJ_DungeonFence.Name
+  var pos       = (0, 0)
+  solidAreaDefaultX = 0
+  solidAreaDefaultY = gp.tileSize / 2
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
+  image         = Tools.scaleImage(Tools.loadImage("Objects/dungeon_fence.png"), gp.tileSize, (gp.tileSize * 1.5).toInt)
+  collision     = true
+
+object OBJ_DungeonFence:
+  val Name: String = "Dungeon Fence"
+
+end OBJ_DungeonFence
+
+class OBJ_Skeleton(gp: GamePanel) extends Entity(gp):
+  var name      = OBJ_Skeleton.Name
+  var pos       = (0, 0)
+  solidAreaDefaultX = 0
+  solidAreaDefaultY = 0
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
+  image         = Tools.scaleImage(Tools.loadImage("Objects/dungeon_skeleton.png"), gp.tileSize, gp.tileSize)
+  collision     = true
+
+object OBJ_Skeleton:
+  val Name: String = "Skeleton"
+
+end OBJ_Skeleton
+
+class OBJ_PlayerDummy(gp: GamePanel) extends Entity(gp):
+  var name      = OBJ_PlayerDummy.Name
+  var pos       = (0, 0)
+  solidAreaDefaultX = 0
+  solidAreaDefaultY = 0
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
+  image         = Tools.scaleImage(Tools.loadImage("Players/player_up.png"), (gp.tileSize * 1.25).toInt, (gp.tileSize * 1.25).toInt)
+
+object OBJ_PlayerDummy:
+  val Name: String = "Dummy"
+
+end OBJ_PlayerDummy

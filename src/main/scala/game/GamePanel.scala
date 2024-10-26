@@ -14,7 +14,8 @@ import javax.swing.JPanel
 import entities.{Entity, Npc, Player}
 import items.Projectile
 import ui.UI
-import utils.{CollisionChecker, Config, EntityGenerator, EventHandler, KeyHandler, Sound, Tools}
+import utils.{CollisionChecker, Config, CutsceneManager, EntityGenerator, EventHandler, KeyHandler, Sound, Tools}
+
 import scala.collection.mutable.ListBuffer
 
 class GamePanel extends JPanel with Runnable:
@@ -31,7 +32,7 @@ class GamePanel extends JPanel with Runnable:
   // Worlds settings
   val maxWorldCol = 50
   val maxWorldRow = 50
-  val maxMap = 2
+  val maxMap = 3
   var currentMap = 0
   val FPS = 60
 
@@ -59,11 +60,12 @@ class GamePanel extends JPanel with Runnable:
   var miniMap: Map = new Map(this)
   var saveLoad: SaveLoad = new SaveLoad(this)
   val entityGen = new EntityGenerator(this)
+  val cutSceneManager = new CutsceneManager(this)
   var gameThread: Thread = _
 
   //ENTITY, OBJECT, NPCS, ENEMIES
   var player = Player((tileSize * 23, tileSize * 21), this)
-  val obj: Array[Array[Entity]] = Array.ofDim[Entity](maxMap, 20)
+  val obj: Array[Array[Entity]] = Array.ofDim[Entity](maxMap, 70)
   var enemyList: Array[Array[Enemy]] = Array.ofDim[Enemy](maxMap, 10)
   var npcList : Array[Array[Npc]] = Array.ofDim[Npc](maxMap, 5)
   var projectileList: ListBuffer[Projectile] = ListBuffer[Projectile]()
@@ -74,6 +76,7 @@ class GamePanel extends JPanel with Runnable:
   // AREA
   var currentArea: Area = Area.OverWorld
   var nextArea: Area = Area.Dungeon
+  var onBossBattle: Boolean = false
 
   //----------------------------------------------------------------------------------------------
   // SET UP METHODS
@@ -90,6 +93,8 @@ class GamePanel extends JPanel with Runnable:
 
   def resetGame(restart: Boolean): Unit =
     this.currentMap = 0
+    onBossBattle = false
+    removeTemporaryObj()
     currentArea = Area.OverWorld
     player.reset()
     oManager.setEnemy()
@@ -111,6 +116,11 @@ class GamePanel extends JPanel with Runnable:
     if nextArea != currentArea then
       currentArea = nextArea
     updateBackGroundImage()
+
+  def removeTemporaryObj(): Unit =
+    for i <- obj(1).indices do
+      if obj(currentMap)(i) != null && obj(currentMap)(i).isTemp then
+        obj(currentMap)(i) = null
 
   // ----------------------------------------------------------------------------------------------
   // Game Loop Update
@@ -197,13 +207,16 @@ class GamePanel extends JPanel with Runnable:
         entity.draw(g2d)
       //EMPTY LIST
       entityList.clear()
-      Tools.renderDebugInfo (g2d, player, obj, enemyList, this)
+      Tools.renderDebugInfo(g2d, player, obj, enemyList, this)
 
       // ENVIRONMENT
       environmentManager.draw(g2d)
       miniMap.drawMiniMap(g2d)
+
       //UI
       gui.drawUI(g2d)
+      //
+      cutSceneManager.draw(g2d)
 
 //      Debug
       if(keyH.showDebugText) then
@@ -244,7 +257,3 @@ class GamePanel extends JPanel with Runnable:
         repaint()
         delta -= 1
         drawCount += 1
-
-//      if timer >= 1e9 then
-//        drawCount = 0
-//        timer = 0

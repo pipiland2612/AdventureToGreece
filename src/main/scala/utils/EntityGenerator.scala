@@ -1,7 +1,7 @@
 package utils
 
 import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_Fireball, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
-import `object`.{OBJ_CheckPoint, OBJ_DungeonGate, OBJ_Heart, OBJ_LightCandle, OBJ_Mana, OBJ_Rock, OBJ_Tree}
+import `object`.{OBJ_BossPillar, OBJ_CheckPoint, OBJ_DungeonFence, OBJ_DungeonGate, OBJ_Heart, OBJ_LightCandle, OBJ_Mana, OBJ_Pillar, OBJ_PlayerDummy, OBJ_Rock, OBJ_Skeleton, OBJ_Tree}
 import entities.Entity
 import game.GamePanel
 
@@ -25,6 +25,11 @@ class EntityGenerator(gp: GamePanel) :
         case OBJ_Heart.Name =>            new OBJ_Heart(gp)
         case OBJ_Mana.Name =>             new OBJ_Mana(gp)
         case OBJ_DungeonGate.Name =>      new OBJ_DungeonGate(gp)
+        case OBJ_Pillar.Name =>           new OBJ_Pillar(gp)
+        case OBJ_BossPillar.Name =>       new OBJ_BossPillar(gp)
+        case OBJ_DungeonFence.Name =>     new OBJ_DungeonFence(gp)
+        case OBJ_Skeleton.Name =>         new OBJ_Skeleton(gp)
+        case OBJ_PlayerDummy.Name =>      new OBJ_PlayerDummy(gp)
 
     entity
 

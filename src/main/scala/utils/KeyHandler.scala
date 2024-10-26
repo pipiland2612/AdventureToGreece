@@ -15,7 +15,8 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case GameState.PlayState       => handlePlayState(code)
       case GameState.TitleState      => handleTitleState(code)
       case GameState.PauseState      => handlePauseState(code)
-      case GameState.DialogueState   => handleDialogueState(code)
+      case GameState.DialogueState
+         | GameState.CutSceneState   => handleDialogueState(code)
       case GameState.CharacterState  => handleCharacterState(code)
       case GameState.GameMenu        => handleGameMenuState(code)
       case GameState.GameOver        => handleGameOverState(code)
@@ -80,6 +81,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
         gp.currentMap match
           case 0 => gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/map.txt", 0)
           case 1 => gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/dungeon_map.txt", 1)
+          case 2 => gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/boss_map.txt", 2)
       case KeyEvent.VK_P                    => gp.gameState = GameState.PauseState
       case KeyEvent.VK_ESCAPE               => gp.gameState = GameState.GameMenu
       case KeyEvent.VK_ENTER                => enterPressed = true
