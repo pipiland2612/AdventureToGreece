@@ -182,7 +182,7 @@ class OBJ_PlayerDummy(gp: GamePanel) extends Entity(gp):
   solidAreaDefaultX = 0
   solidAreaDefaultY = 0
   var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
-  image         = Tools.scaleImage(Tools.loadImage("Players/player_up.png"), (gp.tileSize * 1.25).toInt, (gp.tileSize * 1.25).toInt)
+  image         = Tools.scaleImage(Tools.loadImage("Players/player_up.png"), gp.player.playerScale, gp.player.playerScale)
 
 object OBJ_PlayerDummy:
   val Name: String = "Dummy"

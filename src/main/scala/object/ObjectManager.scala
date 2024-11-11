@@ -6,7 +6,6 @@ import entities.{Entity, Merchant, Socerer}
 import game.{GamePanel, GameProgress}
 import items.InteractiveObjects
 
-
 class ObjectManager(var gp : GamePanel) :
   val tileSize = gp.tileSize
 

@@ -14,7 +14,7 @@ class PathFinder(gp: GamePanel):
   var goalReached: Boolean = false
   var step = 0
 
-  // Min-Heap by fCost, tie by hCost
+  // Min heap by fCost, tie by hCost
   given Ordering[Node] = Ordering.by(node => (-node.fCost, -node.hCost))
   var openList: PriorityQueue[Node] = PriorityQueue.empty
 
@@ -62,20 +62,20 @@ class PathFinder(gp: GamePanel):
       setCost(nodeList(row)(col))
 
       //Check for objs and npcs
-//      for i <- gp.obj(1).indices do
-//        if gp.obj(gp.currentMap)(i) != null && gp.obj(gp.currentMap)(i).collision then
-//          val objCol = (gp.obj(gp.currentMap)(i).getPosition._1 + gp.obj(gp.currentMap)(i).solidAreaDefaultX) / gp.tileSize
-//          val objRow = (gp.obj(gp.currentMap)(i).getPosition._2 + gp.obj(gp.currentMap)(i).solidAreaDefaultY) / gp.tileSize
-//          if objRow >= 0 && objRow < gp.maxWorldRow && objCol >= 0 && objCol < gp.maxWorldCol then
-//            gp.pFinder.nodeList(objRow)(objCol).solid = true
+      for i <- gp.obj(1).indices do
+        if gp.obj(gp.currentMap)(i) != null && gp.obj(gp.currentMap)(i).collision then
+          val objCol = (gp.obj(gp.currentMap)(i).getPosition._1 + gp.obj(gp.currentMap)(i).solidAreaDefaultX) / gp.tileSize
+          val objRow = (gp.obj(gp.currentMap)(i).getPosition._2 + gp.obj(gp.currentMap)(i).solidAreaDefaultY) / gp.tileSize
+          if objRow >= 0 && objRow < gp.maxWorldRow && objCol >= 0 && objCol < gp.maxWorldCol then
+            gp.pFinder.nodeList(objRow)(objCol).solid = true
 
 
-//    for i <- gp.npcList(1).indices do
-//      if gp.npcList(gp.currentMap)(i) != null && gp.npcList(gp.currentMap)(i).notMoving then
-//        val npcListCol = gp.npcList(gp.currentMap)(i).pos._1 / gp.tileSize
-//        val npcListRow = gp.npcList(gp.currentMap)(i).pos._2 / gp.tileSize
-//        if npcListRow >= 0 && npcListRow < gp.maxWorldRow && npcListCol >= 0 && npcListCol < gp.maxWorldCol then
-//          nodeList(npcListRow)(npcListCol).solid = true
+    for i <- gp.npcList(1).indices do
+      if gp.npcList(gp.currentMap)(i) != null && gp.npcList(gp.currentMap)(i).notMoving then
+        val npcListCol = gp.npcList(gp.currentMap)(i).pos._1 / gp.tileSize
+        val npcListRow = gp.npcList(gp.currentMap)(i).pos._2 / gp.tileSize
+        if npcListRow >= 0 && npcListRow < gp.maxWorldRow && npcListCol >= 0 && npcListCol < gp.maxWorldCol then
+          nodeList(npcListRow)(npcListCol).solid = true
 
   def setCost(node: Node): Unit =
     var xDistance = Math.abs(node.col - startNode.col)

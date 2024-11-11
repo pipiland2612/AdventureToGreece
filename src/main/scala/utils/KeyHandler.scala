@@ -79,9 +79,9 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
       case KeyEvent.VK_T                    => if !showDebugText then showDebugText = true else if showDebugText then showDebugText = false
       case KeyEvent.VK_R                    =>
         gp.currentMap match
-          case 0 => gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/map.txt", 0)
-          case 1 => gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/dungeon_map.txt", 1)
-          case 2 => gp.tileManager.loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/boss_map.txt", 2)
+          case 0 => gp.tileManager.loadMap("map.txt", 0)
+          case 1 => gp.tileManager.loadMap("dungeon_map.txt", 1)
+          case 2 => gp.tileManager.loadMap("boss_map.txt", 2)
       case KeyEvent.VK_P                    => gp.gameState = GameState.PauseState
       case KeyEvent.VK_ESCAPE               => gp.gameState = GameState.GameMenu
       case KeyEvent.VK_ENTER                => enterPressed = true

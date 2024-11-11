@@ -109,7 +109,7 @@ class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
     if state != State.ATTACK then checkToAttack(attackRate, verticalScanRange, horizontalScanRange)
 
   def setDialoque(): Unit =
-    dialogues(0)(0) = s"So, you’ve finally made it this far.\nI’ll give you credit for your persistence, but that’s where your luck ends."
+    dialogues(0)(0) = s"So, you’ve finally made it this far.\nI’ll give you credit for your persistence,\nbut that’s where your luck ends."
     dialogues(0)(1) = s"You’ve made a mistake coming here, mortal.\nPrepare to meet your end!"
     dialogues(0)(2) = s"I grow tired of this.\nWITNESS MY TRUE POWER!"
   setDialoque()

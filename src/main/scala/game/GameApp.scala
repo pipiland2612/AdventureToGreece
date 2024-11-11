@@ -1,8 +1,6 @@
 package game
 
 import java.awt.Dimension
-import java.io.File
-import javax.imageio.ImageIO
 import javax.swing.*
 
 // RUN GAME HERE
@@ -13,7 +11,6 @@ object GameApp extends App :
   frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
   frame.add(gamePanel, java.awt.BorderLayout.CENTER)
   frame.setSize(new Dimension(gamePanel.screenWidth, gamePanel.screenHeight))
-  setIcon()
 
   frame.addKeyListener(gamePanel.keyH)
 
@@ -26,7 +23,3 @@ object GameApp extends App :
   gamePanel.config.loadConfig()
   gamePanel.setUpGame()
   gamePanel.startGameThread()
-
-  def setIcon(): Unit =
-    val icon: ImageIcon = new ImageIcon(ImageIO.read(new File("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Players/player_image.png")))
-    frame.setIconImage(icon.getImage)

@@ -7,7 +7,6 @@ import game.GamePanel
 import java.awt.geom.AffineTransform
 import java.awt.{BasicStroke, Color, Graphics2D, Image}
 import java.awt.image.BufferedImage
-import java.io.File
 import javax.imageio.ImageIO
 
 object Tools:
@@ -32,7 +31,7 @@ object Tools:
 
   def loadImage(path: String): BufferedImage =
     try
-      ImageIO.read(new File("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/" + path))
+      ImageIO.read(getClass.getResourceAsStream(s"/images/$path"))
     catch
       case e: Exception =>
         throw new RuntimeException(s"Failed to load image at path: $path")

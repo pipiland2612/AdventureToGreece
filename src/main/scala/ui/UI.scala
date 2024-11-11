@@ -39,7 +39,7 @@ class UI(var gp: GamePanel):
     GameMenuUI.setGraphics(g, gp)
     TradeUI.setGraphics(g, gp)
 
-  // Main draw function
+  // MAIN draw function
   def drawUI(g: Graphics2D): Unit =
     setGraphics(g)
     g.setFont(font_40)
@@ -150,15 +150,10 @@ class UI(var gp: GamePanel):
 
   private def handleDialogueText(): Unit =
     if npc.dialogues(npc.dialogueSet)(npc.dialogueIndex) != null then
+      type DialogueSource = Npc | Enemy
       npc match
-        case npc : Npc =>
-          val charactersSet: Array[Char] = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex).toCharArray
-          if charIndex < charactersSet.length then
-            combinedText += charactersSet(charIndex).toString
-            currentDialogue = combinedText
-            charIndex += 1
-        case enemy: Enemy =>
-          val charactersSet: Array[Char] = npc.dialogues(npc.dialogueSet)(npc.dialogueIndex).toCharArray
+        case npcOrEnemy: DialogueSource =>
+          val charactersSet: Array[Char] = npcOrEnemy.dialogues(npcOrEnemy.dialogueSet)(npcOrEnemy.dialogueIndex).toCharArray
           if charIndex < charactersSet.length then
             combinedText += charactersSet(charIndex).toString
             currentDialogue = combinedText
@@ -270,8 +265,8 @@ class UI(var gp: GamePanel):
         else if currentEnemy.isBoss then
           val oneScale: Double = gp.tileSize * 8 / currentEnemy.maxHealth
           val hpBarValue = oneScale * currentEnemy.health
-          var x = gp.screenWidth / 2 - gp.tileSize * 4
-          var y = gp.tileSize * 10
+          val x = gp.screenWidth / 2 - gp.tileSize * 4
+          val y = gp.tileSize * 10
           // Border
           g2.setColor(new Color(35, 35, 35))
           g2.fillRect(x - 1 , y - 1, hpBarValue.toInt, 22)

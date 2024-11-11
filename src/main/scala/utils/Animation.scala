@@ -23,7 +23,3 @@ class Animation(val frames: Vector[BufferedImage], val frameDuration: Int, var a
     finished = false
 
   def isInAttackInterval: Boolean = currentTimeFrame >= attackStartFrame && currentTimeFrame <= attackEndFrame
-
-  def triggerAttack(): Boolean = isInAttackInterval
-
-  def isFinished: Boolean = finished

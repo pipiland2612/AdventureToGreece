@@ -127,7 +127,7 @@ class GamePanel extends JPanel with Runnable:
   def update(): Unit =
     if gameState == GameState.PlayState then
       this.player.update()
-
+      
       for i <- npcList(1).indices do
         if npcList(currentMap)(i) != null then
           npcList(currentMap)(i).update()

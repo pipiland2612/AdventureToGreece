@@ -27,8 +27,8 @@ object TradeUI:
     gp.gui.drawDialogueScreen()
     var x = tileSize * 15
     var y = tileSize * 4 + 10
-    var width = tileSize * 3
-    var height = (tileSize * 3.5).toInt
+    val width = tileSize * 3
+    val height = (tileSize * 3.5).toInt
     Tools.drawSubWindow(g2, x, y, width, height)
 
     x += tileSize
@@ -105,7 +105,7 @@ object TradeUI:
     Tools.drawSubWindow(g2, x, y, width, height)
     g2.drawString(s"Your coin: ${gp.player.coin}", x + 24, y + 60)
 
-    var itemIndex = PlayerUI.getItemIndexBySlot(PlayerUI.playerSlotCol, PlayerUI.playerSlotRow)
+    val itemIndex = PlayerUI.getItemIndexBySlot(PlayerUI.playerSlotCol, PlayerUI.playerSlotRow)
     if itemIndex < gp.player.inventory.size then
       var price = gp.player.inventory(itemIndex).price / 2
       g2.drawString(s"Price: ${price}", (x + tileSize * 4) + 10, y - 18)

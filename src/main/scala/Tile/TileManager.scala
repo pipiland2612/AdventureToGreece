@@ -4,6 +4,7 @@ import game.GamePanel
 
 import java.awt.{Color, Graphics2D}
 import java.io.{BufferedReader, File, InputStreamReader}
+import scala.util.{Try, Using}
 import utils.Tools
 
 class TileManager(var gp: GamePanel) :
@@ -12,24 +13,24 @@ class TileManager(var gp: GamePanel) :
 
   var mapTileNum: Array[Array[Array[Int]]] = Array.ofDim[Int](gp.maxMap, gp.maxWorldRow, gp.maxWorldCol)
   def loadMap(path: String, mapIndex: Int) =
-    try
-      val inputStream = new File(path).toURI.toURL.openStream()
-      val br = BufferedReader(new InputStreamReader(inputStream))
+    val resourcePath = s"/images/Maps/$path"
+    val streamOption = Option(getClass.getResourceAsStream(resourcePath))
 
-      for row <- 0 until gp.maxWorldRow do
-        val line = br.readLine()
-        for col <- 0 until gp.maxWorldCol do
-          val numbers: Array[String] = line.split(" ")
-          val num: Int = numbers(col).toInt
-          mapTileNum(mapIndex)(row)(col) = num
+    streamOption match
+      case Some(inputStream) =>
+        Using.resource(new BufferedReader(new InputStreamReader(inputStream))) ( br =>
+          for row <- 0 until gp.maxWorldRow do
+            val line = br.readLine()
+            for col <- 0 until gp.maxWorldCol do
+              val numbers: Array[String] = line.split(" ")
+              val num: Int = numbers(col).toInt
+              mapTileNum(mapIndex)(row)(col) = num
+        )
+      case None => println(s"Map source not found for mapIndex: $mapIndex")
 
-      br.close()
-    catch
-      case exception: Exception => println(s"Map source not found $mapIndex")
-
-  loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/map.txt", 0)
-  loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/dungeon_map.txt", 1)
-  loadMap("/Users/batman/Desktop/Adventure to Greece/src/main/resources/images/Maps/boss_map.txt", 2)
+  loadMap("map.txt", 0)
+  loadMap("dungeon_map.txt", 1)
+  loadMap("boss_map.txt", 2)
 
   def loadTileImage (): Unit =
     // OVERWORLD TILE

@@ -1,39 +1,45 @@
 package utils
 
-import java.io.File
 import javax.sound.sampled.{AudioInputStream, AudioSystem, Clip, FloatControl}
 
-class Sound :
+class Sound:
   var clip: Clip = _
   var fc: FloatControl = _
   var volumeScale: Int = 3
   var volume: Float = _
-  var soundUrl: Array[File] = new Array[File](30)
-  soundUrl(0) = new File("src/main/resources/sounds/adventure.wav")
-  soundUrl(1) = new File("src/main/resources/sounds/boss_fight.wav")
+  var soundUrls: Array[String] = Array(
+    "/sounds/adventure.wav",
+    "/sounds/boss_fight.wav"
+  )
 
-  def setFile (int : Int): Unit =
-    try
-      val ais: AudioInputStream = AudioSystem.getAudioInputStream(soundUrl(int))
-      clip = AudioSystem.getClip()
-      clip.open(ais)
-      fc = clip.getControl(FloatControl.Type.MASTER_GAIN).asInstanceOf[FloatControl]
-      checkVolume()
-    catch
-      case e: Exception =>
-        println("Error loading audio")
+  def setFile(index: Int): Unit =
+    val soundPath = soundUrls(index)
+    val resourceStream = Option(getClass.getResourceAsStream(soundPath))
+
+    resourceStream match
+      case Some(stream) =>
+        try
+          val ais: AudioInputStream = AudioSystem.getAudioInputStream(stream)
+          clip = AudioSystem.getClip()
+          clip.open(ais)
+          fc = clip.getControl(FloatControl.Type.MASTER_GAIN).asInstanceOf[FloatControl]
+          checkVolume()
+        catch
+          case e: Exception =>
+            println(s"Error loading audio from $soundPath: ${e.getMessage}")
+      case None =>
+        println(s"Audio file not found at $soundPath")
 
   def play(): Unit =
-    if(clip != null) then
-      clip.start()
+    if (clip != null) then clip.start()
 
-  def stop(): Unit = clip.stop()
+  def stop(): Unit =
+    if (clip != null) then clip.stop()
 
   def loop(): Unit =
-    if (clip != null) then
-      clip.loop(Clip.LOOP_CONTINUOUSLY)
+    if (clip != null) then clip.loop(Clip.LOOP_CONTINUOUSLY)
 
-  def checkVolume (): Unit =
+  def checkVolume(): Unit =
     volume = volumeScale match
       case 0 => -80f
       case 1 => -20f
