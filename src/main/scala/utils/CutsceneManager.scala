@@ -16,10 +16,11 @@ class CutsceneManager (var gp: GamePanel):
   var phaseStartTime: Long = 0
   val NA = 0
   val kingOfDeath = 1
-
   val credit = 2
+
   var creditY: Int = 0
   var fadeAlpha: Float = 0f
+  var counter: Int = 0
 
   def draw(graphics2D: Graphics2D): Unit =
     this.g2 = graphics2D
@@ -78,13 +79,13 @@ class CutsceneManager (var gp: GamePanel):
       sceneNum = NA
       scenePhase = 0
       gp.gameState = PlayState
+      
 
   def creditCutScene(): Unit =
-    // Constants for timing and positioning
     val scrollSpeed = 1
     val textSpacing = 50
     val centerX = gp.screenWidth / 2
-    val fadeSpeed = 0.03f
+    val fadeSpeed = 0.02f
 
     // Helper function to center text
     def drawCenteredText(text: String, y: Int): Unit =
@@ -101,21 +102,21 @@ class CutsceneManager (var gp: GamePanel):
 
     // Fade in phase
     if scenePhase == 1 then
-      // Draw darkening overlay
       g2.setColor(new Color(0, 0, 0, fadeAlpha))
       g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)
 
       fadeAlpha += fadeSpeed
 
       // When fully dark, move to credit scroll
-      if fadeAlpha >= 0.9f then
-        fadeAlpha = 0.9f
-        scenePhase = 2
-        creditY = gp.screenHeight
+      if fadeAlpha >= 0.95f then
+        fadeAlpha = 0.95f
+        counter += 1
+        if(counter >= 60) then
+          scenePhase = 2
+          creditY = gp.screenHeight
 
     // Main credit scroll phase
     if scenePhase == 2 then
-      // Draw dark background
       g2.setColor(new Color(0, 0, 0, 0.9f))
       g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)
 
@@ -126,33 +127,68 @@ class CutsceneManager (var gp: GamePanel):
 
       g2.setFont(g2.getFont.deriveFont(Font.PLAIN, 28f))
 
-      // Draw scrolling credits
       val credits = Array(
         "",
-        "- Development Team -",
+        "==== PROJECT HORIZON ====",
+        "A Journey of Innovation and Passion",
         "",
-        "Game Director",
+        "==== CREDITS ====",
+        "",
+        "Developed By:",
         "Tran Dang Minh Nguyen",
+        "Independent Game Developer",
         "",
-        "Programming",
+        "- Creative Leadership -",
+        "",
+        "Game Director & Lead Designer",
         "Tran Dang Minh Nguyen",
-        "",
-        "Art & Animation",
-        "Itch.io",
-        "",
-        "Music & Sound Effects",
-        "Tran Dang Minh Nguyen",
-        "",
-        "- Special Thanks -",
-        "",
-        "TAs and Head TAs",
-        "Youtube Videos",
-        "ChatGPT",
-        "",
-        "Check out the progress on my GitHub",
+        "Transforming creative vision into interactive experiences",
         "",
         "",
-        "Thank You For Playing!",
+        "Art Direction & Visual Design",
+        "Beautiful Assets from Itch.io",
+        "Carefully selected to create a unique visual narrative",
+        "",
+        "Audio Composition",
+        "Original Music & Sound Design by Tran Dang Minh Nguyen",
+        "",
+        "- Educational Influences -",
+        "",
+        "Mentorship & Guidance",
+        "Dedicated Teaching Assistants and Head TAs",
+        "Who supported and challenged my growth as a developer",
+        "",
+        "Learning Resources",
+        "Inspirational Tutorials on YouTube",
+        "",
+        "- Collaborative Inspirations -",
+        "",
+        "Ideation & Conceptualization",
+        "Collaborative brainstorming with AI assistants",
+        "",
+        "",
+        "- Community Acknowledgments -",
+        "",
+        "Asset Creators on Itch.io",
+        "Providing high-quality, creative resources",
+        "",
+        "Global Gaming Community",
+        "Your passion, feedback, and support fuel creative innovation",
+        "",
+        "- Professional Journey -",
+        "",
+        "",
+        "Check out the game progress on my GitHub:",
+        "github.com/pipiland2612",
+        "",
+        "==== THANK YOU ====",
+        "",
+        "Every line of code is a step in my continuous learning journey.",
+        "",
+        "To those who inspire, challenge, and support creative technology",
+        "Thank You.",
+        "",
+        "© " + java.time.Year.now() + " Tran Dang Minh Nguyen. All Rights Reserved.",
         ""
       )
 

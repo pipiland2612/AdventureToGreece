@@ -14,7 +14,8 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   currentWeapon = OBJ_NormalSword(gp)
   currentShield = OBJ_NormalShield(gp)
   currentProjectile = OBJ_Fireball(gp)
-
+  
+  // IF YOU WANT TO BEAT THE GAME ASAP, TURN THIS INTO TRUE
   var isGodMode = false
 
   state = State.IDLE

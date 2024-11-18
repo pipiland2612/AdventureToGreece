@@ -113,7 +113,7 @@ object GameMenuUI:
     val tileSize = gp.tileSize
     var textX = frameX + tileSize - 10
     var textY = frameY + tileSize
-    gp.gui.currentDialogue = "Quit the game and \nreturn to the title screen ?"
+    gp.gui.currentDialogue = "Quit the game and\nreturn to the title screen ?"
 
     for line <- gp.gui.currentDialogue.split("\n") do
       g2.drawString(line, textX, textY)

@@ -1,7 +1,6 @@
 package Enemy
 
 import `object`.OBJ_HolyGrail
-import `object`.ObjectType.OBJ_BronzeCoin
 import entities.{Direction, State}
 import game.{GamePanel, GameProgress}
 import items.Item

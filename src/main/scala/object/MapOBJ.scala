@@ -198,11 +198,11 @@ class OBJ_HolyGrail(gp: GamePanel) extends Item(gp):
   solidAreaDefaultY = 0
   var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/holy_grail.png"), 32, 32)
-  image = Tools.scaleImage(Tools.loadImage("Objects/holy_grail.png"), 20, 20)
+  image = Tools.scaleImage(Tools.loadImage("Objects/holy_grail.png"), 32, 32)
   setDialogue();
   def getDescription =
     s"A sacred relic of\nimmense power,..."
-    
+
   def setDialogue(): Unit =
     dialogues(0)(0) = s"Use $name to open relic"
     dialogues(1)(0) = s"Cannot use this item here"

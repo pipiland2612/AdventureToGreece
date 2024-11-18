@@ -210,7 +210,7 @@ class GamePanel extends JPanel with Runnable:
       //EMPTY LIST
       entityList.clear()
 
-      // IF YOU WANT TO BE MORE CLEAR HOW'S THE GAME WORK, UNCOMMENT THIS LINE
+      // IF YOU WANT TO BE MORE CLEAR HOW'S THE GAME WORK, UNCOMMENT THE BELOW LINE
 //      Tools.renderDebugInfo(g2d, player, obj, enemyList, this)
 
       // ENVIRONMENT
