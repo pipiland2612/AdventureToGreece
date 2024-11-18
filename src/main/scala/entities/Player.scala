@@ -15,25 +15,25 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   currentShield = OBJ_NormalShield(gp)
   currentProjectile = OBJ_Fireball(gp)
 
-  var isGodMode = true
+  var isGodMode = false
 
   state = State.IDLE
   // ----------------------------------------------------------------------------------
   // Player stats
   var name = "Warrior"
-  speed = 5
-  maxHealth = 110
+  speed = 10
+  maxHealth = 100
   health = maxHealth
   maxMana = 100
   mana = maxMana
-  var strength = 1
+  var strength = 10
   var dexterity = 1
   var exp = 0
   var level = 1
   var nextLevelExp = 5
   var attackDamage = getAttackDamage
   var defense = getDefense
-  var coin = 20
+  var coin = 2000
 
   // other stats
   attackTimeAnimation = 30

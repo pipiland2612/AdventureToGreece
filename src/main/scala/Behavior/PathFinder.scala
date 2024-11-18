@@ -62,13 +62,12 @@ class PathFinder(gp: GamePanel):
       setCost(nodeList(row)(col))
 
       //Check for objs and npcs
-      for i <- gp.obj(1).indices do
-        if gp.obj(gp.currentMap)(i) != null && gp.obj(gp.currentMap)(i).collision then
-          val objCol = (gp.obj(gp.currentMap)(i).getPosition._1 + gp.obj(gp.currentMap)(i).solidAreaDefaultX) / gp.tileSize
-          val objRow = (gp.obj(gp.currentMap)(i).getPosition._2 + gp.obj(gp.currentMap)(i).solidAreaDefaultY) / gp.tileSize
-          if objRow >= 0 && objRow < gp.maxWorldRow && objCol >= 0 && objCol < gp.maxWorldCol then
-            gp.pFinder.nodeList(objRow)(objCol).solid = true
-
+    for i <- gp.obj(1).indices do
+      if gp.obj(gp.currentMap)(i) != null && gp.obj(gp.currentMap)(i).collision then
+        val objCol = (gp.obj(gp.currentMap)(i).getPosition._1 + gp.obj(gp.currentMap)(i).solidAreaDefaultX) / gp.tileSize
+        val objRow = (gp.obj(gp.currentMap)(i).getPosition._2 + gp.obj(gp.currentMap)(i).solidAreaDefaultY) / gp.tileSize
+        if objRow >= 0 && objRow < gp.maxWorldRow && objCol >= 0 && objCol < gp.maxWorldCol then
+          gp.pFinder.nodeList(objRow)(objCol).solid = true
 
     for i <- gp.npcList(1).indices do
       if gp.npcList(gp.currentMap)(i) != null && gp.npcList(gp.currentMap)(i).notMoving then

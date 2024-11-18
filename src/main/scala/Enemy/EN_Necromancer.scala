@@ -1,6 +1,6 @@
 package Enemy
 
-import `object`.ObjectType.OBJ_BronzeCoin
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_GoldCoin, OBJ_SilverKey}
 import entities.{Direction, State}
 import game.GamePanel
 import items.Item
@@ -19,10 +19,10 @@ class EN_Necromancer(gp : GamePanel) extends Enemy(gp) :
   var defense = 5
   maxInvincDuration = 30
   var expGet: Int = 5
-  var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp))
+  var itemDropped: Vector[Item] = Vector(new OBJ_GoldCoin(gp), new OBJ_SilverKey(gp))
 
   var attackRate = 1
-  var verticalScanRange: Int = (gp.tileSize * 2).toInt
+  var verticalScanRange: Int = (gp.tileSize * 2)
   var horizontalScanRange: Int = (gp.tileSize * 1.5).toInt
   attackTimeAnimation = 45
   attackArea.width = (gp.tileSize * 1.5).toInt

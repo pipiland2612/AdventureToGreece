@@ -3,13 +3,13 @@ package Tile
 import game.GamePanel
 
 import java.awt.{Color, Graphics2D}
-import java.io.{BufferedReader, File, InputStreamReader}
-import scala.util.{Try, Using}
+import java.io.{BufferedReader, InputStreamReader}
+import scala.util.Using
 import utils.Tools
 
 class TileManager(var gp: GamePanel) :
   var tile: Array[Tile] = new Array[Tile](35)
-  var drawPath: Boolean = true
+  var drawPath: Boolean = false;
 
   var mapTileNum: Array[Array[Array[Int]]] = Array.ofDim[Int](gp.maxMap, gp.maxWorldRow, gp.maxWorldCol)
   def loadMap(path: String, mapIndex: Int) =

@@ -44,8 +44,7 @@ object Tools:
     g.dispose()
     scaledImage
 
-  def flipFrames(frames: Vector[BufferedImage], flipFunction: BufferedImage => BufferedImage): Vector[BufferedImage] =
-    frames.map(flipFunction)
+  def flipFrames(frames: Vector[BufferedImage], flipFunction: BufferedImage => BufferedImage): Vector[BufferedImage] = frames.map(flipFunction)
 
   def setupCommonAnimations(flipFunction: BufferedImage => BufferedImage, commonFrames: Vector[BufferedImage], framesRate: Int, attackStartFrame: Int = -1, attackEndFrame: Int = -1): Map[Direction, Animation] =
     Map(

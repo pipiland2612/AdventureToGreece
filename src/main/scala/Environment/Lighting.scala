@@ -60,10 +60,10 @@ class Lighting (gp: GamePanel) :
       setLightSource()
       gp.player.lightUpdated = false
 
-  def draw (g2: Graphics2D): Unit =
+  def draw(g2: Graphics2D): Unit =
     // Only play dark screen in dungeon
     if gp.currentArea == Area.Dungeon then
       g2.drawImage(darkNessFilter, 0, 0, null)
 
-end Lighting
 
+end Lighting

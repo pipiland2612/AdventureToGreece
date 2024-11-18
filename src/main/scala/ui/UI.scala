@@ -5,12 +5,14 @@ import entities.{Entity, Npc}
 import game.{GamePanel, GameState}
 import utils.Tools
 
-import java.awt.{Color, Font, Graphics2D}
+import java.io.{File, IOException}
+import java.awt.{Color, Font, FontFormatException, Graphics2D, GraphicsEnvironment}
 import scala.collection.mutable.ListBuffer
 
 class UI(var gp: GamePanel):
   // Fonts and graphics
-  var font_40: Font = new Font("Arial", Font.PLAIN, 40)
+  loadCustomFont()
+  var font_40: Font = _
   var g2: Graphics2D = _
 
   // Messages
@@ -39,7 +41,7 @@ class UI(var gp: GamePanel):
     GameMenuUI.setGraphics(g, gp)
     TradeUI.setGraphics(g, gp)
 
-  // MAIN draw function
+  // MAIN DRAWING function
   def drawUI(g: Graphics2D): Unit =
     setGraphics(g)
     g.setFont(font_40)
@@ -245,7 +247,8 @@ class UI(var gp: GamePanel):
       val currentEnemy = gp.enemyList(gp.currentMap)(i)
       if currentEnemy != null && currentEnemy.isInCamera then
         val (screenX, screenY) = currentEnemy.calculateScreenCoordinates()
-
+        
+        // FOR NORMAL ENEMIES
         if currentEnemy.hpBarOn && !currentEnemy.isBoss then
           val oneScale: Double = gp.tileSize / currentEnemy.maxHealth
           val hpBarValue = oneScale * currentEnemy.health
@@ -261,7 +264,8 @@ class UI(var gp: GamePanel):
             currentEnemy.health = currentEnemy.maxHealth
             currentEnemy.hpBarCounter = 0
             currentEnemy.hpBarOn = false
-
+            
+        // BOSS
         else if currentEnemy.isBoss then
           val oneScale: Double = gp.tileSize * 8 / currentEnemy.maxHealth
           val hpBarValue = oneScale * currentEnemy.health
@@ -277,4 +281,21 @@ class UI(var gp: GamePanel):
           g2.setFont(g2.getFont.deriveFont(Font.BOLD, 24F))
           g2.setColor(Color.WHITE)
           g2.drawString(currentEnemy.name, x + 4, y - 10)
-end UI
+
+  def loadCustomFont(): Unit =
+    try
+      // Load the font from the resources folder
+      val fontFile = new File(getClass.getResource("/fonts/Minecraft.ttf").toURI)
+      val font = Font.createFont(Font.TRUETYPE_FONT, fontFile)
+
+      // Register the font in the graphics environment
+      GraphicsEnvironment.getLocalGraphicsEnvironment.registerFont(font)
+
+      font_40 = font.deriveFont(45f)
+
+    catch
+      case e: IOException => e.printStackTrace()
+      case e: FontFormatException => e.printStackTrace()
+
+
+

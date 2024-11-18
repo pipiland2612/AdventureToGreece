@@ -1,5 +1,6 @@
 package Enemy
 
+import `object`.OBJ_HolyGrail
 import `object`.ObjectType.OBJ_BronzeCoin
 import entities.{Direction, State}
 import game.{GamePanel, GameProgress}
@@ -20,7 +21,7 @@ class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
   var defense = 20
   maxInvincDuration = 15
   var expGet: Int = 30
-  var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp))
+  var itemDropped: Vector[Item] = Vector(new OBJ_HolyGrail(gp))
 
   var attackRate = 10
   var changeDirectionInterval = 45
@@ -109,8 +110,8 @@ class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
     if state != State.ATTACK then checkToAttack(attackRate, verticalScanRange, horizontalScanRange)
 
   def setDialoque(): Unit =
-    dialogues(0)(0) = s"So, you’ve finally made it this far.\nI’ll give you credit for your persistence,\nbut that’s where your luck ends."
-    dialogues(0)(1) = s"You’ve made a mistake coming here, mortal.\nPrepare to meet your end!"
+    dialogues(0)(0) = s"So, you have finally made it this far.\nI will give you credit for your persistence,\nbut that is where your luck ends."
+    dialogues(0)(1) = s"Prepare to meet your end, mortal !!"
     dialogues(0)(2) = s"I grow tired of this.\nWITNESS MY TRUE POWER!"
   setDialoque()
 

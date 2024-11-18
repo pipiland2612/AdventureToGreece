@@ -1,6 +1,6 @@
 package Enemy
 
-import `object`.ObjectType.OBJ_BronzeCoin
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_GoldCoin, OBJ_ManaFlask, OBJ_NormalHealFlask}
 import entities.Direction
 import game.GamePanel
 import items.Item
@@ -57,7 +57,7 @@ class EN_Orc_Light(gp: GamePanel) extends EN_Orc(gp) :
   var defense = 5
   maxInvincDuration = 15
   var expGet: Int = 5
-  var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp))
+  var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp), new OBJ_NormalHealFlask(gp), new OBJ_ManaFlask(gp))
 
   var attackRate = 20
   var changeDirectionInterval = 60
@@ -111,7 +111,7 @@ class EN_Orc_Heavy(gp: GamePanel) extends EN_Orc(gp) :
   var defense = 7
   maxInvincDuration = 15
   var expGet: Int = 7
-  var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp))
+  var itemDropped: Vector[Item] = Vector(new OBJ_GoldCoin(gp))
 
   var attackRate = 20
   var changeDirectionInterval = 60

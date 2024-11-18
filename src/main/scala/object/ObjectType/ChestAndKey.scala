@@ -72,7 +72,7 @@ class OBJ_SilverKey(gp: GamePanel) extends Item(gp):
 
   override def use(entity: Creatures): Boolean =
     gp.gameState = GameState.DialogueState
-    val objIndex = getDetected(entity, gp.obj, "Chest")
+    val objIndex = getDetected(entity, gp.obj, OBJ_SilverChest.Name)
     if objIndex != -1 then
       val chest = gp.obj(gp.currentMap)(objIndex)
       chest match
@@ -94,3 +94,28 @@ object OBJ_Chest:
 
 object OBJ_SilverKey:
   val Name: String = "Silver Key"
+
+
+class OBJ_GoldenRelic(gp: GamePanel) extends InteractiveObjects(gp):
+  var name      = OBJ_GoldenRelic.Name
+  var pos       = (0, 0)
+  var size      = 48
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size , size)
+  image         = Tools.scaleImage(Tools.loadImage("Objects/gold_chest.png"), size, size)
+  collision     = true
+
+  setDialogue()
+  def setDialogue(): Unit =
+    dialogues(0)(0) = "You need a grail to open this"
+
+  override def interact(): Unit =
+    gp.gameState = GameState.DialogueState
+    startDialogue(this, 0)
+
+  def openRelic(): Unit =
+    gp.gameState = GameState.CutSceneState  
+    gp.cutSceneManager.sceneNum = gp.cutSceneManager.credit
+
+end OBJ_GoldenRelic
+object OBJ_GoldenRelic:
+  val Name: String = "Golden Relic"

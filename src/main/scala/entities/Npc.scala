@@ -1,6 +1,6 @@
 package entities
 
-import `object`.ObjectType.{OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword}
+import `object`.ObjectType.{OBJ_GoldenChest, OBJ_GoldenKatana, OBJ_ManaFlask, OBJ_MoonSaber, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverChest}
 import game.{GamePanel, GameState}
 import utils.{Animation, Tools}
 
@@ -50,11 +50,14 @@ class Merchant(gp : GamePanel) extends Npc(gp):
 
   def setItem(): Unit =
     inventory += new OBJ_NormalHealFlask(gp)
+    inventory += new OBJ_ManaFlask(gp)
     inventory += new OBJ_NormalSword(gp)
-    inventory += new OBJ_NormalHealFlask(gp)
-    inventory += new OBJ_NormalAxe(gp)
     inventory += new OBJ_NormalAxe(gp)
     inventory += new OBJ_NormalShield(gp)
+    inventory += new OBJ_SilverChest(gp)
+    inventory += new OBJ_MoonSaber(gp)
+    inventory += new OBJ_GoldenKatana(gp)
+    inventory += new OBJ_GoldenChest(gp)
   setItem()
 
   override def speak(): Unit =

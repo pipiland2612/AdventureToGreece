@@ -18,7 +18,7 @@ object GameMenuUI:
   def gameMenuTop(frameX: Int, frameY: Int):Unit =
     val tileSize = gp.tileSize
     val text = "Options"
-    var textX = Tools.getCenterX(g2, gp, text) + gp.tileSize
+    var textX = Tools.getCenterX(g2, gp, text) + gp.tileSize + 5
     var textY = frameY + tileSize
     g2.drawString(text, textX, textY)
 
@@ -74,25 +74,27 @@ object GameMenuUI:
   def controlDisplay(frameX: Int, frameY: Int): Unit =
     val tileSize = gp.tileSize
     val text = "Control"
-    var textX = Tools.getCenterX(g2, gp, text) + 20
+    var textX = Tools.getCenterX(g2, gp, text) + gp.tileSize + 5
     var textY = frameY + tileSize
     g2.drawString("Control", textX, textY)
 
-    textX = frameX + tileSize - 15
-    textY += tileSize + 25
+    textX = frameX + tileSize - 27
+    textY += tileSize
 
     g2.drawString("Move", textX, textY); textY += tileSize
     g2.drawString("Confirm/Attack", textX, textY); textY += tileSize
+    g2.drawString("Interact", textX, textY); textY += tileSize
     g2.drawString("Shoot/Cast", textX, textY); textY += tileSize
     g2.drawString("Character Screen", textX, textY); textY += tileSize
     g2.drawString("Pause", textX, textY); textY += tileSize
     g2.drawString("Game Menu", textX, textY); textY += tileSize
 
-    textX = frameX + tileSize * 6 - 5
-    textY = frameY + tileSize * 2 + 25
+    textX = frameX + tileSize * 6 - 7
+    textY = frameY + tileSize * 2
 
     g2.drawString("WASD", textX, textY); textY += tileSize
     g2.drawString("J", textX, textY); textY += tileSize
+    g2.drawString("ENTER", textX, textY); textY += tileSize
     g2.drawString("U", textX, textY); textY += tileSize
     g2.drawString("C", textX, textY); textY += tileSize
     g2.drawString("P", textX, textY); textY += tileSize

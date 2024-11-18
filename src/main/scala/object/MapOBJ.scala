@@ -1,8 +1,9 @@
 package `object`
 
-import entities.Entity
+import `object`.ObjectType.OBJ_GoldenRelic
+import entities.{Creatures, Entity}
 import game.{GamePanel, GameState}
-import items.{InteractiveObjects, Light}
+import items.{InteractiveObjects, Item, Light}
 import utils.Tools
 
 import java.awt.Rectangle
@@ -188,3 +189,38 @@ object OBJ_PlayerDummy:
   val Name: String = "Dummy"
 
 end OBJ_PlayerDummy
+
+
+class OBJ_HolyGrail(gp: GamePanel) extends Item(gp):
+  var name = OBJ_HolyGrail.Name
+  var pos = (0, 0)
+  solidAreaDefaultX = 0
+  solidAreaDefaultY = 0
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/holy_grail.png"), 32, 32)
+  image = Tools.scaleImage(Tools.loadImage("Objects/holy_grail.png"), 20, 20)
+  setDialogue();
+  def getDescription =
+    s"A sacred relic of\nimmense power,..."
+    
+  def setDialogue(): Unit =
+    dialogues(0)(0) = s"Use $name to open relic"
+    dialogues(1)(0) = s"Cannot use this item here"
+
+  override def use(entity: Creatures): Boolean =
+    gp.gameState = GameState.DialogueState
+    val objIndex = getDetected(entity, gp.obj, OBJ_GoldenRelic.Name)
+    if objIndex != -1 then
+      val chest = gp.obj(gp.currentMap)(objIndex)
+      chest match
+        case relic: OBJ_GoldenRelic =>
+          relic.openRelic()
+          true
+        case _ =>
+          false
+    else
+      startDialogue(this, 1)
+      false
+
+object OBJ_HolyGrail:
+  val Name: String = "Holy Grail"

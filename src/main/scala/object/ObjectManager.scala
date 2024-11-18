@@ -1,7 +1,7 @@
 package `object`
 
 import Enemy.{EN_Beetle, EN_KingOfDeath, EN_Mantis, EN_Necromancer, EN_Orc_Heavy, EN_Orc_Light}
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalSword}
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_GoldenRelic, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalSword}
 import entities.{Entity, Merchant, Socerer}
 import game.{GamePanel, GameProgress}
 import items.InteractiveObjects
@@ -94,6 +94,8 @@ class ObjectManager(var gp : GamePanel) :
       (new OBJ_BossPillar(gp),                  36,     Some(calcPos (35, 15))),
       (new OBJ_BossPillar(gp),                  37,     Some(calcPos (35, 25))),
       (new OBJ_BossPillar(gp),                  38,     Some(calcPos (23, 21))),
+
+      (new OBJ_GoldenRelic(gp),                 39,     Some(calcPos (24, 2))),
 
     )
 

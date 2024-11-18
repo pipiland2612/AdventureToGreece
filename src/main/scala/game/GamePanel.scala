@@ -39,7 +39,7 @@ class GamePanel extends JPanel with Runnable:
   //----------------------------------------------------------------------------------------------
   //INITIALIZATION
   val backGroundImageOverWorld: BufferedImage = Tools.loadImage("Maps/overworld_background.png")
-  val backGroundImageDungeon: BufferedImage = Tools.loadImage("Maps/dungeon_background.png")
+  val backGroundImageDungeon: BufferedImage   = Tools.loadImage("Maps/dungeon_background.png")
   var backGroundImage: BufferedImage = backGroundImageOverWorld
 
   this.setPreferredSize(new Dimension(screenWidth, screenHeight))
@@ -125,6 +125,7 @@ class GamePanel extends JPanel with Runnable:
   // ----------------------------------------------------------------------------------------------
   // Game Loop Update
   def update(): Unit =
+    updateBackGroundImage()
     if gameState == GameState.PlayState then
       this.player.update()
       
@@ -162,6 +163,7 @@ class GamePanel extends JPanel with Runnable:
     super.paintComponent(g)
     val g2d = g.asInstanceOf[Graphics2D]
 
+    // PRESS T TO OPEN DEBUG
     var startTime: Long = 0
     if(keyH.showDebugText) then
       startTime = System.nanoTime()
@@ -207,7 +209,9 @@ class GamePanel extends JPanel with Runnable:
         entity.draw(g2d)
       //EMPTY LIST
       entityList.clear()
-      Tools.renderDebugInfo(g2d, player, obj, enemyList, this)
+
+      // IF YOU WANT TO BE MORE CLEAR HOW'S THE GAME WORK, UNCOMMENT THIS LINE
+//      Tools.renderDebugInfo(g2d, player, obj, enemyList, this)
 
       // ENVIRONMENT
       environmentManager.draw(g2d)

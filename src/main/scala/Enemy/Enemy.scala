@@ -5,7 +5,7 @@ import entities.{Creatures, Direction, Entity, State}
 import game.GamePanel
 import items.Item
 
-import java.awt.{AlphaComposite, Color, Graphics2D}
+import java.awt.{AlphaComposite, Graphics2D}
 import scala.util.Random
 
 abstract class Enemy(gp: GamePanel) extends Creatures(gp):
@@ -127,10 +127,12 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
 
   def checkDrop(): Unit =
     val randomInt = new Random().nextInt(100) + 1
-    if randomInt < 50 then
-      dropItem(new OBJ_BronzeCoin(gp))
-    else if randomInt >= 50 then
-      dropItem(new OBJ_NormalHealFlask(gp))
+    val randomItem = new Random().nextInt(itemDropped.size)
+    if isBoss then
+      dropItem(itemDropped(randomItem))
+    else
+      if randomInt < 50 then
+        dropItem(itemDropped(randomItem))
 
   def moveTowardPlayer(interval : Int): Unit =
     counter += 1
