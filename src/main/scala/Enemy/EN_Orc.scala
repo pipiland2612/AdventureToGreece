@@ -51,7 +51,7 @@ class EN_Orc_Light(gp: GamePanel) extends EN_Orc(gp) :
   var pos = (0,0)
   var name = "Light Orc"
   speed = 2
-  maxHealth = 25
+  maxHealth = 20
   health = maxHealth
   damagePower = 10
   var defense = 5
@@ -107,10 +107,10 @@ class EN_Orc_Heavy(gp: GamePanel) extends EN_Orc(gp) :
   speed = 2
   maxHealth = 30
   health = maxHealth
-  damagePower = 15
-  var defense = 7
+  damagePower = 10
+  var defense = 10
   maxInvincDuration = 15
-  var expGet: Int = 7
+  var expGet: Int = 10
   var itemDropped: Vector[Item] = Vector(new OBJ_GoldCoin(gp))
 
   var attackRate = 20

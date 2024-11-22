@@ -1,7 +1,7 @@
 package `object`
 
 import Enemy.{EN_Beetle, EN_KingOfDeath, EN_Mantis, EN_Necromancer, EN_Orc_Heavy, EN_Orc_Light}
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_GoldenKatana, OBJ_GoldenRelic, OBJ_ManaFlask, OBJ_MoonSaber, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalSword}
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_GoldenChest, OBJ_GoldenKatana, OBJ_GoldenRelic, OBJ_ManaFlask, OBJ_MoonSaber, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalSword}
 import entities.{Captain, Entity, Merchant, Socerer}
 import game.{GamePanel, GameProgress}
 import items.InteractiveObjects
@@ -49,9 +49,9 @@ class ObjectManager(var gp : GamePanel) :
     this.loadEntity(objectData0, gp.obj(0))
     objectData0(1)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_BronzeCoin(gp))
     objectData0(2)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_NormalHealFlask(gp))
-    objectData0(3)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_ManaFlask(gp))
+    objectData0(3)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_MoonSaber(gp))
     objectData0(4)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_NormalHealFlask(gp))
-    objectData0(5)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_MoonSaber(gp))
+    objectData0(5)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_NormalHealFlask(gp))
 
     val objectData1 = List (
       (new OBJ_DungeonGate(gp),                 0,     Some(calcPos (4, 3))),
@@ -66,7 +66,7 @@ class ObjectManager(var gp : GamePanel) :
       (new OBJ_Chest(gp),                       9,     Some(calcPos (43, 2))),
     )
     this.loadEntity(objectData1, gp.obj(1))
-    objectData1(8)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_MoonSaber(gp))
+    objectData1(8)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_GoldenChest(gp))
     objectData1(9)._1.asInstanceOf[InteractiveObjects].setLoot(new OBJ_GoldenKatana(gp))
 
     val objectData2 = List (
@@ -115,6 +115,7 @@ class ObjectManager(var gp : GamePanel) :
       (new OBJ_BossPillar(gp),                  38,     Some(calcPos (19, 23))),
 
       (new OBJ_GoldenRelic(gp),                 39,     Some(calcPos (24, 2))),
+      (new OBJ_BossPillar(gp),                  40,     Some(calcPos (27, 17))),
 
     )
 
@@ -163,6 +164,12 @@ class ObjectManager(var gp : GamePanel) :
     )
 
     this.loadEntity(npcData0, gp.npcList(0))
+
+    val npcData2 = List(
+      (new Merchant(gp),                        0,     Some(calcPos (23, 43))),
+    )
+
+    this.loadEntity(npcData2, gp.npcList(2))
 
 end ObjectManager
 

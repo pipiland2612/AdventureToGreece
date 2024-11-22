@@ -6,7 +6,7 @@ import utils.Tools
 import java.awt.Rectangle
 
 // SWORD
-class OBJ_NormalSword(gp: GamePanel) extends Weapon(5, gp):
+class OBJ_NormalSword(gp: GamePanel) extends Weapon(7, gp):
   var scale       = 48
   name            = OBJ_NormalSword.Name
   price           = 5
@@ -20,7 +20,7 @@ end OBJ_NormalSword
 object OBJ_NormalSword:
   val Name: String = "Normal Sword"
 
-class OBJ_MoonSaber(gp: GamePanel) extends Weapon(10, gp):
+class OBJ_MoonSaber(gp: GamePanel) extends Weapon(13, gp):
   var scale       = 48
   name            = OBJ_MoonSaber.Name
   price           = 15
@@ -78,7 +78,7 @@ object OBJ_NormalShield:
 
 class OBJ_SilverChest(gp: GamePanel) extends Shield(5, gp):
   name            = OBJ_SilverChest.Name
-  price           = 15
+  price           = 10
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/silver_chest.png"), size - size / 5, size - size / 5)
   image           = Tools.scaleImage(Tools.loadImage("Objects/silver_chest.png"), size - size / 5, size - size / 5)
   attackArea.width  = 10

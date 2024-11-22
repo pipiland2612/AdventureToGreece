@@ -119,4 +119,4 @@ class SaveLoad (gp: GamePanel):
             if gp.obj(mapNum)(i).opened then gp.obj(mapNum)(i).image = gp.obj(mapNum)(i).asInstanceOf[OBJ_Chest].getImage
 
     catch
-      case e: Exception => e.printStackTrace()
+      case e: Exception => {}

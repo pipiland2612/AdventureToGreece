@@ -115,7 +115,12 @@ class EventHandler(var gp: GamePanel):
       else if hasHit(2, 23, 32, Direction.ANY) then kingOfDeath() // CutScene
       else if hasHit(2, 24, 32, Direction.ANY) then kingOfDeath() // CutScene
       else if hasHit(2, 25, 32, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 26, 32, Direction.ANY) then kingOfDeath() // CutScene
+      else if hasHit(2, 23, 31, Direction.ANY) then kingOfDeath() // CutScene
+      else if hasHit(2, 24, 31, Direction.ANY) then kingOfDeath() // CutScene
+      else if hasHit(2, 25, 31, Direction.ANY) then kingOfDeath() // CutScene
+      else if hasHit(2, 23, 30, Direction.ANY) then kingOfDeath() // CutScene
+      else if hasHit(2, 24, 30, Direction.ANY) then kingOfDeath() // CutScene
+      else if hasHit(2, 25, 30, Direction.ANY) then kingOfDeath() // CutScene
 
   // NPC interaction
   def speak(npc: Npc): Unit =

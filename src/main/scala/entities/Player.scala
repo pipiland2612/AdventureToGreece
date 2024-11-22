@@ -22,19 +22,19 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   // ----------------------------------------------------------------------------------
   // Player stats
   var name = "Warrior"
-  speed = 10
+  speed = 5
   maxHealth = 100
   health = maxHealth
   maxMana = 100
   mana = maxMana
-  var strength = 10
+  var strength = 1
   var dexterity = 1
   var exp = 0
   var level = 1
   var nextLevelExp = 5
   var attackDamage = getAttackDamage
   var defense = getDefense
-  var coin = 2000
+  var coin = 25
 
   // other stats
   attackTimeAnimation = 30

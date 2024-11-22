@@ -103,7 +103,7 @@ class GamePanel extends JPanel with Runnable:
     entityList.clear()
 
     if restart then
-      player = new Player((tileSize * 23, tileSize * 21), this)
+      player = new Player((tileSize * 43, tileSize * 46), this)
       oManager.setObject()
 
   //----------------------------------------------------------------------------------------------

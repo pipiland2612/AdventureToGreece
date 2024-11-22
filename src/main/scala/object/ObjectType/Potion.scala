@@ -10,7 +10,7 @@ import java.awt.Rectangle
 class OBJ_NormalHealFlask(gp: GamePanel) extends Potion(10, gp):
   name = OBJ_NormalHealFlask.Name
   effectName = OBJ_NormalHealFlask.EffectName
-  price = 5
+  price = 3
   isStackable = true
   var scale = 32
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/flask_medium.png"), scale, scale)
@@ -31,7 +31,7 @@ end OBJ_NormalHealFlask
 class OBJ_ManaFlask(gp: GamePanel) extends Potion(10, gp):
   name = OBJ_ManaFlask.Name
   effectName = OBJ_ManaFlask.EffectName
-  price = 5
+  price = 4
   isStackable = true
   var scale = 32
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/mana_flask.png"), scale, scale)

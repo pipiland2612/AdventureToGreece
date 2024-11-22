@@ -13,12 +13,12 @@ class EN_Necromancer(gp : GamePanel) extends Enemy(gp) :
   var pos = (0,0)
   var name = "Necromancer"
   speed = 1
-  maxHealth = 40
+  maxHealth = 30
   health = maxHealth
-  damagePower = 10
+  damagePower = 15
   var defense = 5
   maxInvincDuration = 30
-  var expGet: Int = 5
+  var expGet: Int = 10
   var itemDropped: Vector[Item] = Vector(new OBJ_GoldCoin(gp), new OBJ_SilverKey(gp))
 
   var attackRate = 1

@@ -75,7 +75,7 @@ class OBJ_LightCandle(gp: GamePanel) extends Light(gp):
   var solidArea    = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/candle_light.png"), 32, 32)
   image            = Tools.scaleImage(Tools.loadImage("Objects/candle_light.png"), 32, 32)
-  price            = 100
+  price            = 20
   var lightRadius  = 450
 
 object OBJ_LightCandle:

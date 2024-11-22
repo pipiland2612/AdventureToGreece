@@ -14,9 +14,9 @@ class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
   var pos = (0,0)
   var name = EN_KingOfDeath.Name
   speed = 4
-  maxHealth = 50
+  maxHealth = 40
   health = maxHealth
-  damagePower = 25
+  damagePower = 20
   var defense = 20
   maxInvincDuration = 15
   var expGet: Int = 30

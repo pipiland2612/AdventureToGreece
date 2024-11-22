@@ -13,12 +13,12 @@ class EN_Beetle(gp : GamePanel) extends Enemy(gp) :
   var pos = (0,0)
   var name = "Beetle"
   speed = 3
-  maxHealth = 20
+  maxHealth = 10
   health = maxHealth
   damagePower = 5
   var defense = 2
   maxInvincDuration = 15
-  var expGet: Int = 2
+  var expGet: Int = 4
   var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp), new OBJ_NormalHealFlask(gp), new OBJ_SilverKey(gp))
 
   var changeDirectionInterval = 30

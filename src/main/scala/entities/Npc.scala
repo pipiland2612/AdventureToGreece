@@ -17,15 +17,8 @@ abstract class Npc(gp: GamePanel) extends Creatures(gp):
   areaHitBox = Rectangle(0, 0, 0, 0)
 
   def speak (): Unit =
-    facePlayer()
     startDialogue(this, dialogueSet)
 
-  def facePlayer (): Unit =
-    this.direction = gp.player.direction match
-      case Direction.UP => Direction.DOWN
-      case Direction.DOWN => Direction.UP
-      case Direction.LEFT => Direction.RIGHT
-      case Direction.RIGHT => Direction.LEFT
 
 end Npc
 
@@ -118,7 +111,7 @@ class Captain (gp: GamePanel) extends Npc(gp):
     dialogues(0)(2) = "Press J to swing your weapon,\nC to check your inventory and equipment.\nMore commands in the settings menu [ESC].\n"
     dialogues(0)(3) = "On your way to the dungeon, find the candle light.\nIt helps you see through darkness underground.\n"
     dialogues(0)(4) = "The dungeon's first level guards powerful weapons\namong its dangers. Find them, you'll stand a chance\nagainst Shadow Lord at dungeon's level two.\n"
-    dialogues(0)(5) = "REMEMBER: the villagers here know well. Talk to them,\nthey'll share secrets that will save you.\nWe're all in this fight together.\n"
+    dialogues(0)(5) = "REMEMBER: the villagers here know well. Talk to\nthem, they'll share secrets that will save you.\nWe're all in this fight together.\n"
 
   setDialogue()
 
