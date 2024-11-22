@@ -2,7 +2,7 @@ package `object`
 
 import Enemy.{EN_Beetle, EN_KingOfDeath, EN_Mantis, EN_Necromancer, EN_Orc_Heavy, EN_Orc_Light}
 import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_GoldenKatana, OBJ_GoldenRelic, OBJ_ManaFlask, OBJ_MoonSaber, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalSword}
-import entities.{Entity, Merchant, Socerer}
+import entities.{Captain, Entity, Merchant, Socerer}
 import game.{GamePanel, GameProgress}
 import items.InteractiveObjects
 
@@ -25,7 +25,7 @@ class ObjectManager(var gp : GamePanel) :
       (new OBJ_Chest(gp),                       2,     Some(calcPos (39, 8))),
       (new OBJ_Chest(gp),                       3,     Some(calcPos (5, 19))),
       (new OBJ_Chest(gp),                       4,     Some(calcPos (15, 41))),
-      (new OBJ_Chest(gp),                       5,     Some(calcPos (39, 42))),
+      (new OBJ_Chest(gp),                       5,     Some(calcPos (38, 42))),
       (new OBJ_Tree(gp),                        6,     Some(calcPos (8, 6))),
       (new OBJ_Tree(gp),                        7,     Some(calcPos (6, 19))),
       (new OBJ_Tree(gp),                        8,     Some(calcPos (16, 9))),
@@ -126,8 +126,6 @@ class ObjectManager(var gp : GamePanel) :
       (new EN_Beetle(gp),                       0,     Some(calcPos (12, 10))),
       (new EN_Mantis(gp),                       1,     Some(calcPos (6, 8))),
       (new EN_Beetle(gp),                       3,     Some(calcPos (20, 16))),
-      (new EN_Mantis(gp),                       6,     Some(calcPos (38, 42))),
-      (new EN_Beetle(gp),                       7,     Some(calcPos (39, 37))),
       (new EN_Beetle(gp),                       8,     Some(calcPos (42, 14))),
       (new EN_Beetle(gp),                       9,     Some(calcPos (39, 6))),
       (new EN_Beetle(gp),                       10,    Some(calcPos (36, 3))),
@@ -161,6 +159,7 @@ class ObjectManager(var gp : GamePanel) :
     val npcData0 = List(
       (new Merchant(gp),                        0,     Some(calcPos (3, 6))),
       (new Socerer(gp),                         1,     Some(calcPos (3, 2))),
+      (new Captain(gp),                         2,     Some(calcPos (40, 42))),
     )
 
     this.loadEntity(npcData0, gp.npcList(0))

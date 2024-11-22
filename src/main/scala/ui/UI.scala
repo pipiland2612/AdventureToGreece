@@ -77,11 +77,12 @@ class UI(var gp: GamePanel):
     PlayerUI.drawPlayerLife()
     PlayerUI.drawPlayerMana()
     drawDialogueScreen()
+    drawHint("[ENTER] to continue")
 
   private def drawCharacterState(): Unit =
     PlayerUI.drawCharacterState()
     PlayerUI.drawInventory(gp.player, true)
-    drawHint("[ENTER] to use item")
+    drawHint("[ENTER] to use/switch item")
 
   private def drawMessage(): Unit =
     val messageX = tileSize / 2
@@ -288,7 +289,7 @@ class UI(var gp: GamePanel):
     g2.setFont(g2.getFont.deriveFont(Font.BOLD, 13F))
 
     // Calculate position above the player
-    val x = gp.screenWidth - gp.tileSize * 3
+    val x = gp.screenWidth - gp.tileSize * 4
     val y = gp.tileSize * 12 - gp.tileSize/2
 
     // Draw main text in white

@@ -64,7 +64,7 @@ class GamePanel extends JPanel with Runnable:
   var gameThread: Thread = _
 
   //ENTITY, OBJECT, NPCS, ENEMIES
-  var player = Player((tileSize * 23, tileSize * 21), this)
+  var player = Player((tileSize * 43, tileSize * 46), this)
   val obj: Array[Array[Entity]] = Array.ofDim[Entity](maxMap, 80)
   var enemyList: Array[Array[Enemy]] = Array.ofDim[Enemy](maxMap, 40)
   var npcList : Array[Array[Npc]] = Array.ofDim[Npc](maxMap, 5)

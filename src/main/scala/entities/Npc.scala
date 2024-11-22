@@ -78,7 +78,7 @@ class Socerer (gp: GamePanel) extends Npc(gp):
   solidAreaDefaultX = 10
   solidAreaDefaultY = 22
   var solidArea: Rectangle = new Rectangle(solidAreaDefaultX, solidAreaDefaultY, 24, 24)
-  image = Tools.scaleImage(Tools.loadImage("npc/socerer.png"), gp.tileSize * 3 / 2, gp.tileSize * 3 / 2)
+  image = Tools.scaleImage(Tools.loadImage("npc/socerer.png"), (gp.tileSize * 1.2).toInt, (gp.tileSize * 1.2).toInt)
   dialogueSet = -1
 
   def setDialogue(): Unit =
@@ -100,3 +100,35 @@ class Socerer (gp: GamePanel) extends Npc(gp):
 //    super.setAction()
 
 end Socerer
+
+class Captain (gp: GamePanel) extends Npc(gp):
+  var pos: (Int, Int) = (0,0)
+  var name = "Captain"
+  speed = 2
+  notMoving = true
+  solidAreaDefaultX = 10
+  solidAreaDefaultY = 22
+  var solidArea: Rectangle = new Rectangle(solidAreaDefaultX, solidAreaDefaultY, 32, 32)
+  image = Tools.scaleImage(Tools.loadImage("npc/captain.png"), gp.tileSize * 3/2, gp.tileSize * 3/2)
+  dialogueSet = -1
+
+  def setDialogue(): Unit =
+    dialogues(0)(0) = "Welcome, warrior. I'm Captain Aldrin.\nThe King Of Death has taken control of our world.\nWe need your help to defeat him.\n"
+    dialogues(0)(1) = "At the end of the village path lies the dungeon gate.\nBefore you venture forth, visit the merchant!"
+    dialogues(0)(2) = "Press J to swing your weapon,\nC to check your inventory and equipment.\nMore commands in the settings menu [ESC].\n"
+    dialogues(0)(3) = "On your way to the dungeon, find the candle light.\nIt helps you see through darkness underground.\n"
+    dialogues(0)(4) = "The dungeon's first level guards powerful weapons\namong its dangers. Find them, you'll stand a chance\nagainst Shadow Lord at dungeon's level two.\n"
+    dialogues(0)(5) = "REMEMBER: the villagers here know well. Talk to them,\nthey'll share secrets that will save you.\nWe're all in this fight together.\n"
+
+  setDialogue()
+
+  override def speak(): Unit =
+    super.speak()
+
+    dialogueSet += 1
+    if dialogues(dialogueSet)(0) == null then dialogueSet = 0
+
+  override def update(): Unit = {}
+//    super.setAction()
+
+end Captain
