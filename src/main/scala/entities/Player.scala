@@ -239,6 +239,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     this.inventory += currentProjectile
     this.inventory += OBJ_NormalHealFlask(gp)
     this.inventory += OBJ_SilverKey(gp)
+    this.inventory += OBJ_SilverKey(gp)
 
   def selectItem(): Unit =
     val itemIndex = PlayerUI.getItemIndexBySlot(PlayerUI.playerSlotCol, PlayerUI.playerSlotRow)

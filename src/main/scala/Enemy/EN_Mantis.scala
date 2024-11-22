@@ -1,6 +1,6 @@
 package Enemy
 
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_ManaFlask}
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_ManaFlask, OBJ_SilverKey}
 import entities.Direction
 import game.GamePanel
 import items.Item
@@ -19,7 +19,7 @@ class EN_Mantis(gp : GamePanel) extends Enemy(gp) :
   var defense = 5
   maxInvincDuration = 15
   var expGet: Int = 5
-  var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp), new OBJ_ManaFlask(gp))
+  var itemDropped: Vector[Item] = Vector(new OBJ_ManaFlask(gp), new OBJ_SilverKey(gp))
 
   var attackRate = 40
   var changeDirectionInterval = 60

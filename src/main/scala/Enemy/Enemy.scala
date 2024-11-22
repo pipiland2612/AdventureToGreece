@@ -1,6 +1,5 @@
 package Enemy
 
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_NormalHealFlask}
 import entities.{Creatures, Direction, Entity, State}
 import game.GamePanel
 import items.Item
@@ -131,7 +130,7 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
     if isBoss then
       dropItem(itemDropped(randomItem))
     else
-      if randomInt < 50 then
+      if randomInt < 70 then
         dropItem(itemDropped(randomItem))
 
   def moveTowardPlayer(interval : Int): Unit =

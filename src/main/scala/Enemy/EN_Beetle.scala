@@ -1,6 +1,6 @@
 package Enemy
 
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_NormalHealFlask}
+import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_NormalHealFlask, OBJ_SilverKey}
 import entities.Direction
 import game.GamePanel
 import items.Item
@@ -19,7 +19,7 @@ class EN_Beetle(gp : GamePanel) extends Enemy(gp) :
   var defense = 2
   maxInvincDuration = 15
   var expGet: Int = 2
-  var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp), new OBJ_NormalHealFlask(gp))
+  var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp), new OBJ_NormalHealFlask(gp), new OBJ_SilverKey(gp))
 
   var changeDirectionInterval = 30
   var attackRate = 15 // Chance to perform attack

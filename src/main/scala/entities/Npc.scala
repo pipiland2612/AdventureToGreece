@@ -78,23 +78,15 @@ class Socerer (gp: GamePanel) extends Npc(gp):
   solidAreaDefaultX = 10
   solidAreaDefaultY = 22
   var solidArea: Rectangle = new Rectangle(solidAreaDefaultX, solidAreaDefaultY, 24, 24)
-  image = Tools.scaleImage(Tools.loadImage("npc/socerer.png"), gp.tileSize * 2, gp.tileSize * 2)
+  image = Tools.scaleImage(Tools.loadImage("npc/socerer.png"), gp.tileSize * 3 / 2, gp.tileSize * 3 / 2)
   dialogueSet = -1
 
   def setDialogue(): Unit =
     dialogues(0)(0) = "Greetings, adventurer.\nThe magic of this world is deeper than you think.\n"
-    dialogues(0)(1) = "Power comes at a price,\nand you must be prepared to pay it.\n"
-    dialogues(0)(2) = "Do not underestimate the shadows,\nfor they hold secrets not meant for the faint-hearted.\n"
-    dialogues(0)(3) = "The arcane arts require focus and sacrifice.\nBe careful what you seek.\n"
+    dialogues(0)(1) = "Ahead stands a gate leads to dungeon\n"
+    dialogues(0)(2) = "Do not underestimate the shadows.\nThey hold secrets not meant for the faint-hearted.\n"
+    dialogues(0)(3) = "You must be well-armed\nAnd REMEMBER! Bring your light candle, turn it on!\n"
     dialogues(0)(4) = "There are forces in this realm\nthat even I dare not trifle with.\nTread carefully.\n"
-
-    dialogues(1)(0) = "The stars speak to those who listen,\nbut their whispers are not always kind.\n"
-    dialogues(1)(1) = "Once, I was like you—\nfull of hope and ambition.\nThe world changes us all.\n"
-    dialogues(1)(2) = "Magic is not just a tool,\nit is a way of life, a bond with the unseen forces.\n"
-    dialogues(1)(3) = "The runes you see etched on my robes?\nThey are reminders of battles fought and lost.\n"
-    dialogues(1)(4) = "Legends speak of a forgotten spell\nhidden deep in the heart of the ancient woods.\nSome things are best left forgotten.\n"
-    dialogues(1)(5) = "Do not be swayed by the allure of power,\nfor it often leads to ruin.\n"
-    dialogues(1)(6) = "Every spell leaves a mark on the soul.\nBe mindful of how many marks you carry.\n"
 
   setDialogue()
 

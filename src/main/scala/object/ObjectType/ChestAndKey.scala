@@ -12,7 +12,7 @@ class OBJ_Chest(gp: GamePanel) extends InteractiveObjects(gp):
   var name      = OBJ_Chest.Name
   var pos       = (0, 0)
   var size      = 48
-  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size , size)
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size * 2/3, size * 2/3)
   image         = getImage
   collision     = true
 
@@ -57,7 +57,7 @@ class OBJ_SilverKey(gp: GamePanel) extends Item(gp):
   var pos           = (0, 0)
   var solidArea     = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/silver_key.png"), 32, 32)
-  image             = Tools.scaleImage(Tools.loadImage("Objects/silver_key.png"), size, size)
+  image             = Tools.scaleImage(Tools.loadImage("Objects/silver_key.png"), 32, 32)
 
   setDialogue()
 
@@ -72,7 +72,7 @@ class OBJ_SilverKey(gp: GamePanel) extends Item(gp):
 
   override def use(entity: Creatures): Boolean =
     gp.gameState = GameState.DialogueState
-    val objIndex = getDetected(entity, gp.obj, OBJ_SilverChest.Name)
+    val objIndex = getDetected(entity, gp.obj, OBJ_Chest.Name)
     if objIndex != -1 then
       val chest = gp.obj(gp.currentMap)(objIndex)
       chest match

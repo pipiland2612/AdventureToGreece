@@ -66,6 +66,7 @@ class UI(var gp: GamePanel):
     PlayerUI.drawPlayerMana()
     this.drawEnemyHealth()
     drawMessage()
+    drawHint("[ENTER] to interact")
 
   private def drawPauseState(): Unit =
     PlayerUI.drawPlayerLife()
@@ -80,6 +81,7 @@ class UI(var gp: GamePanel):
   private def drawCharacterState(): Unit =
     PlayerUI.drawCharacterState()
     PlayerUI.drawInventory(gp.player, true)
+    drawHint("[ENTER] to use item")
 
   private def drawMessage(): Unit =
     val messageX = tileSize / 2
@@ -281,6 +283,17 @@ class UI(var gp: GamePanel):
           g2.setFont(g2.getFont.deriveFont(Font.BOLD, 24F))
           g2.setColor(Color.WHITE)
           g2.drawString(currentEnemy.name, x + 4, y - 10)
+
+  private def drawHint(text : String):Unit =
+    g2.setFont(g2.getFont.deriveFont(Font.BOLD, 13F))
+
+    // Calculate position above the player
+    val x = gp.screenWidth - gp.tileSize * 3
+    val y = gp.tileSize * 12 - gp.tileSize/2
+
+    // Draw main text in white
+    g2.setColor(Color.WHITE)
+    g2.drawString(text, x, y)
 
   def loadCustomFont(): Unit =
     try

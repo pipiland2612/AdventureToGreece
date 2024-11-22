@@ -36,12 +36,12 @@ class TileManager(var gp: GamePanel) :
     // OVERWORLD TILE
     setUp(0, "OverWorld/grass", false)
     setUp(1, "OverWorld/grass_flower1", false)
-    setUp(2, "OverWorld/grass_flower2", false)
-    setUp(3, "OverWorld/stone_path", false)
+    setUp(2, "OverWorld/grass", false)
+    setUp(3, "OverWorld/grass_flower2", false)
     setUp(4, "OverWorld/ruinedstone_path", false)
-    setUp(5, "OverWorld/ruinedstone_path2", false)
+    setUp(5, "OverWorld/wall", true)
     setUp(6, "OverWorld/wall", true)
-    setUp(7, "OverWorld/wall", true)
+    setUp(7, "OverWorld/stone_path", false)
     setUp(8, "OverWorld/wall", true)
     setUp(9, "OverWorld/water", true)
 

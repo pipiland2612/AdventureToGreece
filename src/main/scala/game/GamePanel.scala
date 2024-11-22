@@ -65,8 +65,8 @@ class GamePanel extends JPanel with Runnable:
 
   //ENTITY, OBJECT, NPCS, ENEMIES
   var player = Player((tileSize * 23, tileSize * 21), this)
-  val obj: Array[Array[Entity]] = Array.ofDim[Entity](maxMap, 70)
-  var enemyList: Array[Array[Enemy]] = Array.ofDim[Enemy](maxMap, 10)
+  val obj: Array[Array[Entity]] = Array.ofDim[Entity](maxMap, 80)
+  var enemyList: Array[Array[Enemy]] = Array.ofDim[Enemy](maxMap, 40)
   var npcList : Array[Array[Npc]] = Array.ofDim[Npc](maxMap, 5)
   var projectileList: ListBuffer[Projectile] = ListBuffer[Projectile]()
   var entityList: ListBuffer[Entity] = ListBuffer[Entity]()

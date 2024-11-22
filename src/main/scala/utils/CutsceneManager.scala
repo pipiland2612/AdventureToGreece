@@ -149,8 +149,6 @@ class CutsceneManager (var gp: GamePanel):
         "Beautiful Assets from Itch.io",
         "Carefully selected to create a unique visual narrative",
         "",
-        "Audio Composition",
-        "Original Music & Sound Design by Tran Dang Minh Nguyen",
         "",
         "- Educational Influences -",
         "",

@@ -102,7 +102,7 @@ abstract class Entity(var gp: GamePanel):
   // ----------------------------------------------------------------------------------------------
   // Rendering Method
   def isInCamera: Boolean =
-    val drawRange = gp.tileSize * 2
+    val drawRange = gp.tileSize * 3
     val (worldX, worldY) = this.pos
     val (playerX, playerY) = gp.player.getPosition
     val screenX = gp.player.screenX

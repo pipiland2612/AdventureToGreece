@@ -114,7 +114,7 @@ class OBJ_DungeonGate(gp: GamePanel) extends Entity(gp):
   var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, 32, 32)
   solidAreaDefaultX = 0
   solidAreaDefaultY = 0
-  image         = Tools.scaleImage(Tools.loadImage("Objects/dungeon_gate2.png"), gp.tileSize * 2, gp.tileSize * 2)
+  image         = Tools.scaleImage(Tools.loadImage("Objects/dungeon_gate2.png"), gp.tileSize, gp.tileSize)
 
 object OBJ_DungeonGate:
   val Name: String = "Dungeon Gate"
