@@ -110,7 +110,7 @@ class UI(var gp: GamePanel):
     g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)
 
     g2.setFont(g2.getFont.deriveFont(Font.BOLD, 70F))
-    drawTitleText("Adventure to Greece", tileSize * 3)
+    drawTitleText("Dungeon Adventure", tileSize * 3)
 
     // Menu options
     g2.setFont(g2.getFont.deriveFont(Font.BOLD, 40F))

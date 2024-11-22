@@ -113,8 +113,10 @@ class EventHandler(var gp: GamePanel):
       else if hasHit(1, 4, 3, Direction.ANY) then teleport(0, 6, 1, Area.OverWorld) // Back to OverWorld
       else if hasHit(1, 47, 33, Direction.ANY) then teleport(2, 4, 44, Area.Dungeon) // TO FINAL BOSS (DUNGEON 2)
       else if hasHit(2, 4, 44, Direction.ANY) then teleport(1, 47, 33, Area.Dungeon) // TO DUNGEON 1
+      else if hasHit(2, 23, 32, Direction.ANY) then kingOfDeath() // CutScene
       else if hasHit(2, 24, 32, Direction.ANY) then kingOfDeath() // CutScene
       else if hasHit(2, 25, 32, Direction.ANY) then kingOfDeath() // CutScene
+      else if hasHit(2, 26, 32, Direction.ANY) then kingOfDeath() // CutScene
 
   // NPC interaction
   def speak(npc: Npc): Unit =

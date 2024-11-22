@@ -112,7 +112,7 @@ class ObjectManager(var gp : GamePanel) :
       (new OBJ_BossPillar(gp),                  35,     Some(calcPos (17, 25))),
       (new OBJ_BossPillar(gp),                  36,     Some(calcPos (35, 15))),
       (new OBJ_BossPillar(gp),                  37,     Some(calcPos (35, 25))),
-      (new OBJ_BossPillar(gp),                  38,     Some(calcPos (23, 21))),
+      (new OBJ_BossPillar(gp),                  38,     Some(calcPos (19, 23))),
 
       (new OBJ_GoldenRelic(gp),                 39,     Some(calcPos (24, 2))),
 

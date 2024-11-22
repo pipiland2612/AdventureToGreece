@@ -5,7 +5,7 @@ import javax.swing.*
 
 // RUN GAME HERE
 object GameApp extends App :
-  val frame = new JFrame("Adventure to Greece")
+  val frame = new JFrame("Dungeon Adventure")
   val gamePanel = new GamePanel()
 
   frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)

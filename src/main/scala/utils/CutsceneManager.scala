@@ -123,7 +123,7 @@ class CutsceneManager (var gp: GamePanel):
       g2.setColor(Color.WHITE)
       g2.setFont(g2.getFont.deriveFont(Font.BOLD, 48f))
 
-      drawCenteredText("ADVENTURE TO GREECE", creditY)
+      drawCenteredText("DUNGEON ADVENTURE", creditY)
 
       g2.setFont(g2.getFont.deriveFont(Font.PLAIN, 28f))
 
