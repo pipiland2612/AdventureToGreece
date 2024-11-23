@@ -13,8 +13,8 @@ class OBJ_NormalHealFlask(gp: GamePanel) extends Potion(10, gp):
   price = 3
   isStackable = true
   var scale = 32
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/flask_medium.png"), scale, scale)
-  image = Tools.scaleImage(Tools.loadImage("Objects/flask_medium.png"), scale, scale)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/flask_medium.png"), scale, scale)
+  image = Tools.scaleImage(Tools.loadImage("objects/flask_medium.png"), scale, scale)
   solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
 
   override def applyEffect(effect: Int, creatures: Creatures): Unit =
@@ -34,8 +34,8 @@ class OBJ_ManaFlask(gp: GamePanel) extends Potion(10, gp):
   price = 4
   isStackable = true
   var scale = 32
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/mana_flask.png"), scale, scale)
-  image = Tools.scaleImage(Tools.loadImage("Objects/mana_flask.png"), scale, scale)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/mana_flask.png"), scale, scale)
+  image = Tools.scaleImage(Tools.loadImage("objects/mana_flask.png"), scale, scale)
   solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
 
   override def applyEffect(effect: Int, creatures: Creatures): Unit =

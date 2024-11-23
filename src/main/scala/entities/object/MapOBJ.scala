@@ -198,7 +198,7 @@ class OBJ_HolyGrail(gp: GamePanel) extends Item(gp):
   solidAreaDefaultY = 0
   var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, gp.tileSize, gp.tileSize)
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/holy_grail.png"), 32, 32)
-  image = Tools.scaleImage(Tools.loadImage("Objects/holy_grail.png"), 32, 32)
+  image = Tools.scaleImage(Tools.loadImage("objects/holy_grail.png"), 32, 32)
   setDialogue();
   def getDescription =
     s"A sacred relic of\nimmense power,..."

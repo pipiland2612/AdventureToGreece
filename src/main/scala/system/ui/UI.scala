@@ -298,9 +298,10 @@ class UI(var gp: GamePanel):
 
   def loadCustomFont(): Unit =
     try
-      // Load the font from the resources folder
-      val fontFile = new File(getClass.getResource("/fonts/Minecraft.ttf").toURI)
-      val font = Font.createFont(Font.TRUETYPE_FONT, fontFile)
+      val fontStream = getClass.getResourceAsStream("/fonts/Minecraft.ttf")
+      if (fontStream == null) throw new IllegalArgumentException("Font resource not found")
+      val font = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, fontStream)
+      fontStream.close()
 
       // Register the font in the graphics environment
       GraphicsEnvironment.getLocalGraphicsEnvironment.registerFont(font)

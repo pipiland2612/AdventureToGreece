@@ -32,10 +32,14 @@ object Tools:
 
   def loadImage(path: String): BufferedImage =
     try
+      val imageStream = getClass.getResourceAsStream(s"/images/$path")
+      if (imageStream == null) throw new RuntimeException(s"Image not found: /images/$path")
+      val image = ImageIO.read(imageStream)
+
       ImageIO.read(getClass.getResourceAsStream(s"/images/$path"))
     catch
       case e: Exception =>
-        throw new RuntimeException(s"Failed to load image at path: $path")
+        throw new RuntimeException(s"Failed to load image at path: /$path with exception: $e")
 
   def scaleImage(origin: BufferedImage, width: Int, height: Int): BufferedImage =
     val resized = origin.getScaledInstance(width, height, Image.SCALE_DEFAULT)

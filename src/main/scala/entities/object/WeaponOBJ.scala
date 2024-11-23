@@ -11,8 +11,8 @@ class OBJ_NormalSword(gp: GamePanel) extends Weapon(6, gp):
   var scale       = 48
   name            = OBJ_NormalSword.Name
   price           = 5
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), scale * 4 / 5, scale * 4 / 5)
-  image           = Tools.scaleImage(Tools.loadImage("Objects/sword_normal.png"), scale, scale)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/sword_normal.png"), scale * 4 / 5, scale * 4 / 5)
+  image           = Tools.scaleImage(Tools.loadImage("objects/sword_normal.png"), scale, scale)
   attackArea.width  = 32
   attackArea.height = 16
   solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
@@ -25,8 +25,8 @@ class OBJ_MoonSaber(gp: GamePanel) extends Weapon(10, gp):
   var scale       = 48
   name            = OBJ_MoonSaber.Name
   price           = 15
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/moon_saber.png"), scale * 4 / 5, scale * 4 / 5)
-  image           = Tools.scaleImage(Tools.loadImage("Objects/moon_saber.png"), scale, scale)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/moon_saber.png"), scale * 4 / 5, scale * 4 / 5)
+  image           = Tools.scaleImage(Tools.loadImage("objects/moon_saber.png"), scale, scale)
   attackArea.width  = 32
   attackArea.height = 16
   solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
@@ -39,8 +39,8 @@ class OBJ_GoldenKatana(gp: GamePanel) extends Weapon(15, gp):
   var scale       = 48
   name            = OBJ_GoldenKatana.Name
   price           = 30
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/golden_katana.png"), scale * 4 / 5, scale * 4 / 5)
-  image           = Tools.scaleImage(Tools.loadImage("Objects/golden_katana.png"), scale, scale)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/golden_katana.png"), scale * 4 / 5, scale * 4 / 5)
+  image           = Tools.scaleImage(Tools.loadImage("objects/golden_katana.png"), scale, scale)
   attackArea.width  = 32
   attackArea.height = 16
   solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, scale, scale)
@@ -53,8 +53,8 @@ object OBJ_GoldenKatana:
 class OBJ_NormalAxe(gp: GamePanel) extends Weapon(7, gp):
   name            = OBJ_NormalAxe.Name
   price           = 7
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/axe_normal.png"), size - size / 5, size - size / 5)
-  image           = Tools.scaleImage(Tools.loadImage("Objects/axe_normal.png"), size - size / 5, size - size / 5)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/axe_normal.png"), size - size / 5, size - size / 5)
+  image           = Tools.scaleImage(Tools.loadImage("objects/axe_normal.png"), size - size / 5, size - size / 5)
   attackArea.width  = 32
   attackArea.height = 20
   solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
@@ -67,8 +67,8 @@ object OBJ_NormalAxe:
 class OBJ_NormalShield(gp: GamePanel) extends Shield(3, gp):
   name            = OBJ_NormalShield.Name
   price           = 5
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5)
-  image           = Tools.scaleImage(Tools.loadImage("Objects/shield_normal.png"), size - size / 5, size - size / 5)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/shield_normal.png"), size - size / 5, size - size / 5)
+  image           = Tools.scaleImage(Tools.loadImage("objects/shield_normal.png"), size - size / 5, size - size / 5)
   attackArea.width  = 10
   attackArea.height = 10
   solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
@@ -80,8 +80,8 @@ object OBJ_NormalShield:
 class OBJ_SilverChest(gp: GamePanel) extends Shield(5, gp):
   name            = OBJ_SilverChest.Name
   price           = 10
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/silver_chest.png"), size - size / 5, size - size / 5)
-  image           = Tools.scaleImage(Tools.loadImage("Objects/silver_chest.png"), size - size / 5, size - size / 5)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/silver_chest.png"), size - size / 5, size - size / 5)
+  image           = Tools.scaleImage(Tools.loadImage("objects/silver_chest.png"), size - size / 5, size - size / 5)
   attackArea.width  = 10
   attackArea.height = 10
   solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)
@@ -93,8 +93,8 @@ object OBJ_SilverChest:
 class OBJ_GoldenChest(gp: GamePanel) extends Shield(15, gp):
   name            = OBJ_GoldenChest.Name
   price           = 30
-  var imageDisplayed = Tools.scaleImage(Tools.loadImage("Objects/golden_chest.png"), size - size / 5, size - size / 5)
-  image           = Tools.scaleImage(Tools.loadImage("Objects/golden_chest.png"), size - size / 5, size - size / 5)
+  var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/golden_chest.png"), size - size / 5, size - size / 5)
+  image           = Tools.scaleImage(Tools.loadImage("objects/golden_chest.png"), size - size / 5, size - size / 5)
   attackArea.width  = 10
   attackArea.height = 10
   solidArea       = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size)

@@ -39,8 +39,8 @@ class GamePanel extends JPanel with Runnable:
 
   //----------------------------------------------------------------------------------------------
   //INITIALIZATION
-  val backGroundImageOverWorld: BufferedImage = Tools.loadImage("Maps/overworld_background.png")
-  val backGroundImageDungeon: BufferedImage   = Tools.loadImage("Maps/dungeon_background.png")
+  val backGroundImageOverWorld: BufferedImage = Tools.loadImage("maps/overworld_background.png")
+  val backGroundImageDungeon: BufferedImage   = Tools.loadImage("maps/dungeon_background.png")
   var backGroundImage: BufferedImage = backGroundImageOverWorld
 
   this.setPreferredSize(new Dimension(screenWidth, screenHeight))

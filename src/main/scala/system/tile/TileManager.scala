@@ -13,7 +13,7 @@ class TileManager(var gp: GamePanel) :
 
   var mapTileNum: Array[Array[Array[Int]]] = Array.ofDim[Int](gp.maxMap, gp.maxWorldRow, gp.maxWorldCol)
   def loadMap(path: String, mapIndex: Int) =
-    val resourcePath = s"/images/Maps/$path"
+    val resourcePath = s"/images/maps/$path"
     val streamOption = Option(getClass.getResourceAsStream(resourcePath))
 
     streamOption match
@@ -66,7 +66,7 @@ class TileManager(var gp: GamePanel) :
     val uTools = Tools
     try
       tile(index) = new Tile()
-      tile(index).image = uTools.loadImage("Tiles/" + imageName + ".png")
+      tile(index).image = uTools.loadImage("tiles/" + imageName + ".png")
 
       // scale beforehand to optimize time to draw
       tile(index).image = uTools.scaleImage(tile(index).image, gp.tileSize, gp.tileSize)
