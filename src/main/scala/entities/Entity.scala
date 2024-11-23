@@ -1,11 +1,12 @@
 package entities
 
+import entities.creatures.{Direction, State}
+import entities.items.*
 import game.{GamePanel, GameState}
-import items.{Item, Light, Projectile, Shield, Weapon}
 import utils.Animation
 
-import java.awt.{Graphics2D, Rectangle}
 import java.awt.image.BufferedImage
+import java.awt.{Graphics2D, Rectangle}
 import scala.collection.mutable.ListBuffer
 
 abstract class Entity(var gp: GamePanel):
@@ -14,10 +15,10 @@ abstract class Entity(var gp: GamePanel):
   // Attributes
 
   var state: State = State.IDLE
-  var pos: (Int, Int)                                // Position (x, y)
-  var speed: Int = 0                                 // Movement speed
-  var direction: Direction = Direction.DOWN          // Current direction
-  var isCollided: Boolean = false                    // Collision status
+  var pos: (Int, Int)                                
+  var speed: Int = 0                                 
+  var direction: Direction = Direction.DOWN          
+  var isCollided: Boolean = false                    
 
   // ----------------------------------------------------------------------------------------------
   // Inventory, Equipment, and Interaction
@@ -28,20 +29,20 @@ abstract class Entity(var gp: GamePanel):
   var currentLight: Light = _
 
   val maxInventorySize = 20
-  var inventory: ListBuffer[Item] = ListBuffer()     // Player inventory
-  var loot: Item = _                                 // Lootable item
-  var opened: Boolean = false                        // Is the entity opened (for chests)
+  var inventory: ListBuffer[Item] = ListBuffer()     
+  var loot: Item = _                                 
+  var opened: Boolean = false                        
 
   // ----------------------------------------------------------------------------------------------
   // Collision Areas
 
-  var solidArea: Rectangle                           // Collision area
-  var solidAreaDefaultX, solidAreaDefaultY: Int = 0  // Default positions for solid area
+  var solidArea: Rectangle                           
+  var solidAreaDefaultX, solidAreaDefaultY: Int = 0  
 
-  var areaHitBox: Rectangle = Rectangle(0, 0, 0, 0)  // Hitbox for specific purposes (e.g., attack)
-  var areaDefaultX, areaDefaultY: Int = 0            // Default hitbox positions
+  var areaHitBox: Rectangle = Rectangle(0, 0, 0, 0)  
+  var areaDefaultX, areaDefaultY: Int = 0            
 
-  var attackArea: Rectangle = new Rectangle(0, 0, 0, 0) // Area for attack hitbox
+  var attackArea: Rectangle = new Rectangle(0, 0, 0, 0) 
 
   // ----------------------------------------------------------------------------------------------
   // Animation and Rendering
@@ -57,8 +58,8 @@ abstract class Entity(var gp: GamePanel):
   // ----------------------------------------------------------------------------------------------
   // Dialogue System
 
-  var name: String                                   // Entity name
-  var collision: Boolean = false                     // Does the entity block movement?
+  var name: String                                  
+  var collision: Boolean = false                    
 
   var dialogues: Array[Array[String]] = Array.ofDim(20, 20) // Dialogue contents
   var dialogueSet: Int = 0

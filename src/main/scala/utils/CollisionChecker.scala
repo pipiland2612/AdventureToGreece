@@ -1,8 +1,9 @@
 package utils
 
-import Enemy.Enemy
-import entities.Direction.ANY
-import entities.{Creatures, Direction, Entity}
+import entities.Entity
+import entities.creatures.{Creatures, Direction}
+import entities.creatures.Direction.ANY
+import entities.creatures.enemy.Enemy
 import game.GamePanel
 
 import java.awt.Rectangle

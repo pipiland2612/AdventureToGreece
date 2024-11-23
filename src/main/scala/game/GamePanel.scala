@@ -1,20 +1,21 @@
 package game
 
-import Behavior.PathFinder
-import Data.SaveLoad
-import Enemy.Enemy
-import Environment.{Area, EnvironmentManager}
-
+import entities.Entity
 import java.awt.image.BufferedImage
-import Tile.{Map, TileManager}
-import `object`.ObjectManager
+import entities.creatures.enemy.Enemy
+import entities.creatures.{Npc, Player}
+import entities.items.Projectile
+import system.objectManager.ObjectManager
+import system.behavior.PathFinder
+import system.data.SaveLoad
+import system.environment.{Area, EnvironmentManager}
+import system.event.EventHandler
+import system.tile.{Map, TileManager}
+import system.ui.UI
 
 import java.awt.{Color, Dimension, Font, Graphics, Graphics2D}
 import javax.swing.JPanel
-import entities.{Entity, Npc, Player}
-import items.Projectile
-import ui.UI
-import utils.{CollisionChecker, Config, CutsceneManager, EntityGenerator, EventHandler, KeyHandler, Sound, Tools}
+import utils.{CollisionChecker, Config, CutsceneManager, EntityGenerator, KeyHandler, Sound, Tools}
 
 import scala.collection.mutable.ListBuffer
 

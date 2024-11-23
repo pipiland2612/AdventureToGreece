@@ -1,7 +1,6 @@
 package utils
 
-import `object`.ObjectType.{OBJ_BronzeCoin, OBJ_Chest, OBJ_Fireball, OBJ_GoldCoin, OBJ_GoldenChest, OBJ_GoldenKatana, OBJ_ManaFlask, OBJ_MoonSaber, OBJ_NormalAxe, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverChest, OBJ_SilverKey, OBJ_GoldenRelic}
-import `object`.{OBJ_BossPillar, OBJ_CheckPoint, OBJ_DungeonFence, OBJ_DungeonGate, OBJ_Heart, OBJ_HolyGrail, OBJ_LightCandle, OBJ_Mana, OBJ_Pillar, OBJ_PlayerDummy, OBJ_Rock, OBJ_Skeleton, OBJ_Tree}
+import entities.`object`.*
 import entities.Entity
 import game.GamePanel
 

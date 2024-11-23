@@ -1,7 +1,8 @@
 package utils
 
-import Enemy.Enemy
-import entities.{Creatures, Direction, Entity, State}
+import entities.Entity
+import entities.creatures.enemy.Enemy
+import entities.creatures.{Creatures, Direction, State}
 import game.GamePanel
 
 import java.awt.geom.AffineTransform

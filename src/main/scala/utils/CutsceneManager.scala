@@ -1,7 +1,7 @@
 package utils
 
-import Enemy.EN_KingOfDeath
-import `object`.{OBJ_DungeonFence, OBJ_PlayerDummy}
+import entities.`object`.{OBJ_DungeonFence, OBJ_PlayerDummy}
+import entities.creatures.enemy.KingOfDeath
 import game.GamePanel
 import game.GameState.PlayState
 
@@ -59,7 +59,7 @@ class CutsceneManager (var gp: GamePanel):
       found = false
       for i <- gp.enemyList(1).indices if !found do
         if gp.enemyList(gp.currentMap)(i) != null then
-          if gp.enemyList(gp.currentMap)(i).name.equals(EN_KingOfDeath.Name) then
+          if gp.enemyList(gp.currentMap)(i).name.equals(KingOfDeath.Name) then
             gp.enemyList(gp.currentMap)(i).isSleeping = false
             gp.gui.npc = gp.enemyList(gp.currentMap)(i)
             scenePhase += 1

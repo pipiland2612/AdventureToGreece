@@ -1,7 +1,7 @@
 package utils
 import game.GameState.{CharacterState, MapState, PlayState}
 import game.{GamePanel, GameState}
-import ui.PlayerUI
+import system.ui.PlayerUI
 
 import java.awt.event.{KeyEvent, KeyListener}
 
