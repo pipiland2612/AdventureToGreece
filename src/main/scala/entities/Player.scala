@@ -49,7 +49,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
 
   // ----------------------------------------------------------------------------------
   // Player Position and collision
-  var lastSavePoint: (Int, Int) = (gp.tileSize * 23, gp.tileSize * 21)
+  var lastSavePoint: (Int, Int) = (gp.tileSize * 43, gp.tileSize * 46)
   var lastSavePointMap: Int = 0
 
   var solidAreaX = 22

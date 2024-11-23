@@ -9,7 +9,7 @@ import utils.Tools
 
 class TileManager(var gp: GamePanel) :
   var tile: Array[Tile] = new Array[Tile](35)
-  var drawPath: Boolean = false;
+  var drawPath: Boolean = false // SET this to true if you want to see how A* work
 
   var mapTileNum: Array[Array[Array[Int]]] = Array.ofDim[Int](gp.maxMap, gp.maxWorldRow, gp.maxWorldCol)
   def loadMap(path: String, mapIndex: Int) =

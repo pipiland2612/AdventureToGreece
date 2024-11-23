@@ -288,7 +288,6 @@ class UI(var gp: GamePanel):
   private def drawHint(text : String):Unit =
     g2.setFont(g2.getFont.deriveFont(Font.BOLD, 13F))
 
-    // Calculate position above the player
     val x = gp.screenWidth - gp.tileSize * 4
     val y = gp.tileSize * 12 - gp.tileSize/2
 
