@@ -6,6 +6,7 @@ import items.Item
 
 import java.awt.{AlphaComposite, Graphics2D}
 import scala.util.Random
+import scala.util.boundary.break
 
 abstract class Enemy(gp: GamePanel) extends Creatures(gp):
 
@@ -117,12 +118,14 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
     counter = 0
     isOnPath = true
 
-  def dropItem(item: Item): Unit =
-    for index <- gp.obj(1).indices do
-      if gp.obj(gp.currentMap)(index) == null then
+  def dropItem(item: Item): Unit = 
+    gp.obj(1).indices.find ( index =>
+      if (gp.obj(gp.currentMap)(index) == null) then
         gp.obj(gp.currentMap)(index) = item
         gp.obj(gp.currentMap)(index).pos = (this.pos._1 + this.solidArea.x, this.pos._2 + this.solidArea.y)
-        return
+        true // Break the loop
+      else false
+    )
 
   def checkDrop(): Unit =
     val randomInt = new Random().nextInt(100) + 1

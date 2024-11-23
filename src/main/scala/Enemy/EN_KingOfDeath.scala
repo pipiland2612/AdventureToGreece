@@ -99,6 +99,7 @@ class EN_KingOfDeath (gp: GamePanel) extends Enemy(gp) :
     case Direction.DOWN => Rectangle(pos._1 + areaHitBox.x / 2, pos._2 + (attackArea.height), attackArea.width, attackArea.height)
     case Direction.LEFT => Rectangle(pos._1 + areaHitBox.x - attackArea.width, pos._2 + (areaHitBox.y * 3/2), attackArea.width, attackArea.height)
     case Direction.RIGHT => Rectangle(pos._1 + areaHitBox.x + attackArea.width / 2, pos._2 + (areaHitBox.y / 1.5).toInt , attackArea.width, attackArea.height)
+    case Direction.ANY => Rectangle(0,0,0,0)
 
   override def setAction(): Unit =
     if getTileDistance(gp.player) < 10 then

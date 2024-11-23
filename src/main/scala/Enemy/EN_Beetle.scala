@@ -86,6 +86,7 @@ class EN_Beetle(gp : GamePanel) extends Enemy(gp) :
     case Direction.DOWN => Rectangle(pos._1 + (areaHitBox.x), pos._2 + areaHitBox.y + attackArea.height, attackArea.width, attackArea.height)
     case Direction.LEFT => Rectangle(pos._1 + areaHitBox.x - attackArea.width, pos._2 + areaHitBox.y , attackArea.width, attackArea.height)
     case Direction.RIGHT => Rectangle(pos._1 + (areaHitBox.width / 2) + attackArea.width, pos._2 + areaHitBox.y, attackArea.width, attackArea.height)
+    case Direction.ANY => Rectangle(0,0,0,0)
 
   currentAnimation = idleAnimations(this.direction)
 

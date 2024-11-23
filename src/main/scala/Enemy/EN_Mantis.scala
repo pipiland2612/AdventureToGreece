@@ -16,7 +16,7 @@ class EN_Mantis(gp : GamePanel) extends Enemy(gp) :
   maxHealth = 15
   health = maxHealth
   damagePower = 7
-  var defense = 7
+  var defense = 3
   maxInvincDuration = 15
   var expGet: Int = 7
   var itemDropped: Vector[Item] = Vector(new OBJ_ManaFlask(gp), new OBJ_SilverKey(gp))
@@ -86,6 +86,7 @@ class EN_Mantis(gp : GamePanel) extends Enemy(gp) :
     case Direction.DOWN => Rectangle(pos._1 + (areaHitBox.x ), pos._2 + areaHitBox.y + attackArea.height, attackArea.width, attackArea.height)
     case Direction.LEFT => Rectangle(pos._1 + areaHitBox.x - attackArea.width, pos._2 + areaHitBox.y , attackArea.width, attackArea.height)
     case Direction.RIGHT => Rectangle(pos._1 + (areaHitBox.width / 4) + attackArea.width, pos._2 + areaHitBox.y, attackArea.width, attackArea.height)
+    case Direction.ANY => Rectangle(0,0,0,0)
 
   currentAnimation = idleAnimations(this.direction)
 

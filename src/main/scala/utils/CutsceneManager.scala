@@ -206,11 +206,11 @@ class CutsceneManager (var gp: GamePanel):
       val gradientHeight = 100
       val topGradient = new GradientPaint(
         0, 0, new Color(0, 0, 0, 255),
-        0, gradientHeight, new Color(0, 0, 0, 0)
+        0, gradientHeight.toFloat, new Color(0, 0, 0, 0)
       )
       val bottomGradient = new GradientPaint(
-        0, gp.screenHeight - gradientHeight, new Color(0, 0, 0, 0),
-        0, gp.screenHeight, new Color(0, 0, 0, 255)
+        0, gp.screenHeight.toFloat - gradientHeight, new Color(0, 0, 0, 0),
+        0, gp.screenHeight.toFloat, new Color(0, 0, 0, 255)
       )
 
       g2.setPaint(topGradient)

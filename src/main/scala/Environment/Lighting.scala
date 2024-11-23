@@ -49,7 +49,7 @@ class Lighting (gp: GamePanel) :
       fraction(10) = 0.95f
       fraction(11) = 1f
 
-      val gPaint :RadialGradientPaint = RadialGradientPaint(centerX, centerY, gp.player.currentLight.lightRadius , fraction, color)
+      val gPaint :RadialGradientPaint = RadialGradientPaint(centerX.toFloat, centerY.toFloat, gp.player.currentLight.lightRadius.toFloat , fraction, color)
       g2.setPaint(gPaint)
 
     g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight)

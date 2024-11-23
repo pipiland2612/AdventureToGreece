@@ -372,7 +372,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         if damage < 0 then damage = 0
         currentEnemy.takeDamage(damage)
         currentEnemy.damageReaction()
-        gp.gui.addMessage(damage + " damage!")
+        gp.gui.addMessage(s"$damage: damage!")
         currentEnemy.isInvinc = true
 
         if !currentEnemy.isAlive then

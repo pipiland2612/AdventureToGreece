@@ -66,6 +66,7 @@ abstract class Creatures(gp: GamePanel) extends Entity(gp) :
     case Direction.DOWN => Rectangle(pos._1 + (areaHitBox.x / 1.5).toInt, pos._2 + areaHitBox.y + areaHitBox.height /2 + attackArea.height, attackArea.width, attackArea.height)
     case Direction.LEFT => Rectangle(pos._1 + areaHitBox.x - attackArea.width, pos._2 + (areaHitBox.y * 3/2), attackArea.width, attackArea.height)
     case Direction.RIGHT => Rectangle(pos._1 + areaHitBox.x - areaHitBox.width + attackArea.width, pos._2 + (areaHitBox.y * 3/2), attackArea.width, attackArea.height)
+    case ANY => Rectangle(0,0,0,0)
   // ----------------------------------------------------------------------------------------------
   // Creature Actions and State Management
 
