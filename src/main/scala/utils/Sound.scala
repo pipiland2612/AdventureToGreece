@@ -1,5 +1,6 @@
 package utils
 
+import java.io.ByteArrayInputStream
 import javax.sound.sampled.{AudioInputStream, AudioSystem, Clip, FloatControl}
 
 class Sound:
@@ -19,20 +20,19 @@ class Sound:
     resourceStream match
       case Some(stream) =>
         try
-          // Buffer the InputStream into a ByteArrayInputStream
-          val bufferedStream = new java.io.ByteArrayInputStream(
-            stream.readAllBytes()
-          )
+          val bufferedStream = new ByteArrayInputStream(stream.readAllBytes())
           val ais: AudioInputStream = AudioSystem.getAudioInputStream(bufferedStream)
+
           clip = AudioSystem.getClip()
           clip.open(ais)
-          fc = clip.getControl(FloatControl.Type.MASTER_GAIN).asInstanceOf[FloatControl]
-          checkVolume()
+
         catch
           case e: Exception =>
             println(s"Error loading audio from $soundPath: ${e.getMessage}")
+
       case None =>
         println(s"Audio file not found at $soundPath")
+
 
   def play(): Unit =
     if (clip != null) then clip.start()
@@ -51,5 +51,5 @@ class Sound:
       case 3 => -5f
       case 4 => 1f
       case 5 => 6f
-    fc.setValue(volume)
+    if fc != null then fc.setValue(volume)
 end Sound
