@@ -12,7 +12,7 @@ class OBJ_Chest(gp: GamePanel) extends InteractiveObjects(gp):
   var name      = OBJ_Chest.Name
   var pos       = (0, 0)
   var size      = 48
-  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size * 2/3, size * 2/3)
+  var solidArea = Rectangle(solidAreaDefaultX, solidAreaDefaultY, size, size * 2/3)
   image         = getImage
   collision     = true
 

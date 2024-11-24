@@ -72,7 +72,15 @@ class EventHandler(var gp: GamePanel):
       thisEventRect.y = thisEventRect.eventRectDefaultY
 
     hasHit
+  def hasHitByCoords(map: Int, startCol: Int, startRow: Int): Boolean =
+    var hasHit = false
 
+    if map == gp.currentMap then
+      if (gp.player.getPosition._1 + gp.player.attackArea.x) / gp.tileSize >= startCol &&
+        (gp.player.getPosition._2 + gp.player.attackArea.y) / gp.tileSize <= startRow
+      then
+        hasHit = true
+    hasHit
   // Event actions
   def damagePit(): Unit =
     eventMaster.startDialogue(eventMaster, 0)
@@ -114,15 +122,10 @@ class EventHandler(var gp: GamePanel):
       else if hasHit(1, 4, 3, Direction.ANY) then teleport(0, 6, 1, Area.OverWorld) // Back to OverWorld
       else if hasHit(1, 47, 33, Direction.ANY) then teleport(2, 4, 44, Area.Dungeon) // TO FINAL BOSS (DUNGEON 2)
       else if hasHit(2, 4, 44, Direction.ANY) then teleport(1, 47, 33, Area.Dungeon) // TO DUNGEON 1
-      else if hasHit(2, 23, 32, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 24, 32, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 25, 32, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 23, 31, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 24, 31, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 25, 31, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 23, 30, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 24, 30, Direction.ANY) then kingOfDeath() // CutScene
-      else if hasHit(2, 25, 30, Direction.ANY) then kingOfDeath() // CutScene
+      else if hasHitByCoords(2, 25, 33) then kingOfDeath()
+      else if hasHitByCoords(2, 24, 33) then kingOfDeath()
+      else if hasHitByCoords(2, 23, 33) then kingOfDeath()
+      else if hasHitByCoords(2, 22, 33) then kingOfDeath()
 
   // NPC interaction
   def speak(npc: Npc): Unit =

@@ -90,7 +90,7 @@ end OBJ_SilverChest
 object OBJ_SilverChest:
   val Name: String = "Silver Shield"
 
-class OBJ_GoldenChest(gp: GamePanel) extends Shield(15, gp):
+class OBJ_GoldenChest(gp: GamePanel) extends Shield(8, gp):
   name            = OBJ_GoldenChest.Name
   price           = 30
   var imageDisplayed = Tools.scaleImage(Tools.loadImage("objects/golden_chest.png"), size - size / 5, size - size / 5)

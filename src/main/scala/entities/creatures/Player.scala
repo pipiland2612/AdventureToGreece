@@ -1,7 +1,7 @@
 package entities.creatures
 
 import entities.items.{Coin, InteractiveObjects, Item, Light, Potion, Projectile, Shield, Weapon}
-import entities.`object`.{OBJ_Fireball, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
+import entities.`object`.{OBJ_Fireball, OBJ_LightCandle, OBJ_NormalHealFlask, OBJ_NormalShield, OBJ_NormalSword, OBJ_SilverKey}
 import game.{GamePanel, GameState}
 import system.ui.PlayerUI
 import utils.{Animation, Tools}
@@ -14,7 +14,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   currentWeapon = OBJ_NormalSword(gp)
   currentShield = OBJ_NormalShield(gp)
   currentProjectile = OBJ_Fireball(gp)
-  
+  currentLight = OBJ_LightCandle(gp)
   
   // IF YOU WANT TO BEAT THE GAME ASAP, TURN THIS INTO TRUE
   var isGodMode = false
@@ -238,6 +238,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     this.inventory += currentWeapon
     this.inventory += currentShield
     this.inventory += currentProjectile
+    this.inventory += currentLight
     this.inventory += OBJ_NormalHealFlask(gp)
     this.inventory += OBJ_SilverKey(gp)
     this.inventory += OBJ_SilverKey(gp)
@@ -373,7 +374,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
         if damage < 0 then damage = 0
         currentEnemy.takeDamage(damage)
         currentEnemy.damageReaction()
-        gp.gui.addMessage(s"$damage: damage!")
+        gp.gui.addMessage(s"$damage damage!")
         currentEnemy.isInvinc = true
 
         if !currentEnemy.isAlive then
