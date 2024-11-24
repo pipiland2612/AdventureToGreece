@@ -27,9 +27,9 @@ class Sound:
           checkVolume()
         catch
           case e: Exception =>
-            println(s"Error loading audio from $soundPath: ${e.getMessage}")
+            println(s"")
       case None =>
-        println(s"Audio file not found at $soundPath")
+        println(s"")
 
 
   def play(): Unit =
