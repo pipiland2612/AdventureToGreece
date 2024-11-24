@@ -96,7 +96,7 @@ class KeyHandler(var gp: GamePanel) extends KeyListener :
 
   private def handleGameMenuState(code: Int): Unit =
     val maxCommanNum = gp.gui.subState match
-      case 0 => 4
+      case 0 => 5
       case 1 => 0
       case 2 => 1
     code match

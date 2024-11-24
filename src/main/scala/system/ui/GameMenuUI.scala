@@ -39,6 +39,15 @@ object GameMenuUI:
       if gp.keyH.enterPressed then
         gp.gui.subState = 1
         gp.gui.commandNum = 0
+
+    textY += tileSize
+    g2.drawString("Show hint ?", textX, textY)
+    if gp.gui.commandNum == 4 then
+      g2.drawString(">", textX - 25, textY)
+      if gp.keyH.enterPressed then
+        if gp.gui.canDrawHint then gp.gui.canDrawHint = false
+        else gp.gui.canDrawHint = true
+
     // END GAME
     textY += tileSize
     g2.drawString("End Game", textX, textY)
@@ -47,10 +56,11 @@ object GameMenuUI:
       if gp.keyH.enterPressed then
         gp.gui.subState = 2
         gp.gui.commandNum = 0
+
     // BACK
     textY += tileSize * 2
     g2.drawString("Back", textX, textY)
-    if gp.gui.commandNum == 4 then
+    if gp.gui.commandNum == 5 then
       g2.drawString(">", textX - 25, textY)
       if gp.keyH.enterPressed then
         gp.gameState = GameState.PlayState
@@ -67,6 +77,11 @@ object GameMenuUI:
     g2.drawRect(textX, textY, 120, 24)
     val seWidth = 24 * gp.se.volumeScale
     g2.fillRect(textX, textY, seWidth, 24)
+
+    textY += 2 * tileSize
+    g2.drawRect(textX + 96, textY, 24, 24)
+    def fill: Int = if gp.gui.canDrawHint then 24 else 0
+    g2.fillRect(textX + 96, textY, fill, 24)
 
     gp.config.saveConfig()
 
@@ -113,7 +128,7 @@ object GameMenuUI:
     val tileSize = gp.tileSize
     var textX = frameX + tileSize - 10
     var textY = frameY + tileSize
-    gp.gui.currentDialogue = "Quit the game and\nreturn to the title screen ?"
+    gp.gui.currentDialogue = "Quit the game and return\nto the title screen ?"
 
     for line <- gp.gui.currentDialogue.split("\n") do
       g2.drawString(line, textX, textY)

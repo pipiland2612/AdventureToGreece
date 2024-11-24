@@ -19,7 +19,11 @@ class Sound:
     resourceStream match
       case Some(stream) =>
         try
-          val ais: AudioInputStream = AudioSystem.getAudioInputStream(stream)
+          // Buffer the InputStream into a ByteArrayInputStream
+          val bufferedStream = new java.io.ByteArrayInputStream(
+            stream.readAllBytes()
+          )
+          val ais: AudioInputStream = AudioSystem.getAudioInputStream(bufferedStream)
           clip = AudioSystem.getClip()
           clip.open(ais)
           fc = clip.getControl(FloatControl.Type.MASTER_GAIN).asInstanceOf[FloatControl]

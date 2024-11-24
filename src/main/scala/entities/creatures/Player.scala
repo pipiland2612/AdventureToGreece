@@ -14,7 +14,6 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
   currentWeapon = OBJ_NormalSword(gp)
   currentShield = OBJ_NormalShield(gp)
   currentProjectile = OBJ_Fireball(gp)
-  currentLight = OBJ_LightCandle(gp)
   
   // IF YOU WANT TO BEAT THE GAME ASAP, TURN THIS INTO TRUE
   var isGodMode = false
@@ -238,7 +237,7 @@ class Player(var pos: (Int, Int), gp: GamePanel) extends Creatures(gp):
     this.inventory += currentWeapon
     this.inventory += currentShield
     this.inventory += currentProjectile
-    this.inventory += currentLight
+    this.inventory += OBJ_LightCandle(gp)
     this.inventory += OBJ_NormalHealFlask(gp)
     this.inventory += OBJ_SilverKey(gp)
     this.inventory += OBJ_SilverKey(gp)

@@ -32,6 +32,7 @@ class UI(var gp: GamePanel):
   var commandNum = 0
   var counter: Int = 0
   var subState = 0
+  var canDrawHint: Boolean = true
 
   val tileSize = gp.tileSize
 
@@ -67,7 +68,7 @@ class UI(var gp: GamePanel):
     PlayerUI.drawPlayerMana()
     this.drawEnemyHealth()
     drawMessage()
-    drawHint("[ENTER] to interact")
+    drawHint("[ENTER] to interact\n[C] to open inventory")
 
   private def drawPauseState(): Unit =
     PlayerUI.drawPlayerLife()
@@ -286,15 +287,22 @@ class UI(var gp: GamePanel):
           g2.setColor(Color.WHITE)
           g2.drawString(currentEnemy.name, x + 4, y - 10)
 
-  private def drawHint(text : String):Unit =
-    g2.setFont(g2.getFont.deriveFont(Font.BOLD, 13F))
+  private def drawHint(text: String): Unit =
+    if canDrawHint then
+      g2.setFont(g2.getFont.deriveFont(Font.BOLD, 13F))
 
-    val x = gp.screenWidth - gp.tileSize * 4
-    val y = gp.tileSize * 12 - gp.tileSize/2
+      val x = gp.screenWidth - gp.tileSize * 4
+      val baseY = gp.tileSize * 12 - gp.tileSize / 2
 
-    // Draw main text in white
-    g2.setColor(Color.WHITE)
-    g2.drawString(text, x, y)
+      // Split text into lines by \n
+      val lines = text.split("\n")
+
+      g2.setColor(Color.WHITE)
+      for ((line, index) <- lines.zipWithIndex) {
+          val y = baseY + index * g2.getFontMetrics.getHeight
+          g2.drawString(line, x, y)
+      }
+
 
   def loadCustomFont(): Unit =
     try
