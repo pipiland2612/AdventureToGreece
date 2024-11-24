@@ -20,16 +20,14 @@ class Sound:
     resourceStream match
       case Some(stream) =>
         try
-          val bufferedStream = new ByteArrayInputStream(stream.readAllBytes())
-          val ais: AudioInputStream = AudioSystem.getAudioInputStream(bufferedStream)
-
+          val ais: AudioInputStream = AudioSystem.getAudioInputStream(stream)
           clip = AudioSystem.getClip()
           clip.open(ais)
-
+          fc = clip.getControl(FloatControl.Type.MASTER_GAIN).asInstanceOf[FloatControl]
+          checkVolume()
         catch
           case e: Exception =>
             println(s"Error loading audio from $soundPath: ${e.getMessage}")
-
       case None =>
         println(s"Audio file not found at $soundPath")
 
