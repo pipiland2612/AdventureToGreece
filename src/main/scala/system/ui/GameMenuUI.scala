@@ -42,7 +42,7 @@ object GameMenuUI:
 
     textY += tileSize
     g2.drawString("Show hint ?", textX, textY)
-    if gp.gui.commandNum == 4 then
+    if gp.gui.commandNum == 3 then
       g2.drawString(">", textX - 25, textY)
       if gp.keyH.enterPressed then
         if gp.gui.canDrawHint then gp.gui.canDrawHint = false
@@ -51,7 +51,7 @@ object GameMenuUI:
     // END GAME
     textY += tileSize
     g2.drawString("End Game", textX, textY)
-    if gp.gui.commandNum == 3 then
+    if gp.gui.commandNum == 4 then
       g2.drawString(">", textX - 25, textY)
       if gp.keyH.enterPressed then
         gp.gui.subState = 2
