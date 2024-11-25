@@ -13,12 +13,12 @@ class Mantis(gp : GamePanel) extends Enemy(gp) :
   var pos = (0,0)
   var name = "Mantis"
   speed = 2
-  maxHealth = 15
+  maxHealth = 25
   health = maxHealth
-  damagePower = 7
-  var defense = 3
+  damagePower = 10
+  var defense = 10
   maxInvincDuration = 15
-  var expGet: Int = 7
+  var expGet: Int = 8
   var itemDropped: Vector[Item] = Vector(new OBJ_ManaFlask(gp), new OBJ_SilverKey(gp))
 
   var attackRate = 40

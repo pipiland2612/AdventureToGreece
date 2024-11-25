@@ -12,13 +12,13 @@ class Beetle(gp : GamePanel) extends Enemy(gp) :
   // stats
   var pos = (0,0)
   var name = "Beetle"
-  speed = 3
-  maxHealth = 10
+  speed = 5
+  maxHealth = 15
   health = maxHealth
-  damagePower = 5
-  var defense = 2
+  damagePower = 6
+  var defense = 4
   maxInvincDuration = 15
-  var expGet: Int = 4
+  var expGet: Int = 5
   var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp), new OBJ_NormalHealFlask(gp), new OBJ_SilverKey(gp))
 
   var changeDirectionInterval = 30

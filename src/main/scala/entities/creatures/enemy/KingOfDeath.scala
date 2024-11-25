@@ -13,11 +13,11 @@ class KingOfDeath (gp: GamePanel) extends Enemy(gp) :
 
   var pos = (0,0)
   var name = KingOfDeath.Name
-  speed = 4
-  maxHealth = 40
+  speed = 5
+  maxHealth = 250
   health = maxHealth
-  damagePower = 20
-  var defense = 20
+  damagePower = 70
+  var defense = 50
   maxInvincDuration = 15
   var expGet: Int = 30
   var itemDropped: Vector[Item] = Vector(new OBJ_HolyGrail(gp))

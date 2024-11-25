@@ -109,7 +109,7 @@ abstract class Enemy(gp: GamePanel) extends Creatures(gp):
   // Enemy Actions
   override def dealDamage(damagePower: Int): Unit =
     var damage = damagePower - gp.player.defense
-    if damage < 0 then damage = 0
+    damage = math.max(damage, if isBoss then 10 else 2)
     gp.player.takeDamage(damage)
     gp.gui.addMessage(s"Monster attack! -$damage HP")
     gp.player.isInvinc = true

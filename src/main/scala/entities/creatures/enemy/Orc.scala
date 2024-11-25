@@ -52,12 +52,12 @@ class Orc_Light(gp: GamePanel) extends Orc(gp) :
   var pos = (0,0)
   var name = "Light Orc"
   speed = 2
-  maxHealth = 20
+  maxHealth = 25
   health = maxHealth
-  damagePower = 10
-  var defense = 5
+  damagePower = 14
+  var defense = 20
   maxInvincDuration = 15
-  var expGet: Int = 5
+  var expGet: Int = 10
   var itemDropped: Vector[Item] = Vector(new OBJ_BronzeCoin(gp), new OBJ_NormalHealFlask(gp), new OBJ_ManaFlask(gp))
 
   var attackRate = 20
@@ -106,12 +106,12 @@ class Orc_Heavy(gp: GamePanel) extends Orc(gp) :
   var pos = (0,0)
   var name = "Heavy Orc"
   speed = 2
-  maxHealth = 30
+  maxHealth = 40
   health = maxHealth
-  damagePower = 10
-  var defense = 10
+  damagePower = 35
+  var defense = 30
   maxInvincDuration = 15
-  var expGet: Int = 10
+  var expGet: Int = 20
   var itemDropped: Vector[Item] = Vector(new OBJ_GoldCoin(gp))
 
   var attackRate = 20
